@@ -7,5 +7,5 @@
 
 void transmit_init(void);
 bool transmit_ready(size_t len);
-void transmit_send(const uint8_t *data, size_t len);
+void transmit_send(const void *packet, const uint8_t *data, size_t len);
 void transmit_task(DAC_HandleTypeDef *hdac);

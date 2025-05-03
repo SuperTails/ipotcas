@@ -172,7 +172,6 @@ void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef * heth) {
 
 
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
-  // TODO: When does this get released??
   ETH_AppBuff *frame_Rx;
   if (HAL_ETH_ReadData(heth, (void **)&frame_Rx) != HAL_OK) {
     printf("eth rx err\n");
@@ -189,9 +188,11 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
   }
   #else
   if (transmit_ready(frame_Rx->AppBuff.len)) {
-    transmit_send(frame_Rx->buffer, frame_Rx->AppBuff.len);
+    printf("eth rx %d\n", frame_Rx->AppBuff.len);
+    transmit_send(frame_Rx, frame_Rx->buffer, frame_Rx->AppBuff.len);
+  } else {
+    ethernet_free_rx_buffer(frame_Rx);
   }
-  ethernet_free_rx_buffer(frame_Rx);
   #endif
 }
 

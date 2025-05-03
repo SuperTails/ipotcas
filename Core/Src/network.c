@@ -42,12 +42,12 @@ bool tud_network_recv_cb(const uint8_t *src, uint16_t size) {
     }
     return true;
     #else
-    if (transmit_ready(size)) {
+    /*if (transmit_ready(size)) {
         transmit_send(src, size);
         printf("usb rx %d ok\n", size);
     } else {
         printf("usb rx %d bad\n", size);
-    }
+    }*/
     return true;
     #endif
 

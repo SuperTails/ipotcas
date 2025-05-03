@@ -1,10 +1,12 @@
 #include "transmit.h"
 #include "modulation.h"
+#include "ethernet.h"
 #include <stdint.h>
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 extern TIM_HandleTypeDef htim3;
 
@@ -68,9 +70,29 @@ static void encoder_enc(encoder_t *enc, int symbol, int *i, int *q) {
     *q = SYMBOL_TO_CONSTELLATION_Q[(y0 << 4) | (enc->y12 << 2) | q34];
 }
 
+double fast_cos(double rad) {
+    //rad = fmod(rad + M_PI, 2.0f * M_PI) - M_PI;
+
+    // from https://stackoverflow.com/questions/18662261/fastest-implementation-of-sine-cosine-and-square-root-in-c-doesnt-need-to-b
+    double tp = 1./(2.*M_PI);
+    rad *= tp;
+    rad -= 0.25 + floor(rad + 0.25);
+    rad *= 16.0 * (fabs(rad) - 0.5);
+
+    /*float rad_2 = rad * rad;
+    float rad_4 = rad_2 * rad_2;
+
+    return 1.0 - rad_2 / 2.0 + rad_4 / 24.0;*/
+    return rad;
+}
+
+double fast_sin(double rad) {
+    return fast_cos(rad - M_PI_2);
+}
+
 static int current_dac_value(int mod_i, int mod_q) {
     double rad = micros() * (2.0 * M_PI * CARRIER_FREQUENCY / 1.0e6);
-    double amp = (mod_i * cos(rad) + mod_q * sin(rad));
+    double amp = (mod_i * fast_cos(rad) + mod_q * fast_sin(rad));
     // scale -8 to 8 range into 0 to 1, then convert to int
     return (int)(((amp + 8.0) / 16.0) * 4096.0);
 }
@@ -95,47 +117,7 @@ static void tx_reset(transmitter_t *tx) {
     tx->next_event = micros();
 }
 
-const char sym_data[] = "Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow";
-
-// returns the current value that should be fed to the DAC
-static int tx_update(transmitter_t *tx) {
-    if (micros() > tx->next_event) {
-        if (tx->state == TX_GAP) {
-            tx->next_event += 2 * TRAIN_PERIOD_US;
-            tx->mod_i = 4; tx->mod_q = 0;
-            tx->idx = 0;
-            encoder_reset(&tx->enc);
-            tx->state = TX_TRAIN;
-        } else if ((tx->state == TX_TRAIN) || (tx->state == TX_BYTE_HI && tx->idx < sizeof(sym_data))) {
-            int symbol = sym_data[tx->idx] & 0xF;
-
-            tx->next_event += SYMBOL_PERIOD_US;
-            encoder_enc(&tx->enc, symbol, &tx->mod_i, &tx->mod_q);
-            tx->state = TX_BYTE_LO;
-        } else if (tx->state == TX_BYTE_LO) {
-            int symbol = (sym_data[tx->idx++] >> 4) & 0xF;
-
-            tx->next_event += SYMBOL_PERIOD_US;
-            encoder_enc(&tx->enc, symbol, &tx->mod_i, &tx->mod_q);
-            tx->state = TX_BYTE_HI;
-        } else if (tx->state == TX_BYTE_HI) {
-            tx->next_event += SYMBOL_GAP_US;
-            tx->mod_i = 0; tx->mod_q = 0;
-            tx->state = TX_GAP;
-        }
-    }
-
-    return current_dac_value(tx->mod_i, tx->mod_q);
-}
-
-transmitter_t TRANSMITTER;
-
-void transmit_init() {
-    tx_reset(&TRANSMITTER);
-}
-
-const char dmadata[] = "Hello, world!";
-
+#if 0
 extern UART_HandleTypeDef huart2;
 
 volatile bool dma_ready = true;
@@ -154,18 +136,89 @@ void transmit_send(const uint8_t *data, size_t len) {
     dma_ready = false;
 }
 
-void transmit_task(DAC_HandleTypeDef *hdac) {
-    //int value = tx_update(&TRANSMITTER);
-    
-    int value = current_dac_value(4, 0);
-    //static int i = 0;
-    //int value = micros() % 4096;
-    HAL_DAC_SetValue(hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
-}
-
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart == &huart2) {
         dma_ready = true;
     }
 }
+#else
 
+const void *current_packet = NULL;
+//const uint8_t *sym_data = NULL;
+//size_t sym_len = 0;
+const char *sym_data = "Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow";
+size_t sym_len = 539;
+
+bool transmit_ready(size_t len) {
+    return current_packet == NULL;
+}
+
+void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
+    if (current_packet) {
+        return;
+    }
+
+    current_packet = pkt;
+    sym_data = data;
+    sym_len = len;
+}
+#endif
+
+//const char sym_data[] = "Hello, world!\n";
+
+// returns the current value that should be fed to the DAC
+static int tx_update(transmitter_t *tx) {
+    if (tx->state == TX_GAP && sym_len == 0) {
+        return 4096 / 2;
+    }
+
+    if (micros() > tx->next_event) {
+        if (tx->state == TX_GAP) {
+            tx->next_event += TRAIN_PERIOD_US;
+            tx->mod_i = 4; tx->mod_q = 0;
+            tx->idx = 0;
+            encoder_reset(&tx->enc);
+            tx->state = TX_TRAIN;
+        } else if ((tx->state == TX_TRAIN) || (tx->state == TX_BYTE_HI && tx->idx < sym_len)) {
+            int symbol = sym_data[tx->idx] & 0xF;
+
+            tx->next_event += SYMBOL_PERIOD_US;
+            encoder_enc(&tx->enc, symbol, &tx->mod_i, &tx->mod_q);
+            tx->state = TX_BYTE_LO;
+        } else if (tx->state == TX_BYTE_LO) {
+            int symbol = (sym_data[tx->idx++] >> 4) & 0xF;
+
+            tx->next_event += SYMBOL_PERIOD_US;
+            encoder_enc(&tx->enc, symbol, &tx->mod_i, &tx->mod_q);
+            tx->state = TX_BYTE_HI;
+        } else if (tx->state == TX_BYTE_HI) {
+            if (current_packet) {
+                ethernet_free_rx_buffer(current_packet);
+                current_packet = NULL;
+                sym_data = NULL;
+                sym_len = 0;
+            }
+
+            tx->next_event += SYMBOL_GAP_US;
+            tx->mod_i = 0; tx->mod_q = 0;
+            tx->state = TX_GAP;
+        }
+    }
+
+    return current_dac_value(tx->mod_i, tx->mod_q);
+}
+
+transmitter_t TRANSMITTER;
+
+void transmit_task(DAC_HandleTypeDef *hdac) {
+    int value = tx_update(&TRANSMITTER);
+    
+    //int value = current_dac_value(4, 0);
+    //static int i = 0;
+    //int value = micros() % 4096;
+    HAL_DAC_SetValue(hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
+}
+
+void transmit_init() {
+    tx_reset(&TRANSMITTER);
+}

@@ -14,3 +14,5 @@ void ethernet_send_packet(const uint8_t *data, size_t len);
 void ethernet_free_rx_buffer(const void *buf);
 
 void ethernet_task(void);
+
+void ethernet_free_rx_buffer(const void *buf);

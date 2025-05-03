@@ -1,12 +1,13 @@
 #pragma once
 #include <stdint.h>
 
-#define SAMPLE_PERIOD_NS 62500 // 16khz
+//#define SAMPLE_PERIOD_NS 62500 // 16khz
+#define SAMPLE_PERIOD_NS 31250 // 32khz
 
 #define CARRIER_PERIOD_NS 250000 // 4khz
 #define CARRIER_FREQUENCY (1.0e9 / CARRIER_PERIOD_NS)
 
-#define SYMBOL_PERIOD_US 2000
+#define SYMBOL_PERIOD_US 5000
 #define SYMBOL_GAP_US (2 * SYMBOL_PERIOD_US)
 #define TRAIN_PERIOD_US (2 * SYMBOL_PERIOD_US)
 
@@ -24,5 +25,5 @@ const static int8_t CONSTELLATION_TO_SYMBOL[9][9] = {
   { -1, -1, -1, 31, -1, 24, -1, -1, -1 },
 };
 
-const static int8_t SYMBOL_TO_CONSTELLATION_I[] = { -4, 0, 0, 4, 4, 0, 0, -4, -2, -2, 2, 2, 2, 2, -2, -2, -3, 1, -3, 1, 3, -1, 3, -1, 1, -3, 1, 1, -1, 3, -1, -1 };
-const static int8_t SYMBOL_TO_CONSTELLATION_Q[] = { 1, -3, 1, 1, -1, 3, -1, -1, 3, -1, 3, -1, -3, 1, -3, 1, -2, -2, 2, 2, 2, 2, -2, -2, 4, 0, 0, -4, -4, 0, 0, 4 };
+const static int8_t SYMBOL_TO_CONSTELLATION_I[] = { -4,  0, 0, 4,  4, 0,  0, -4, -2, -2, 2,  2,  2, 2, -2, -2, -3,  1, -3, 1, 3, -1,  3, -1, 1, -3, 1,  1, -1, 3, -1, -1 };
+const static int8_t SYMBOL_TO_CONSTELLATION_Q[] = {  1, -3, 1, 1, -1, 3, -1, -1,  3, -1, 3, -1, -3, 1, -3,  1, -2, -2,  2, 2, 2,  2, -2, -2, 4,  0, 0, -4, -4, 0,  0,  4 };
