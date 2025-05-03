@@ -155,9 +155,11 @@ void transmit_send(const uint8_t *data, size_t len) {
 }
 
 void transmit_task(DAC_HandleTypeDef *hdac) {
-    int value = tx_update(&TRANSMITTER);
+    //int value = tx_update(&TRANSMITTER);
     
-    //int value = current_dac_value(4, 0);
+    int value = current_dac_value(4, 0);
+    //static int i = 0;
+    //int value = micros() % 4096;
     HAL_DAC_SetValue(hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
 }
 
@@ -166,3 +168,4 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
         dma_ready = true;
     }
 }
+

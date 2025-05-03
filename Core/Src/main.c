@@ -119,6 +119,8 @@ extern int buffer_uses[8];
 extern int uart_rx_tail; // index that is being popped off
 extern uint8_t uart_rx_buf[1024];
 
+uint16_t adc_val;
+
 /* USER CODE END 0 */
 
 /**
@@ -131,6 +133,14 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
+
+  /* Enable the CPU Cache */
+
+  /* Enable I-Cache---------------------------------------------------------*/
+  SCB_EnableICache();
+
+  /* Enable D-Cache---------------------------------------------------------*/
+  SCB_EnableDCache();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -228,6 +238,9 @@ int main(void)
   }
   #endif
 
+  if(HAL_ADC_Start_IT(&hadc1) != HAL_OK)
+    Error_Handler();
+
   int i = 0;
   int s = 0;
   int calls = 0;
@@ -238,7 +251,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     uint32_t a = __HAL_TIM_GET_COUNTER(&htim3);
-    uint32_t b = HAL_ADC_GetValue(&hadc1);
+    //uint32_t b = HAL_ADC_GetValue(&hadc1);
     //printf("%lu %lu %d\n", a, b, (int)(micros() / 1000));
 
     int s2 = micros() / 1000000;
@@ -253,15 +266,11 @@ int main(void)
 
     if (s != s2) {
       s = s2;
-      if (s2 != st) { printf("hewo %d %d\n", calls / (s2 - st), huart2.pRxBuffPtr - uart_rx_buf, uart_rx_tail); }
-      for (int j = 0; j < 8; ++j) {
-        printf("%d,", buffer_uses[j]);
-      }
-      printf("\n");
+      if (s2 != st) { printf("hewo %d %d\n", calls / (s2 - st), adc_val); }
     }
 
     ++calls;
-    //transmit_task(&hdac);
+    transmit_task(&hdac);
     ethernet_task();
     //tud_task();
   }
@@ -589,7 +598,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 1000000;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -752,6 +761,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  adc_val = HAL_ADC_GetValue(&hadc1);
+              // Toggle the Green LED
+  HAL_GPIO_TogglePin(GPIOB, 7);
+}
 
 /* USER CODE END 4 */
 
