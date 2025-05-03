@@ -1,5 +1,6 @@
 #include "network.h"
 #include "ethernet.h"
+#include "transmit.h"
 
 #include "tusb.h"
 
@@ -30,14 +31,25 @@ int _write(int fd, const char *ptr, int len);
 
 // client must provide this: return false if the packet buffer was not accepted
 bool tud_network_recv_cb(const uint8_t *src, uint16_t size) {
+    #if 0
     if (ethernet_can_transmit(size)) {
         ethernet_send_packet(src, size);
         printf("usb rx %d\n", size);
-        return true;
+        //return true;
     } else {
         printf("usb rx %d bad\n", size);
-        return false;
+        //return false;
     }
+    return true;
+    #else
+    if (transmit_ready(size)) {
+        transmit_send(src, size);
+        printf("usb rx %d ok\n", size);
+    } else {
+        printf("usb rx %d bad\n", size);
+    }
+    return true;
+    #endif
 
     /*printf("data sz %d\n", (int)size);
     for (int i = 0; i < size; ++i) {

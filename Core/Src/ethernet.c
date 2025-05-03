@@ -112,11 +112,13 @@ typedef struct {
 
 int pool_taken[POOL_ENTRIES] = { 0 };
 ETH_AppBuff rx_pool[POOL_ENTRIES];
+int buffer_uses[POOL_ENTRIES] = { 0 };
 
 void ethernet_free_rx_buffer(const void *buf) {
   int idx = ((intptr_t)buf - (intptr_t)&rx_pool[0]) / sizeof(rx_pool[0]);
   pool_taken[idx] = 0;
-  printf("freed %d\n", idx);
+  ++buffer_uses[idx];
+  //printf("freed %d\n", idx);
 }
 
 
@@ -129,7 +131,7 @@ void HAL_ETH_RxAllocateCallback(uint8_t **buff) {
       *buff = &p->buffer[0];
       p->AppBuff.next = NULL;
       p->AppBuff.len = 1524;
-      printf("alloc %d\n", i);
+      //printf("alloc %d\n", i);
       return;
     }
   }
@@ -177,6 +179,7 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
     return;
   }
 
+  #if 0
   if (tud_network_can_xmit(frame_Rx->AppBuff.len)) {
     tud_network_xmit(frame_Rx->buffer, frame_Rx->AppBuff.len);
     printf("eth rx %d ok\n", frame_Rx->AppBuff.len);
@@ -184,7 +187,80 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
     printf("eth rx %d bad\n", frame_Rx->AppBuff.len);
     ethernet_free_rx_buffer(frame_Rx);
   }
+  #else
+  if (transmit_ready(frame_Rx->AppBuff.len)) {
+    transmit_send(frame_Rx->buffer, frame_Rx->AppBuff.len);
+  }
+  ethernet_free_rx_buffer(frame_Rx);
+  #endif
 }
+
+extern UART_HandleTypeDef huart2;
+
+#define RXBUFSZ 1024
+
+int uart_rx_tail = 0; // index that is being popped off
+uint8_t uart_rx_buf[RXBUFSZ] __ALIGNED(32);
+
+uint8_t next_packet_buf[1524];
+int next_packet_idx;
+int next_packet_len;
+enum {
+  ST_HEADER,
+  ST_LEN_LO,
+  ST_LEN_HI,
+  ST_BODY
+} next_packet_state = ST_HEADER;
+
+uint8_t get_next_uart() {
+  uint8_t d = uart_rx_buf[uart_rx_tail++];
+  if (uart_rx_tail >= RXBUFSZ) uart_rx_tail = 0;
+  return d;
+}
+
+void ethernet_task(void) {
+  HAL_UART_Receive_IT(&huart2, uart_rx_buf, sizeof(uart_rx_buf));
+  int uart_rx_head = (int)(huart2.pRxBuffPtr - uart_rx_buf);
+
+  while (uart_rx_tail != uart_rx_head) {
+    uint8_t d = get_next_uart();
+
+    if (next_packet_state == ST_HEADER) {
+      if (d == '%') {
+        next_packet_state = ST_LEN_LO;
+      }
+    } else if (next_packet_state == ST_LEN_LO) {
+      next_packet_len = d;
+      next_packet_state = ST_LEN_HI;
+    } else if (next_packet_state == ST_LEN_HI) {
+      next_packet_len |= (d << 8);
+      if (next_packet_len > sizeof(next_packet_buf)) {
+        printf("BAD LEN %d\n", next_packet_len);
+        next_packet_state = ST_HEADER;
+      } else {
+        next_packet_idx = 0;
+        next_packet_state = ST_BODY;
+      }
+    } else {
+      next_packet_buf[next_packet_idx++] = d;
+      if (next_packet_idx >= next_packet_len) {
+        // finished with this packet
+        ethernet_send_packet(next_packet_buf, next_packet_len);
+        next_packet_state = ST_HEADER;
+        printf("uart rx %d\n", next_packet_len);
+      }
+    }
+  }
+}
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  if (huart == &huart2) {
+    HAL_UART_Receive_IT(&huart2, uart_rx_buf, sizeof(uart_rx_buf));
+  }
+}
+
+
 
 int ethernet_init(void) {
   /* Set PHY IO functions */

@@ -1,6 +1,7 @@
 #include "transmit.h"
 #include "modulation.h"
 #include <stdint.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
@@ -133,9 +134,35 @@ void transmit_init() {
     tx_reset(&TRANSMITTER);
 }
 
+const char dmadata[] = "Hello, world!";
+
+extern UART_HandleTypeDef huart2;
+
+volatile bool dma_ready = true;
+uint8_t dma_buffer[1524+3];
+
+bool transmit_ready(size_t len) {
+    return dma_ready;
+}
+
+void transmit_send(const uint8_t *data, size_t len) {
+    dma_buffer[0] = '%';
+    dma_buffer[1] = len & 0xFF;
+    dma_buffer[2] = (len >> 8) & 0xFF;
+    memcpy(dma_buffer+3, data, len);
+    HAL_UART_Transmit_DMA(&huart2, dma_buffer, len+3);
+    dma_ready = false;
+}
+
 void transmit_task(DAC_HandleTypeDef *hdac) {
     int value = tx_update(&TRANSMITTER);
     
     //int value = current_dac_value(4, 0);
     HAL_DAC_SetValue(hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart == &huart2) {
+        dma_ready = true;
+    }
 }

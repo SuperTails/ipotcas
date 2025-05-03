@@ -63,9 +63,7 @@
 #define CFG_TUSB_OS           OPT_OS_NONE
 #endif
 
-#ifndef CFG_TUSB_DEBUG
 #define CFG_TUSB_DEBUG        0
-#endif
 
 // Enable Device stack
 #define CFG_TUD_ENABLED       1
@@ -113,6 +111,8 @@
 
 // MSC Buffer size of Device Mass storage
 #define CFG_TUD_MSC_EP_BUFSIZE   512
+
+//#define CFG_TUD_NCM_LOG_LEVEL 3
 
 #ifdef __cplusplus
  }
