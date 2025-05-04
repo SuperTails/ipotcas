@@ -3,8 +3,6 @@
 
 #include "ethernet.h"
 #include "transmit.h"
-#include "tusb.h"
-#include "network.h"
 #include "stm32f7xx_hal.h"
 #include "lan8742.h"
 #include <stdint.h>
@@ -56,7 +54,7 @@ int32_t ETH_PHY_INTERFACE_GetTick(void) {
   return HAL_GetTick();
 }
 
-int ETH_StartLink() {
+int ETH_StartLink(void) {
   ETH_MACConfigTypeDef MACConf = {0};
   int32_t PHYLinkState = 0U;
   uint32_t linkchanged = 0U, speed = 0U, duplex =0U;
@@ -123,7 +121,6 @@ void ethernet_free_rx_buffer(const void *buf) {
 
 
 void HAL_ETH_RxAllocateCallback(uint8_t **buff) {
-  ETH_BufferTypeDef *p = malloc(sizeof(ETH_AppBuff));
   for (int i = 0; i < POOL_ENTRIES; ++i) {
     if (!pool_taken[i]) {
       pool_taken[i] = 1;
@@ -131,21 +128,11 @@ void HAL_ETH_RxAllocateCallback(uint8_t **buff) {
       *buff = &p->buffer[0];
       p->AppBuff.next = NULL;
       p->AppBuff.len = 1524;
-      //printf("alloc %d\n", i);
       return;
     }
   }
   *buff = NULL;
   printf("alloc fail\n");
-  /*if (p) {
-    *buff = (uint8_t *)p + offsetof(ETH_AppBuff, buffer);
-    p->next = NULL;
-    p->len = 1524;
-    //printf("alloc ok\n");
-  } else {
-    *buff = NULL;
-    printf("alloc fail\n");
-  }*/
 }
 
 void HAL_ETH_RxLinkCallback(void **pStart, void **pEnd, uint8_t *buff, uint16_t Length) {
@@ -188,7 +175,7 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
   }
   #else
   if (transmit_ready(frame_Rx->AppBuff.len)) {
-    printf("eth rx %d\n", frame_Rx->AppBuff.len);
+    printf("eth rx %lu\n", frame_Rx->AppBuff.len);
     transmit_send(frame_Rx, frame_Rx->buffer, frame_Rx->AppBuff.len);
   } else {
     ethernet_free_rx_buffer(frame_Rx);
@@ -213,7 +200,7 @@ enum {
   ST_BODY
 } next_packet_state = ST_HEADER;
 
-uint8_t get_next_uart() {
+uint8_t get_next_uart(void) {
   uint8_t d = uart_rx_buf[uart_rx_tail++];
   if (uart_rx_tail >= RXBUFSZ) uart_rx_tail = 0;
   return d;

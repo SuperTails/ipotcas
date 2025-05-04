@@ -10,7 +10,7 @@
 
 extern TIM_HandleTypeDef htim3;
 
-uint64_t micros() {
+uint64_t micros(void) {
     static uint16_t prev = 0;
     static uint64_t offset = 0;
     uint16_t cur = __HAL_TIM_GET_COUNTER(&htim3);
@@ -126,10 +126,10 @@ int tx_munch_symbol(transmitter_t *tx) {
         return 0;
     } else if (tx->hi) {
         tx->hi = false;
-        return sym_data[tx->idx++];
+        return (sym_data[tx->idx++] >> 4) & 0xF;
     } else {
         tx->hi = true;
-        return sym_data[tx->idx];
+        return sym_data[tx->idx] & 0xF;
     }
 }
 
@@ -176,6 +176,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
 
 bool transmit_ready(size_t len) {
+    (void)len;
     return current_packet == NULL;
 }
 
@@ -239,12 +240,9 @@ transmitter_t TRANSMITTER;
 void transmit_task(DAC_HandleTypeDef *hdac) {
     int value = tx_update(&TRANSMITTER);
     
-    //int value = current_dac_value(4, 0);
-    //static int i = 0;
-    //int value = micros() % 4096;
     HAL_DAC_SetValue(hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
 }
 
-void transmit_init() {
+void transmit_init(void) {
     tx_reset(&TRANSMITTER);
 }

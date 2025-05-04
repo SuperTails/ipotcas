@@ -27,8 +27,6 @@
 #include "receive.h"
 #include "modulation.h"
 #include "ethernet.h"
-#include "lan8742.h"
-#include <math.h>
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -268,7 +266,7 @@ int main(void)
 
     ++calls;
     transmit_task(&hdac);
-    //receive_task();
+    receive_task();
     ethernet_task();
     //tud_task();
   }

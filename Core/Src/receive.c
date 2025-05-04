@@ -181,10 +181,34 @@ int next_symbol_time = 0;
 bool new_data = false;
 bool half = false;
 
-#define RX_SIZE 1524
+#define RX_STREAM_SIZE 1520
 
-uint8_t received_data[RX_SIZE];
-int received_data_len = 0;
+typedef struct {
+    size_t bits;
+    size_t len;
+    int next_byte;
+    uint8_t data[RX_STREAM_SIZE];
+} rx_stream_t;
+
+void rx_stream_push(rx_stream_t *rxs, int symbol) {
+    rxs->next_byte |= (symbol << rxs->bits);
+    rxs->bits += BITS_PER_SYMBOL;
+    if (rxs->bits >= 8) {
+        if (rxs->len < RX_STREAM_SIZE) {
+            rxs->data[rxs->len++] = rxs->next_byte & 0xFF;
+        }
+        rxs->next_byte >>= 8;
+        rxs->bits -= 8;
+    }
+}
+
+void rx_stream_reset(rx_stream_t *rxs) {
+    rxs->bits = 0;
+    rxs->len = 0;
+    rxs->next_byte = 0;
+}
+
+rx_stream_t rxs;
 
 extern ADC_HandleTypeDef hadc1;
 
@@ -214,15 +238,9 @@ void receive_task(void) {
 
     new_data = false;
 
-    //printf("%d\n", (int)sample_buf[(sample_buf_head + SAMPLE_BUF_SZ - 1) % SAMPLE_BUF_SZ]);
-
     float total_power = 0.0f;
 
-    int rx_byte = 0;
-    int rx_byte_valid = 0;
-
     static int abc = 0;
-
     ++abc;
 
     bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
@@ -292,8 +310,7 @@ void receive_task(void) {
 
             int s = trellis_push_head(&carriers[c].trellis, b_i, b_q);
             if (s >= 0) {
-                rx_byte |= s << (4 * c);
-                rx_byte_valid = 1;
+                rx_stream_push(&rxs, s);
             }
         }
     }
@@ -304,17 +321,9 @@ void receive_task(void) {
         }
     }
 
-
-    if (rx_byte_valid) {
-        if (received_data_len < RX_SIZE) {
-            received_data[received_data_len++] = rx_byte;
-        }
-    }
-
     if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
         int done = 0;
         while (!done) {
-            int rx_byte2 = 0;
             for (int c = 0; c < CARRIERS; ++c) {
                 int s = trellis_pop_tail(&carriers[c].trellis);
                 if (s < 0) {
@@ -322,23 +331,19 @@ void receive_task(void) {
                     break;
                 }
 
-                rx_byte2 |= s << (4 * c);
-            }
-
-            if (received_data_len < RX_SIZE) {
-                received_data[received_data_len++] = rx_byte2;
+                rx_stream_push(&rxs, s);
             }
         }
 
-        if (received_data_len > 0) {
+        if (rxs.len > 0) {
             printf("RX: ");
-            for (int i = 0; i < received_data_len; ++i) {
-                printf("%c", received_data[i]);
+            for (int i = 0; i < rxs.len; ++i) {
+                printf("%c", rxs.data[i]);
             }
             printf("\n");
             printf("phase adj: %d %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj), (int)(1000.0 * (carriers[1].phase_adj - carriers[0].phase_adj)));
-            received_data_len = 0;
-            ethernet_send_packet(received_data, received_data_len);
+            ethernet_send_packet(rxs.data, rxs.len);
+            rx_stream_reset(&rxs);
         }
     }
 
@@ -352,7 +357,7 @@ void receive_task(void) {
             samples = 0;
             // TODO: Don't hardcode this to expect 2 symbol period training
             next_symbol_time = (SAMPLES_PER_SYMBOL * 9 / 4);
-            received_data_len = 0;
+            rx_stream_reset(&rxs);
             printf("START\n");
             for (int i = 0; i < CARRIERS; ++i) {
                 trellis_reset(&carriers[i].trellis);
@@ -363,6 +368,7 @@ void receive_task(void) {
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+    (void)hadc;
     sample_buf[sample_buf_head++] = HAL_ADC_GetValue(&hadc1);
     if (sample_buf_head >= SAMPLE_BUF_SZ) sample_buf_head = 0;
     new_data = true;
