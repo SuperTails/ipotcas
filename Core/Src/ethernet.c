@@ -2,7 +2,7 @@
 // https://github.com/stm32-hotspot/CKB-STM32-HAL-Ethernet-BareMetal
 
 #include "ethernet.h"
-
+#include "transmit.h"
 #include "tusb.h"
 #include "network.h"
 #include "stm32f7xx_hal.h"
@@ -108,7 +108,7 @@ typedef struct {
   uint8_t buffer[1524] __ALIGNED(32);
 } ETH_AppBuff;
 
-#define POOL_ENTRIES 8
+#define POOL_ENTRIES 5
 
 int pool_taken[POOL_ENTRIES] = { 0 };
 ETH_AppBuff rx_pool[POOL_ENTRIES];

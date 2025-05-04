@@ -1,0 +1,680 @@
+[
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/main.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/main.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/main.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/main.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/stm32f7xx_it.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/stm32f7xx_it.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/stm32f7xx_it.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/stm32f7xx_it.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/stm32f7xx_hal_msp.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/stm32f7xx_hal_msp.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/stm32f7xx_hal_msp.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/stm32f7xx_hal_msp.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/sysmem.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/sysmem.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/sysmem.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/sysmem.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/syscalls.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/syscalls.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/syscalls.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/syscalls.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -x assembler-with-cpp -MMD -MP -g -o CMakeFiles/ipotcas2.dir/startup_stm32f767xx.s.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/startup_stm32f767xx.s",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/startup_stm32f767xx.s",
+  "output": "CMakeFiles/ipotcas2.dir/startup_stm32f767xx.s.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/ethernet.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/ethernet.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/ethernet.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/ethernet.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/lan8742.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/lan8742.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/lan8742.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/lan8742.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/msc_disk.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/msc_disk.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/msc_disk.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/msc_disk.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/network.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/network.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/network.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/network.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/receive.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/receive.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/receive.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/receive.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/transmit.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/transmit.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/transmit.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/transmit.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/Core/Src/usb_descriptors.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/usb_descriptors.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/usb_descriptors.c",
+  "output": "CMakeFiles/ipotcas2.dir/Core/Src/usb_descriptors.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/host/hub.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/host/hub.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/host/hub.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/host/hub.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/host/usbh.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/host/usbh.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/host/usbh.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/host/usbh.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/synopsys/dwc2/hcd_dwc2.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/synopsys/dwc2/hcd_dwc2.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/synopsys/dwc2/hcd_dwc2.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/synopsys/dwc2/hcd_dwc2.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/analog/max3421/hcd_max3421.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/analog/max3421/hcd_max3421.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/analog/max3421/hcd_max3421.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/analog/max3421/hcd_max3421.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/ehci/ehci.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/ehci/ehci.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/ehci/ehci.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/ehci/ehci.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/bridgetek/ft9xx/dcd_ft9xx.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/bridgetek/ft9xx/dcd_ft9xx.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/bridgetek/ft9xx/dcd_ft9xx.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/bridgetek/ft9xx/dcd_ft9xx.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/lpc_ip3511/dcd_lpc_ip3511.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/lpc_ip3511/dcd_lpc_ip3511.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/lpc_ip3511/dcd_lpc_ip3511.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/lpc_ip3511/dcd_lpc_ip3511.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/khci/dcd_khci.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/khci/dcd_khci.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/khci/dcd_khci.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/khci/dcd_khci.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/khci/hcd_khci.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/khci/hcd_khci.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/khci/hcd_khci.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/khci/hcd_khci.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/lpc17_40/dcd_lpc17_40.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/lpc17_40/dcd_lpc17_40.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/lpc17_40/dcd_lpc17_40.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/lpc17_40/dcd_lpc17_40.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/lpc17_40/hcd_lpc17_40.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/lpc17_40/hcd_lpc17_40.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nxp/lpc17_40/hcd_lpc17_40.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nxp/lpc17_40/hcd_lpc17_40.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/ohci/ohci.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/ohci/ohci.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/ohci/ohci.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/ohci/ohci.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/wch/dcd_ch32_usbhs.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/wch/dcd_ch32_usbhs.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/wch/dcd_ch32_usbhs.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/wch/dcd_ch32_usbhs.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/wch/dcd_ch32_usbfs.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/wch/dcd_ch32_usbfs.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/wch/dcd_ch32_usbfs.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/wch/dcd_ch32_usbfs.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/template/dcd_template.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/template/dcd_template.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/template/dcd_template.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/template/dcd_template.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/template/hcd_template.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/template/hcd_template.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/template/hcd_template.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/template/hcd_template.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/mentor/musb/hcd_musb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/mentor/musb/hcd_musb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/mentor/musb/hcd_musb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/mentor/musb/hcd_musb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/mentor/musb/dcd_musb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/mentor/musb/dcd_musb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/mentor/musb/dcd_musb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/mentor/musb/dcd_musb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/st/typec/typec_stm32.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/st/typec/typec_stm32.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/st/typec/typec_stm32.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/st/typec/typec_stm32.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/dialog/da146xx/dcd_da146xx.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/dialog/da146xx/dcd_da146xx.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/dialog/da146xx/dcd_da146xx.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/dialog/da146xx/dcd_da146xx.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/chipidea/ci_fs/dcd_ci_fs.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/chipidea/ci_fs/dcd_ci_fs.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/chipidea/ci_fs/dcd_ci_fs.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/chipidea/ci_fs/dcd_ci_fs.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/chipidea/ci_hs/dcd_ci_hs.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/chipidea/ci_hs/dcd_ci_hs.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/chipidea/ci_hs/dcd_ci_hs.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/chipidea/ci_hs/dcd_ci_hs.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/chipidea/ci_hs/hcd_ci_hs.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/chipidea/ci_hs/hcd_ci_hs.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/chipidea/ci_hs/hcd_ci_hs.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/chipidea/ci_hs/hcd_ci_hs.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/sunxi/dcd_sunxi_musb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/sunxi/dcd_sunxi_musb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/sunxi/dcd_sunxi_musb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/sunxi/dcd_sunxi_musb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/samx7x/dcd_samx7x.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/samx7x/dcd_samx7x.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/samx7x/dcd_samx7x.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/samx7x/dcd_samx7x.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/samg/dcd_samg.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/samg/dcd_samg.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/samg/dcd_samg.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/samg/dcd_samg.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/pic/dcd_pic.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/pic/dcd_pic.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/pic/dcd_pic.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/pic/dcd_pic.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/pic32mz/dcd_pic32mz.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/pic32mz/dcd_pic32mz.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/pic32mz/dcd_pic32mz.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/pic32mz/dcd_pic32mz.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/samd/dcd_samd.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/samd/dcd_samd.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/microchip/samd/dcd_samd.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/microchip/samd/dcd_samd.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nuvoton/nuc121/dcd_nuc121.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nuvoton/nuc121/dcd_nuc121.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nuvoton/nuc121/dcd_nuc121.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nuvoton/nuc121/dcd_nuc121.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nuvoton/nuc120/dcd_nuc120.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nuvoton/nuc120/dcd_nuc120.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nuvoton/nuc120/dcd_nuc120.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nuvoton/nuc120/dcd_nuc120.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nuvoton/nuc505/dcd_nuc505.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nuvoton/nuc505/dcd_nuc505.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/nuvoton/nuc505/dcd_nuc505.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/nuvoton/nuc505/dcd_nuc505.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/renesas/rusb2/rusb2_common.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/renesas/rusb2/rusb2_common.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/renesas/rusb2/rusb2_common.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/renesas/rusb2/rusb2_common.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/renesas/rusb2/hcd_rusb2.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/renesas/rusb2/hcd_rusb2.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/renesas/rusb2/hcd_rusb2.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/renesas/rusb2/hcd_rusb2.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/renesas/rusb2/dcd_rusb2.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/renesas/rusb2/dcd_rusb2.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/renesas/rusb2/dcd_rusb2.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/renesas/rusb2/dcd_rusb2.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/espressif/esp32sx/dcd_esp32sx.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/espressif/esp32sx/dcd_esp32sx.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/espressif/esp32sx/dcd_esp32sx.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/espressif/esp32sx/dcd_esp32sx.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/rp2040/hcd_rp2040.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/rp2040/hcd_rp2040.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/rp2040/hcd_rp2040.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/rp2040/hcd_rp2040.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/pio_usb/dcd_pio_usb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/pio_usb/dcd_pio_usb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/raspberrypi/pio_usb/dcd_pio_usb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/raspberrypi/pio_usb/dcd_pio_usb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/sony/cxd56/dcd_cxd56.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/sony/cxd56/dcd_cxd56.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/sony/cxd56/dcd_cxd56.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/sony/cxd56/dcd_cxd56.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/mindmotion/mm32/dcd_mm32f327x_otg.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/mindmotion/mm32/dcd_mm32f327x_otg.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/mindmotion/mm32/dcd_mm32f327x_otg.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/mindmotion/mm32/dcd_mm32f327x_otg.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/portable/ti/msp430x5xx/dcd_msp430x5xx.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/ti/msp430x5xx/dcd_msp430x5xx.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/portable/ti/msp430x5xx/dcd_msp430x5xx.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/portable/ti/msp430x5xx/dcd_msp430x5xx.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/common/tusb_fifo.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/common/tusb_fifo.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/common/tusb_fifo.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/common/tusb_fifo.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/typec/usbc.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/typec/usbc.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/typec/usbc.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/typec/usbc.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/cdc/cdc_rndis_host.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/cdc/cdc_rndis_host.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/cdc/cdc_rndis_host.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/cdc/cdc_rndis_host.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/cdc/cdc_host.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/cdc/cdc_host.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/cdc/cdc_host.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/cdc/cdc_host.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/cdc/cdc_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/cdc/cdc_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/cdc/cdc_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/cdc/cdc_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/video/video_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/video/video_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/video/video_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/video/video_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/net/ncm_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/net/ncm_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/net/ncm_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/net/ncm_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/net/ecm_rndis_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/net/ecm_rndis_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/net/ecm_rndis_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/net/ecm_rndis_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/dfu/dfu_rt_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/dfu/dfu_rt_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/dfu/dfu_rt_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/dfu/dfu_rt_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/dfu/dfu_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/dfu/dfu_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/dfu/dfu_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/dfu/dfu_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/midi/midi_host.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/midi/midi_host.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/midi/midi_host.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/midi/midi_host.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/midi/midi_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/midi/midi_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/midi/midi_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/midi/midi_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/usbtmc/usbtmc_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/usbtmc/usbtmc_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/usbtmc/usbtmc_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/usbtmc/usbtmc_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/bth/bth_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/bth/bth_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/bth/bth_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/bth/bth_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/audio/audio_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/audio/audio_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/audio/audio_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/audio/audio_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/msc/msc_host.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/msc/msc_host.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/msc/msc_host.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/msc/msc_host.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/msc/msc_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/msc/msc_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/msc/msc_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/msc/msc_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/hid/hid_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/hid/hid_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/hid/hid_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/hid/hid_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/hid/hid_host.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/hid/hid_host.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/hid/hid_host.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/hid/hid_host.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/vendor/vendor_host.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/vendor/vendor_host.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/vendor/vendor_host.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/vendor/vendor_host.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/class/vendor/vendor_device.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/vendor/vendor_device.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/class/vendor/vendor_device.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/class/vendor/vendor_device.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/device/usbd_control.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/device/usbd_control.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/device/usbd_control.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/device/usbd_control.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/device/usbd.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/device/usbd.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/device/usbd.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/device/usbd.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/hw -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles/ipotcas2.dir/tinyusb/src/tusb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/tusb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/tinyusb/src/tusb.c",
+  "output": "CMakeFiles/ipotcas2.dir/tinyusb/src/tusb.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f7xx.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/system_stm32f7xx.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Src/system_stm32f7xx.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f7xx.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dac_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_eth.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_eth.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_eth.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_eth.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c.obj"
+},
+{
+  "directory": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/build",
+  "command": "/opt/homebrew/bin/arm-none-eabi-gcc -DDEBUG -DSTM32F767xx -DUSE_HAL_DRIVER -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Core/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Device/ST/STM32F7xx/Include -I/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/CMSIS/Include  -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_usb.c.obj -c /Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_usb.c",
+  "file": "/Users/salix/STM32CubeIDE/workspace_1.18.1/ipotcas2/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_usb.c",
+  "output": "cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_usb.c.obj"
+}
+]

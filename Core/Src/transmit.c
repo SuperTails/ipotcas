@@ -90,27 +90,58 @@ double fast_sin(double rad) {
     return fast_cos(rad - M_PI_2);
 }
 
-static int current_dac_value(int mod_i, int mod_q) {
-    double rad = micros() * (2.0 * M_PI * CARRIER_FREQUENCY / 1.0e6);
-    double amp = (mod_i * fast_cos(rad) + mod_q * fast_sin(rad));
-    // scale -8 to 8 range into 0 to 1, then convert to int
-    return (int)(((amp + 8.0) / 16.0) * 4096.0);
-}
+const void *current_packet = NULL;
+//const uint8_t *sym_data = NULL;
+//size_t sym_len = 0;
+const char *sym_data = "Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow";
+size_t sym_len = 539;
 
 typedef enum {
     TX_GAP,
     TX_TRAIN,
-    TX_BYTE_LO,
-    TX_BYTE_HI,
+    TX_SEND
 } tx_state_t;
 
 typedef struct {
     uint64_t next_event;
-    int mod_i, mod_q;
+    int mod_i[CARRIERS];
+    int mod_q[CARRIERS];
     int idx;
-    encoder_t enc;
+    int hi;
+    encoder_t enc[CARRIERS];
     tx_state_t state;
 } transmitter_t;
+
+void tx_reload_data(transmitter_t *tx) {
+    tx->idx = 0;
+    tx->hi = 0;
+}
+
+bool tx_data_exhausted(const transmitter_t *tx) {
+    return tx->idx >= sym_len;
+}
+
+int tx_munch_symbol(transmitter_t *tx) {
+    if (tx->idx >= sym_len) {
+        return 0;
+    } else if (tx->hi) {
+        tx->hi = false;
+        return sym_data[tx->idx++];
+    } else {
+        tx->hi = true;
+        return sym_data[tx->idx];
+    }
+}
+
+static int current_dac_value(transmitter_t *t) {
+    double amp = 0.0;
+    for (int i = 0; i < CARRIERS; ++i) {
+        double rad = micros() * (2.0 * M_PI * 1e3 / CARRIER_PERIODS_NS[i]);
+        amp += 1.5 * (t->mod_i[i] * fast_cos(rad) + t->mod_q[i] * fast_sin(rad)) / CARRIERS;
+    }
+    // scale -8 to 8 range into 0 to 1, then convert to int
+    return (int)(((amp + 8.0) / 16.0) * 4096.0);
+}
 
 static void tx_reset(transmitter_t *tx) {
     memset(tx, 0, sizeof(*tx));
@@ -143,11 +174,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 }
 #else
 
-const void *current_packet = NULL;
-//const uint8_t *sym_data = NULL;
-//size_t sym_len = 0;
-const char *sym_data = "Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow";
-size_t sym_len = 539;
 
 bool transmit_ready(size_t len) {
     return current_packet == NULL;
@@ -164,6 +190,7 @@ void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
 }
 #endif
 
+
 //const char sym_data[] = "Hello, world!\n";
 
 // returns the current value that should be fed to the DAC
@@ -175,23 +202,20 @@ static int tx_update(transmitter_t *tx) {
     if (micros() > tx->next_event) {
         if (tx->state == TX_GAP) {
             tx->next_event += TRAIN_PERIOD_US;
-            tx->mod_i = 4; tx->mod_q = 0;
-            tx->idx = 0;
-            encoder_reset(&tx->enc);
+            tx_reload_data(tx);
+            for (int i = 0; i < CARRIERS; ++i) {
+                tx->mod_i[i] = 4; tx->mod_q[i] = 0;
+                encoder_reset(&tx->enc[i]);
+            }
             tx->state = TX_TRAIN;
-        } else if ((tx->state == TX_TRAIN) || (tx->state == TX_BYTE_HI && tx->idx < sym_len)) {
-            int symbol = sym_data[tx->idx] & 0xF;
-
+        } else if ((tx->state == TX_TRAIN) || (tx->state == TX_SEND && !tx_data_exhausted(tx))) {
             tx->next_event += SYMBOL_PERIOD_US;
-            encoder_enc(&tx->enc, symbol, &tx->mod_i, &tx->mod_q);
-            tx->state = TX_BYTE_LO;
-        } else if (tx->state == TX_BYTE_LO) {
-            int symbol = (sym_data[tx->idx++] >> 4) & 0xF;
-
-            tx->next_event += SYMBOL_PERIOD_US;
-            encoder_enc(&tx->enc, symbol, &tx->mod_i, &tx->mod_q);
-            tx->state = TX_BYTE_HI;
-        } else if (tx->state == TX_BYTE_HI) {
+            for (int i = 0; i < CARRIERS; ++i) {
+                int symbol = tx_munch_symbol(tx);
+                encoder_enc(&tx->enc[i], symbol, &tx->mod_i[i], &tx->mod_q[i]);
+            }
+            tx->state = TX_SEND;
+        } else if (tx->state == TX_SEND) {
             if (current_packet) {
                 ethernet_free_rx_buffer(current_packet);
                 current_packet = NULL;
@@ -200,12 +224,14 @@ static int tx_update(transmitter_t *tx) {
             }
 
             tx->next_event += SYMBOL_GAP_US;
-            tx->mod_i = 0; tx->mod_q = 0;
+            for (int i = 0; i < CARRIERS; ++i) {
+                tx->mod_i[i] = 0; tx->mod_q[i] = 0;
+            }
             tx->state = TX_GAP;
         }
     }
 
-    return current_dac_value(tx->mod_i, tx->mod_q);
+    return current_dac_value(tx);
 }
 
 transmitter_t TRANSMITTER;

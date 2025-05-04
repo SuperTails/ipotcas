@@ -1,3 +1,8 @@
 tinyusb
 Release
 Debug
+Core/Src/Backup/
+Core/Inc/Backup/
+build/
+.cache
+.vscode

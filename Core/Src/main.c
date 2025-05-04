@@ -158,6 +158,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -242,7 +243,6 @@ int main(void)
 
   receive_init();
 
-  int i = 0;
   int s = 0;
   int calls = 0;
   int st = micros() / 1000000;
@@ -251,10 +251,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    uint32_t a = __HAL_TIM_GET_COUNTER(&htim3);
-    //uint32_t b = HAL_ADC_GetValue(&hadc1);
-    //printf("%lu %lu %d\n", a, b, (int)(micros() / 1000));
-
     int s2 = micros() / 1000000;
     /*if (!ethernet_ok && s != s2) {
       s = s2;
@@ -272,7 +268,7 @@ int main(void)
 
     ++calls;
     transmit_task(&hdac);
-    receive_task();
+    //receive_task();
     ethernet_task();
     //tud_task();
   }
