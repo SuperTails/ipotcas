@@ -4,11 +4,11 @@
 //#define SAMPLE_PERIOD_NS 62500 // 16khz
 #define SAMPLE_PERIOD_NS 31250 // 32khz
 
-#define CARRIERS 1
+#define CARRIERS 3
 
 static const int CARRIER_PERIODS_NS[CARRIERS] = {
-  //125000, // 8 kHz
-  //166666, // 6 kHz
+  125000, // 8 kHz
+  166666, // 6 kHz
   250000  // 4 kHz
 };
 
