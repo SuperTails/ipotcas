@@ -416,8 +416,16 @@ static void MX_DAC_Init(void)
   {
     Error_Handler();
   }
+
+  /** DAC channel OUT2 config
+  */
+  if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN DAC_Init 2 */
   HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+  HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
 
   /* USER CODE END DAC_Init 2 */
 

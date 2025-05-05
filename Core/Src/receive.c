@@ -9,7 +9,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#define SAMPLE_BUF_SZ 64
+#define SAMPLE_BUF_SZ 32
 
 #define RAD_PER_SAMPLE(i) (2.0 * M_PI * SAMPLE_PERIOD_NS / CARRIER_PERIODS_NS[i])
 
@@ -179,7 +179,8 @@ int quiet_time = 0;
 int samples = 0;
 int next_symbol_time = 0;
 bool new_data = false;
-bool half = false;
+
+extern DAC_HandleTypeDef hdac;
 
 #define RX_STREAM_SIZE 1520
 
@@ -226,10 +227,13 @@ void init_coeff_buf(carrier_t *c, int i) {
 
 void receive_init(void) {
     HAL_ADC_Start_IT(&hadc1);
-    init_coeff_buf(&carriers[0], 0);
-    init_coeff_buf(&carriers[1], 1);
+    for (int i = 0; i < CARRIERS; ++i) {
+        init_coeff_buf(&carriers[i], i);
+    }
 }
 
+float min_power = INFINITY;
+float filt_power = 0.0;
 
 void receive_task(void) {
     if (!new_data) {
@@ -238,17 +242,23 @@ void receive_task(void) {
 
     new_data = false;
 
-    float total_power = 0.0f;
-
     static int abc = 0;
     ++abc;
 
+    /*if (abc % 1000 == 0) {
+        printf("logf %d\n", (int)(logf(filt_power) * 100.0));
+    }*/
+
     bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
-    bool data_sample = (quiet_time < (SAMPLES_PER_SYMBOL / 2) && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time));
+    bool data_sample = (quiet_time < SAMPLES_PER_SYMBOL / 2 && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time));
+
+    float total_power = 0.0;
 
     for (int c = 0; c < CARRIERS; ++c) {
+        // this block takes like 10us
         float b_i = 0.0f;
         float b_q = 0.0f;
+
         for (int k = 0; k < SAMPLE_BUF_SZ; ++k) {
             b_i += carriers[c].cos_buf[k] * sample_buf[k];
             b_q += carriers[c].sin_buf[k] * sample_buf[k];
@@ -302,11 +312,16 @@ void receive_task(void) {
 
             if (phase_changed) {
                 init_coeff_buf(&carriers[c], c);
+                //printf("phase adj: %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj));
             }
 
             //printf("%d: %2d %2d %d %d\n", c, best_i, best_q, (int)(b_i * 1000), (int)(b_q * 1000));
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
             //my_printf("%f,%f\n", mag_adj * b_i1, mag_adj * b_q1);
+
+            if (c == 0) {
+                HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(b_i * 256 + 2048));
+            }
 
             int s = trellis_push_head(&carriers[c].trellis, b_i, b_q);
             if (s >= 0) {
@@ -315,7 +330,13 @@ void receive_task(void) {
         }
     }
 
-    if ((quiet_time < (SAMPLES_PER_SYMBOL / 2)) && samples > 2 * SAMPLES_PER_SYMBOL) {
+    filt_power = filt_power * 0.9 + total_power * 0.1;
+
+    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 100.0 + 4096));
+    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 300.0 + 2048));
+
+
+    if ((quiet_time < SAMPLES_PER_SYMBOL / 2) && samples > 2 * SAMPLES_PER_SYMBOL) {
         if (samples >= next_symbol_time) {
             next_symbol_time += SAMPLES_PER_SYMBOL;
         }
@@ -341,22 +362,22 @@ void receive_task(void) {
                 printf("%c", rxs.data[i]);
             }
             printf("\n");
-            printf("phase adj: %d %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj), (int)(1000.0 * (carriers[1].phase_adj - carriers[0].phase_adj)));
+            printf("phase adj: %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj));
             ethernet_send_packet(rxs.data, rxs.len);
             rx_stream_reset(&rxs);
         }
     }
 
-    if (total_power < 500e-6) {
+    if (filt_power < 10e-6) {
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         ++quiet_time;
     } else {
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
         if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
             // we just started a new transmission, sample as late as possible
-            half = false;
             samples = 0;
             // TODO: Don't hardcode this to expect 2 symbol period training
-            next_symbol_time = (SAMPLES_PER_SYMBOL * 9 / 4);
+            next_symbol_time = (SAMPLES_PER_SYMBOL * 11 / 4);
             rx_stream_reset(&rxs);
             printf("START\n");
             for (int i = 0; i < CARRIERS; ++i) {
@@ -369,9 +390,11 @@ void receive_task(void) {
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
     (void)hadc;
-    sample_buf[sample_buf_head++] = HAL_ADC_GetValue(&hadc1);
+    uint16_t adc_val = HAL_ADC_GetValue(&hadc1);
+    sample_buf[sample_buf_head++] = adc_val;
     if (sample_buf_head >= SAMPLE_BUF_SZ) sample_buf_head = 0;
     new_data = true;
     ++samples;
+    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, adc_val);
 }
 
