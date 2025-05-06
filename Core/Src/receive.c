@@ -28,7 +28,7 @@ int diff_dec(int y_prev, int y_new) {
 }
 
 int y12_for_transition(int prev_state, int cur_state) {
-  int TABLE[8][8] = {
+  const int8_t TABLE[8][8] = {
     { 0, 3, 2, 1, -1, -1, -1, -1  },
     { -1, -1, -1, -1, 0, 1, 3, 2 },
     { 3, 0, 1, 2, -1, -1, -1, -1 },
@@ -42,6 +42,16 @@ int y12_for_transition(int prev_state, int cur_state) {
   return TABLE[prev_state][cur_state];
 }
 
+inline int32_t smlad(int32_t lhs, int32_t rhs, int32_t acc) {
+    int32_t result;
+    asm inline (
+        "smlad %0, %1, %2, %3"
+        : "=r" (result)
+        : "r" (lhs), "r" (rhs), "r" (acc)
+
+    );
+    return result;
+}
 
 
 typedef struct {
@@ -164,8 +174,8 @@ int trellis_push_head(trellis_t *t, float i_pt, float q_pt) {
 }
 
 typedef struct {
-    float cos_buf[SAMPLE_BUF_SZ];
-    float sin_buf[SAMPLE_BUF_SZ];
+    int16_t cos_buf[SAMPLE_BUF_SZ] __ALIGNED(4);
+    int16_t sin_buf[SAMPLE_BUF_SZ] __ALIGNED(4);
     trellis_t trellis;
     float phase_adj;
     float mag_adj;
@@ -173,7 +183,7 @@ typedef struct {
 
 carrier_t carriers[CARRIERS];
   
-float sample_buf[SAMPLE_BUF_SZ];
+int16_t sample_buf[SAMPLE_BUF_SZ] __ALIGNED(4);
 int sample_buf_head = 0;
 int quiet_time = 0;
 int samples = 0;
@@ -220,8 +230,8 @@ float signed_angle_diff(float lhs, float rhs) {
 
 void init_coeff_buf(carrier_t *c, int i) {
     for (int k = 0; k < SAMPLE_BUF_SZ; ++k) {
-        c->cos_buf[k] = cos(RAD_PER_SAMPLE(i) * k + c->phase_adj) * (3.3 / (4096 * SAMPLE_BUF_SZ));
-        c->sin_buf[k] = sin(RAD_PER_SAMPLE(i) * k + c->phase_adj) * (3.3 / (4096 * SAMPLE_BUF_SZ));
+        c->cos_buf[k] = cos(RAD_PER_SAMPLE(i) * k + c->phase_adj) * 2048;
+        c->sin_buf[k] = sin(RAD_PER_SAMPLE(i) * k + c->phase_adj) * 2048;
     }
 }
 
@@ -256,13 +266,16 @@ void receive_task(void) {
 
     for (int c = 0; c < CARRIERS; ++c) {
         // this block takes like 10us
-        float b_i = 0.0f;
-        float b_q = 0.0f;
+        int32_t b_i_int = 0;
+        int32_t b_q_int = 0;
 
-        for (int k = 0; k < SAMPLE_BUF_SZ; ++k) {
-            b_i += carriers[c].cos_buf[k] * sample_buf[k];
-            b_q += carriers[c].sin_buf[k] * sample_buf[k];
+        for (int k = 0; k < SAMPLE_BUF_SZ; k += 2) {
+            b_i_int = smlad(*(int32_t *)&carriers[c].cos_buf[k], *(int32_t *)&sample_buf[k], b_i_int);
+            b_q_int = smlad(*(int32_t *)&carriers[c].sin_buf[k], *(int32_t *)&sample_buf[k], b_q_int);
         }
+
+        float b_i = b_i_int * (3.3 / (2048 * 4096 * SAMPLE_BUF_SZ));
+        float b_q = b_q_int * (3.3 / (2048 * 4096 * SAMPLE_BUF_SZ));
 
         float b_mag_sq = (b_i * b_i + b_q * b_q);
         if (training_sample) {
@@ -278,8 +291,11 @@ void receive_task(void) {
         b_i *= carriers[c].mag_adj;
         b_q *= carriers[c].mag_adj;
 
+        /*if (abc % 10000 == 0) {
+            printf("%d %d\n", b_i_int, b_q_int);
+        }*/
+
         if (data_sample) {
-            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
             int best_i = 0;
             int best_q = 0;
@@ -315,24 +331,23 @@ void receive_task(void) {
                 //printf("phase adj: %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj));
             }
 
-            //printf("%d: %2d %2d %d %d\n", c, best_i, best_q, (int)(b_i * 1000), (int)(b_q * 1000));
-            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
-            //my_printf("%f,%f\n", mag_adj * b_i1, mag_adj * b_q1);
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
-            if (c == 0) {
-                HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(b_i * 256 + 2048));
-            }
+            //printf("%d: %2d %2d %d %d\n", c, best_i, best_q, (int)(b_i * 1000), (int)(b_q * 1000));
+            //my_printf("%f,%f\n", mag_adj * b_i1, mag_adj * b_q1);
 
             int s = trellis_push_head(&carriers[c].trellis, b_i, b_q);
             if (s >= 0) {
                 rx_stream_push(&rxs, s);
             }
+
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
     }
 
     filt_power = filt_power * 0.9 + total_power * 0.1;
 
-    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 100.0 + 4096));
+    HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 100.0 + 4096));
     //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 300.0 + 2048));
 
 
@@ -368,7 +383,7 @@ void receive_task(void) {
         }
     }
 
-    if (filt_power < 10e-6) {
+    if (filt_power < 50e-6) {
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         ++quiet_time;
     } else {
