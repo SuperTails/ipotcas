@@ -392,7 +392,7 @@ void receive_task(void) {
             // we just started a new transmission, sample as late as possible
             samples = 0;
             // TODO: Don't hardcode this to expect 2 symbol period training
-            next_symbol_time = (SAMPLES_PER_SYMBOL * 11 / 4);
+            next_symbol_time = (SAMPLES_PER_SYMBOL * 23 / 8);
             rx_stream_reset(&rxs);
             printf("START\n");
             for (int i = 0; i < CARRIERS; ++i) {
