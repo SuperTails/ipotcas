@@ -260,7 +260,7 @@ void receive_task(void) {
     }*/
 
     bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
-    bool data_sample = (quiet_time < SAMPLES_PER_SYMBOL / 2 && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time));
+    bool data_sample = (quiet_time < SAMPLES_PER_SYMBOL / 4 && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time));
 
     float total_power = 0.0;
 
@@ -345,7 +345,7 @@ void receive_task(void) {
         }
     }
 
-    filt_power = filt_power * 0.9 + total_power * 0.1;
+    filt_power = filt_power * 0.5 + total_power * 0.5;
 
     HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 100.0 + 4096));
     //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 300.0 + 2048));
@@ -383,7 +383,7 @@ void receive_task(void) {
         }
     }
 
-    if (filt_power < 50e-6) {
+    if (filt_power < 1e-3) {
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         ++quiet_time;
     } else {
