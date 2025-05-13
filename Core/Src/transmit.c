@@ -1,4 +1,5 @@
 #include "transmit.h"
+#include "fast_math.h"
 #include "modulation.h"
 #include "ethernet.h"
 #include <stdint.h>
@@ -59,7 +60,7 @@ static void encoder_reset(encoder_t *enc) {
     memset(enc, 0, sizeof(*enc));
 }
 
-static void encoder_enc(encoder_t *enc, int symbol, int *i, int *q) {
+static void encoder_enc(encoder_t *enc, int symbol, int16_t *i, int16_t *q) {
     int q34 = symbol & 0x3;
     int q12 = symbol >> 2;
 
@@ -104,10 +105,14 @@ typedef enum {
     TX_SEND
 } tx_state_t;
 
+typedef struct __ALIGNED(4) {
+    int16_t i; 
+    int16_t q;
+} mod_t;
+
 typedef struct {
     uint64_t next_event;
-    int mod_i[CARRIERS];
-    int mod_q[CARRIERS];
+    mod_t mod[CARRIERS];
     int idx;
     int hi;
     encoder_t enc[CARRIERS];
@@ -136,13 +141,45 @@ int tx_munch_symbol(transmitter_t *tx) {
 }
 
 static int current_dac_value(transmitter_t *t) {
-    double amp = 0.0;
-    for (int i = 0; i < CARRIERS; ++i) {
-        double rad = micros() * (2.0 * M_PI * 1e3 / CARRIER_PERIODS_NS[i]);
-        amp += 1.5 * (t->mod_i[i] * fast_cos(rad) + t->mod_q[i] * fast_sin(rad)) / CARRIERS;
+    if (0) {
+        double amp = 0.0;
+        static int last_step = 0;
+        int freq_step = (micros() / 20000) % 2000;
+        double t = freq_step / 2000.0;
+        // 100 Hz to 100kHz
+        double freq = exp(4.6 + (9.9 - 4.6) * t);
+        if (freq_step != last_step) {
+            printf("freq %d\n", (int)(freq));
+            HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_0);
+            last_step = freq_step;
+        }
+        double rad = freq * micros() * (2.0 * M_PI / 1e6);
+        amp += 2.0 * fast_cos(rad);
+        //int i = (micros() / 100000) - ((micros() - 50) / 100000);
+        //amp = (i * 8.0) - 4.0;
+        // scale -8 to 8 range into 0 to 1, then convert to int
+        return (int)(((amp + 8.0) / 16.0) * 4096.0);
+
+    } else {
+        uint64_t u = micros();
+        int32_t amp = 0;
+
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
+        for (int i = 0; i < CARRIERS; ++i) {
+            int ang = u * 256000 / CARRIER_PERIODS_NS[i];
+            amp = smlad(*(int32_t *)&t->mod[i], cos_sin_table[ang & 0xFF], amp);
+        }
+        // *2:     increase amplitude
+        // *4096:  12-bit DAC
+        // /128:   convert cos/sin to -1 to 1
+        // /16:    scale down (2*) -4 to 4 range
+        amp *= 2 * 4096 / 128 / 16;
+        amp /= CARRIERS;
+        amp += 2048;
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
+
+        return amp;
     }
-    // scale -8 to 8 range into 0 to 1, then convert to int
-    return (int)(((amp + 8.0) / 16.0) * 4096.0);
 }
 
 static void tx_reset(transmitter_t *tx) {
@@ -207,7 +244,7 @@ static int tx_update(transmitter_t *tx) {
             tx->next_event += TRAIN_PERIOD_US;
             tx_reload_data(tx);
             for (int i = 0; i < CARRIERS; ++i) {
-                tx->mod_i[i] = 4; tx->mod_q[i] = 0;
+                tx->mod[i].i = 4; tx->mod[i].q = 0;
                 encoder_reset(&tx->enc[i]);
             }
             tx->state = TX_TRAIN;
@@ -215,7 +252,7 @@ static int tx_update(transmitter_t *tx) {
             tx->next_event += SYMBOL_PERIOD_US;
             for (int i = 0; i < CARRIERS; ++i) {
                 int symbol = tx_munch_symbol(tx);
-                encoder_enc(&tx->enc[i], symbol, &tx->mod_i[i], &tx->mod_q[i]);
+                encoder_enc(&tx->enc[i], symbol, &tx->mod[i].i, &tx->mod[i].q);
             }
             tx->state = TX_SEND;
         } else if (tx->state == TX_SEND) {
@@ -228,7 +265,7 @@ static int tx_update(transmitter_t *tx) {
 
             tx->next_event += SYMBOL_GAP_US;
             for (int i = 0; i < CARRIERS; ++i) {
-                tx->mod_i[i] = 0; tx->mod_q[i] = 0;
+                tx->mod[i].i = 0; tx->mod[i].q = 0;
             }
             tx->state = TX_GAP;
         }

@@ -9,7 +9,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#define SAMPLE_BUF_SZ 32
+#define SAMPLE_BUF_SZ 64
 
 #define RAD_PER_SAMPLE(i) (2.0 * M_PI * SAMPLE_PERIOD_NS / CARRIER_PERIODS_NS[i])
 
@@ -17,7 +17,7 @@
 #define CC_STATES 8
 
 int diff_dec(int y_prev, int y_new) {
-  const int TABLE[4][4] = {
+  const int8_t TABLE[4][4] = {
     {0, 1, 2, 3},
     {1, 0, 3, 2},
     {3, 2, 0, 1},
@@ -42,18 +42,6 @@ int y12_for_transition(int prev_state, int cur_state) {
   return TABLE[prev_state][cur_state];
 }
 
-inline int32_t smlad(int32_t lhs, int32_t rhs, int32_t acc) {
-    int32_t result;
-    asm inline (
-        "smlad %0, %1, %2, %3"
-        : "=r" (result)
-        : "r" (lhs), "r" (rhs), "r" (acc)
-
-    );
-    return result;
-}
-
-
 typedef struct {
     float path_metric[TRELLIS_HISTORY][CC_STATES];
     int prev_states[TRELLIS_HISTORY][CC_STATES];
@@ -64,6 +52,10 @@ typedef struct {
     int head;
     int tail;
 } trellis_t;
+
+const char *expected_data = "Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow";
+size_t expected_len = 539;
+
 
 void trellis_reset(trellis_t *t) {
     memset(t, 0, sizeof(*t));
@@ -264,14 +256,17 @@ void receive_task(void) {
 
     float total_power = 0.0;
 
+    int32_t sample_buf2[SAMPLE_BUF_SZ/2];
+    memcpy(sample_buf2, sample_buf, sizeof(sample_buf));
+
     for (int c = 0; c < CARRIERS; ++c) {
         // this block takes like 10us
         int32_t b_i_int = 0;
         int32_t b_q_int = 0;
 
         for (int k = 0; k < SAMPLE_BUF_SZ; k += 2) {
-            b_i_int = smlad(*(int32_t *)&carriers[c].cos_buf[k], *(int32_t *)&sample_buf[k], b_i_int);
-            b_q_int = smlad(*(int32_t *)&carriers[c].sin_buf[k], *(int32_t *)&sample_buf[k], b_q_int);
+            b_i_int = smlad(*(int32_t *)&carriers[c].cos_buf[k], sample_buf2[k/2], b_i_int);
+            b_q_int = smlad(*(int32_t *)&carriers[c].sin_buf[k], sample_buf2[k/2], b_q_int);
         }
 
         float b_i = b_i_int * (3.3 / (2048 * 4096 * SAMPLE_BUF_SZ));
@@ -296,6 +291,7 @@ void receive_task(void) {
         }*/
 
         if (data_sample) {
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
             int best_i = 0;
             int best_q = 0;
@@ -331,7 +327,6 @@ void receive_task(void) {
                 //printf("phase adj: %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj));
             }
 
-            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
             //printf("%d: %2d %2d %d %d\n", c, best_i, best_q, (int)(b_i * 1000), (int)(b_q * 1000));
             //my_printf("%f,%f\n", mag_adj * b_i1, mag_adj * b_q1);
@@ -377,7 +372,23 @@ void receive_task(void) {
                 printf("%c", rxs.data[i]);
             }
             printf("\n");
-            printf("phase adj: %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj));
+            int l = (rxs.len < expected_len) ? rxs.len : expected_len;
+            int byt_errors = 0;
+            int err_dist[CARRIERS] = { 0 };
+            for (int i = 0; i < 2*l; ++i) {
+                if ((rxs.data[i/2] ^ expected_data[i/2]) & (0xF << (4 * (i % 2)))) {
+                    ++err_dist[i % CARRIERS];
+                    ++byt_errors;
+                }
+            }
+            for (int i = 0; i < CARRIERS; ++i) {
+                printf("%d ", err_dist[i]);
+            }
+            printf("\n");
+            /*if (byt_errors > 0) {
+                printf("byt errors: %d\n", byt_errors);
+            }*/
+            //printf("phase adj: %d %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj), (int)(1000.0 * (carriers[1].phase_adj - carriers[0].phase_adj)));
             ethernet_send_packet(rxs.data, rxs.len);
             rx_stream_reset(&rxs);
         }
