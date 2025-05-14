@@ -7,11 +7,12 @@
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 
 extern TIM_HandleTypeDef htim3;
 
-uint64_t micros(void) {
+int64_t micros(void) {
     static uint16_t prev = 0;
     static uint64_t offset = 0;
     uint16_t cur = __HAL_TIM_GET_COUNTER(&htim3);
@@ -99,45 +100,126 @@ size_t sym_len = 539;
 //const char *sym_data = "Hello, world!\n";
 //size_t sym_len = 15;
 
-typedef enum {
-    TX_GAP,
-    TX_TRAIN,
-    TX_SEND
-} tx_state_t;
+typedef struct {
+    size_t idx;
+    int hi;
+} tx_bitstream_t;
+
+void txbs_reload_data(tx_bitstream_t *s) {
+    s->idx = 0;
+    s->hi = false;
+}
+
+bool txbs_data_exhausted(const tx_bitstream_t *s) {
+    return s->idx >= sym_len;
+}
+
+int txbs_munch_symbol(tx_bitstream_t *s) {
+    if (s->idx >= sym_len) {
+        return 0;
+    } else if (s->hi) {
+        s->hi = false;
+        return (sym_data[s->idx++] >> 4) & 0xF;
+    } else {
+        s->hi = true;
+        return sym_data[s->idx] & 0xF;
+    }
+}
+
+typedef struct {
+    tx_bitstream_t bs;
+    encoder_t enc[CARRIERS];
+    int train_periods;
+    int gap_periods;
+} tx_cstream_t;
 
 typedef struct __ALIGNED(4) {
     int16_t i; 
     int16_t q;
 } mod_t;
 
+void txcs_reload_data(tx_cstream_t *tx) {
+    txbs_reload_data(&tx->bs);
+    for (int i = 0; i < CARRIERS; ++i) {
+        encoder_reset(&tx->enc[i]);
+    }
+    // TODO: Maybe rewrite the constants as multiples of a period?
+    tx->train_periods = TRAIN_PERIOD_US / SYMBOL_PERIOD_US;
+    tx->gap_periods = SYMBOL_GAP_US / SYMBOL_PERIOD_US;
+}
+
+bool txcs_data_exhausted(const tx_cstream_t *tx) {
+    return tx->gap_periods == 0;
+}
+
+void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
+    if (tx->train_periods > 0) {
+        for (int i = 0; i < CARRIERS; ++i) {
+            mod[i].i = 2; mod[i].q = 0;
+        }
+        --tx->train_periods;
+    } else if (txbs_data_exhausted(&tx->bs)) {
+        if (tx->gap_periods > 0) --tx->gap_periods;
+        for (int i = 0; i < CARRIERS; ++i) {
+            mod[i].i = 0; mod[i].q = 0;
+        }
+    } else {
+        for (int i = 0; i < CARRIERS; ++i) {
+            int symbol = txbs_munch_symbol(&tx->bs);
+            encoder_enc(&tx->enc[i], symbol, &mod[i].i, &mod[i].q);
+        }
+    }
+}
+
+#define HISTORY 3
+
 typedef struct {
-    uint64_t next_event;
-    mod_t mod[CARRIERS];
-    int idx;
-    int hi;
-    encoder_t enc[CARRIERS];
-    tx_state_t state;
+    tx_cstream_t cs;
+    int64_t cur_symbol_center;
+    mod_t mod[HISTORY][CARRIERS];
+    int cur_symbol; // history index of the current symbol
 } transmitter_t;
 
-void tx_reload_data(transmitter_t *tx) {
-    tx->idx = 0;
-    tx->hi = 0;
-}
-
-bool tx_data_exhausted(const transmitter_t *tx) {
-    return tx->idx >= sym_len;
-}
-
-int tx_munch_symbol(transmitter_t *tx) {
-    if (tx->idx >= sym_len) {
-        return 0;
-    } else if (tx->hi) {
-        tx->hi = false;
-        return (sym_data[tx->idx++] >> 4) & 0xF;
-    } else {
-        tx->hi = true;
-        return sym_data[tx->idx] & 0xF;
+static double raised_cos_filt_impulse(double t, double rolloff) {
+    if (fabs(t) < 1e-3) {
+        return 1.0;
     }
+
+    /*if (fabs(t) < 0.5) {
+        //return 1.0 - fabs(t);
+        return 1.0;
+    } else {
+        return 0.0;
+    }*/
+
+    double half_inv_rolloff = 0.5 / rolloff;
+    if (rolloff > 1e-3 && fabs(fabs(t) - half_inv_rolloff) < 1e-3) {
+        return rolloff * 0.5 * fast_sin(M_PI * half_inv_rolloff);
+    }
+
+    double tmp = 2.0 * rolloff * t;
+
+    double numer = fast_sin(M_PI * t) * fast_cos(M_PI * rolloff * t);
+    double denom = M_PI * t * (1.0 - tmp * tmp);
+
+    return numer / denom;
+}
+
+static int32_t raised_cos_filt_impulse_2(int32_t t) {
+    if (abs(t) < 32) {
+        return 1 << 12; // 1.0
+    }
+
+    if (abs(t-2048) < 32 || abs(t+2048) < 32) {
+        return 1 << 11; // 0.5
+    }
+
+    const int32_t ang_mask = (1 << 12) - 1;
+    int32_t numer = isin((t & ang_mask) >> 4); // << 8
+    int32_t denom = (t * ((1<<12) - ((4 * t * t) >> 12))) >> 12; // << 12
+    denom = (denom * 12867) >> 12; // denom *= M_PI
+
+    return (numer << 16) / denom; // << 12
 }
 
 static int current_dac_value(transmitter_t *t) {
@@ -161,20 +243,42 @@ static int current_dac_value(transmitter_t *t) {
         return (int)(((amp + 8.0) / 16.0) * 4096.0);
 
     } else {
-        uint64_t u = micros();
+        int64_t u = micros();
         int32_t amp = 0;
+
+        double d00 = (u - t->cur_symbol_center) * (1.0 / SYMBOL_PERIOD_US);
+        double dn0 = d00 + 1.0;
+        double dp0 = d00 - 1.0;
+
+        // these are all (20.12) fixed point
+        int fn0 = raised_cos_filt_impulse_2(dn0 * (1 << 12));
+        int f00 = raised_cos_filt_impulse_2(d00 * (1 << 12));
+        int fp0 = raised_cos_filt_impulse_2(dp0 * (1 << 12));
+
+        int in0 = (t->cur_symbol + HISTORY - 2) % HISTORY;
+        int i00 = (t->cur_symbol + HISTORY - 1) % HISTORY;
+        int ip0 = t->cur_symbol;
 
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         for (int i = 0; i < CARRIERS; ++i) {
             int ang = u * 256000 / CARRIER_PERIODS_NS[i];
-            amp = smlad(*(int32_t *)&t->mod[i], cos_sin_table[ang & 0xFF], amp);
+            //amp = smlad(*(int32_t *)&t->mod[i], cos_sin_table[ang & 0xFF], amp);
+            int32_t i_part = t->mod[in0][i].i * fn0 + t->mod[i00][i].i * f00 + t->mod[ip0][i].i * fp0;
+            int32_t q_part = t->mod[in0][i].q * fn0 + t->mod[i00][i].q * f00 + t->mod[ip0][i].q * fp0;
+            /*if (t->mod[ip0][i].i == 4 && t->mod[ip0][i].q == 0 && fn0 < -0.0) {
+                i_part = 4 * 256;
+                q_part = 0;
+            }*/
+            //amp += t->mod[h][i].i * icos(ang) + t->mod[h][i].q * isin(ang);
+            amp += i_part * icos(ang) + q_part * isin(ang);
         }
+        // amp is now in 12.20 fixed-point
+
         // *2:     increase amplitude
         // *4096:  12-bit DAC
         // /128:   convert cos/sin to -1 to 1
         // /16:    scale down (2*) -4 to 4 range
-        amp *= 2 * 4096 / 128 / 16;
-        amp /= CARRIERS;
+        amp /= 128 * 16 * CARRIERS;
         amp += 2048;
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
 
@@ -182,9 +286,34 @@ static int current_dac_value(transmitter_t *t) {
     }
 }
 
+static int tx_update(transmitter_t *tx) {
+    if (micros() > tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
+        HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_1);
+        tx->cur_symbol_center += SYMBOL_PERIOD_US;
+        ++tx->cur_symbol; if (tx->cur_symbol >= HISTORY) tx->cur_symbol = 0;
+
+        if (txcs_data_exhausted(&tx->cs)) {
+            if (current_packet) {
+                ethernet_free_rx_buffer(current_packet);
+                current_packet = NULL;
+                sym_data = NULL;
+                sym_len = 0;
+            }
+
+            // TODO: Needs to be fixed for when ethernet is used
+            // because w/ ethernet we can't just reload immediately, we need idle time
+            txcs_reload_data(&tx->cs);
+        } else {
+            txcs_munch_period(&tx->cs, tx->mod[tx->cur_symbol]);
+        }
+    }
+
+    return current_dac_value(tx);
+}
+
 static void tx_reset(transmitter_t *tx) {
     memset(tx, 0, sizeof(*tx));
-    tx->next_event = micros();
+    tx->cur_symbol_center = micros();
 }
 
 #if 0
@@ -232,47 +361,6 @@ void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
 
 
 //const char sym_data[] = "Hello, world!\n";
-
-// returns the current value that should be fed to the DAC
-static int tx_update(transmitter_t *tx) {
-    if (tx->state == TX_GAP && sym_len == 0) {
-        return 4096 / 2;
-    }
-
-    if (micros() > tx->next_event) {
-        if (tx->state == TX_GAP) {
-            tx->next_event += TRAIN_PERIOD_US;
-            tx_reload_data(tx);
-            for (int i = 0; i < CARRIERS; ++i) {
-                tx->mod[i].i = 4; tx->mod[i].q = 0;
-                encoder_reset(&tx->enc[i]);
-            }
-            tx->state = TX_TRAIN;
-        } else if ((tx->state == TX_TRAIN) || (tx->state == TX_SEND && !tx_data_exhausted(tx))) {
-            tx->next_event += SYMBOL_PERIOD_US;
-            for (int i = 0; i < CARRIERS; ++i) {
-                int symbol = tx_munch_symbol(tx);
-                encoder_enc(&tx->enc[i], symbol, &tx->mod[i].i, &tx->mod[i].q);
-            }
-            tx->state = TX_SEND;
-        } else if (tx->state == TX_SEND) {
-            if (current_packet) {
-                ethernet_free_rx_buffer(current_packet);
-                current_packet = NULL;
-                sym_data = NULL;
-                sym_len = 0;
-            }
-
-            tx->next_event += SYMBOL_GAP_US;
-            for (int i = 0; i < CARRIERS; ++i) {
-                tx->mod[i].i = 0; tx->mod[i].q = 0;
-            }
-            tx->state = TX_GAP;
-        }
-    }
-
-    return current_dac_value(tx);
-}
 
 transmitter_t TRANSMITTER;
 

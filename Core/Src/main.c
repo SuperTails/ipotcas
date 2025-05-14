@@ -266,8 +266,8 @@ int main(void)
 
     ++calls;
     transmit_task(&hdac);
-    receive_task();
-    ethernet_task();
+    //receive_task();
+    //ethernet_task();
     //tud_task();
   }
   /* USER CODE END 3 */
