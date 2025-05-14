@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "class/cdc/cdc_device.h"
 #include "string.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -203,7 +204,7 @@ int main(void)
     Error_Handler();
   }
 
-  //tusb_init();
+  tusb_init();
 
   transmit_init(&hdac);
 
@@ -276,7 +277,7 @@ int main(void)
     transmit_task(&hdac);
     //receive_task();
     //ethernet_task();
-    //tud_task();
+    tud_task();
   }
   /* USER CODE END 3 */
 }

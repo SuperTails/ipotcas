@@ -84,8 +84,8 @@ uint8_t const *tud_descriptor_device_cb(void) {
 };*/
 
 enum {
-  ITF_NUM_CDC_NCM_COM = 0,
-  ITF_NUM_CDC_NCM_DATA,
+  ITF_NUM_CDC = 0,
+  ITF_NUM_CDC_DATA,
   ITF_NUM_TOTAL,
 };
 
@@ -133,7 +133,7 @@ enum {
 #define EPNUM_NCM_NOTIFICATION 0x04
 
 //#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_MSC_DESC_LEN)
-#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_NCM_DESC_LEN)
+#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN)
 
 // full speed configuration
 uint8_t const desc_fs_configuration[] = {
@@ -141,10 +141,10 @@ uint8_t const desc_fs_configuration[] = {
     TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
 
     // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
-    //TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
+    TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
 
     // Interface number, description string index, MAC address string index, EP notification address and size, EP data address (out, in), and size, max segment size.
-    TUD_CDC_NCM_DESCRIPTOR(ITF_NUM_CDC_NCM_COM, 4, 5, EPNUM_NCM_NOTIFICATION, 64, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64, CFG_TUD_NET_MTU)
+    //TUD_CDC_NCM_DESCRIPTOR(ITF_NUM_CDC_NCM_COM, 4, 5, EPNUM_NCM_NOTIFICATION, 64, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64, CFG_TUD_NET_MTU)
 };
 
 #if TUD_OPT_HIGH_SPEED
@@ -253,7 +253,7 @@ static uint16_t _desc_str[32 + 1];
 // Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
 uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
   (void) langid;
-  size_t chr_count;
+  size_t chr_count = 0;
 
   switch ( index ) {
     case STRID_LANGID:
@@ -267,11 +267,17 @@ uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
     
     case STRID_MAC:
       // Convert MAC address into UTF-16
+      #if 0
       for (unsigned i = 0;  i < sizeof(tud_network_mac_address);  ++i) {
         _desc_str[1+chr_count++] = "0123456789ABCDEF"[(tud_network_mac_address[i] >> 4) & 0xf];
         _desc_str[1+chr_count++] = "0123456789ABCDEF"[(tud_network_mac_address[i] >> 0) & 0xf];
       }
       break;
+      #endif
+      for (unsigned i = 0; i < 6; ++i) {
+        _desc_str[1+chr_count++] = '0';
+        _desc_str[1+chr_count++] = '0';
+      }
 
     default:
       // Note: the 0xEE index string is a Microsoft OS 1.0 Descriptors.

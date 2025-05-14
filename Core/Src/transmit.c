@@ -2,6 +2,7 @@
 #include "fast_math.h"
 #include "modulation.h"
 #include "ethernet.h"
+#include "tusb.h"
 #include "stm32f7xx_hal_dac.h"
 #include "stm32f7xx_hal_dma_ex.h"
 #include <stdint.h>
@@ -284,6 +285,7 @@ static int current_dac_value(transmitter_t *t) {
         // *4096:  12-bit DAC
         // /128:   convert cos/sin to -1 to 1
         // /16:    scale down (2*) -4 to 4 range
+        //amp *= 2;
         amp /= 128 * 16 * CARRIERS;
         amp += 2048;
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
@@ -386,12 +388,17 @@ void transmit_task(DAC_HandleTypeDef *hdac) {
         // wait for DMA to finish the one it is using...
         bool dma_which = (hdac->DMA_Handle1->Instance->CR & DMA_SxCR_CT) != 0;
         if (dma_which == dac_dma_which) {
+            if (dac_dma_which) {
+                tud_cdc_write(dac_dma_buf_b, sizeof(dac_dma_buf_b));
+            } else {
+                tud_cdc_write(dac_dma_buf_a, sizeof(dac_dma_buf_a));
+            }
             // DMA is now using the buffer we just filled, start filling the one it just emptied
             dac_dma_which = !dac_dma_which;
             dac_dma_head = 0;
         }
     } else {
-        int value = tx_update(&TRANSMITTER);
+        uint16_t value = tx_update(&TRANSMITTER);
         if (dac_dma_which) {
             dac_dma_buf_b[dac_dma_head++] = value;
         } else {
