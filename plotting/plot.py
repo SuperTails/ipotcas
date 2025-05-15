@@ -1,9 +1,12 @@
 from serial import Serial
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 import numpy as np
 import time
 import math
+from numpy import fft
 from scipy import signal
+from codec import *
 
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
@@ -77,42 +80,17 @@ class BlitManager:
         # let the GUI event loop process anything it has to do
         cv.flush_events()
  
-
-CONSTELLATION_TABLE = [
-       None,    None,    None, 0b11111,    None, 0b11000,    None,    None,    None,
-       None,    None, 0b01000,     'D', 0b00101,    None, 0b01010,    None,    None,
-       None, 0b10010,    None, 0b10101,    None, 0b10011,    None, 0b10100,    None,
-    0b00000,    None, 0b01111,    None, 0b00010,    None, 0b01101,     'C', 0b00011,
-       None, 0b11001,    None, 0b11110,    None, 0b11010,    None, 0b11101,    None,
-    0b00111,     'A', 0b01001,    None, 0b00110,    None, 0b01011,    None, 0b00100,
-       None, 0b10000,    None, 0b10111,    None, 0b10001,    None, 0b10110,    None,
-       None,    None, 0b01110,    None, 0b00001,     'B', 0b01100,    None,    None,
-       None,    None,    None, 0b11100,    None, 0b11011,    None,    None,    None,
-]
-
-SYMBOL_TO_CONSTELLATION = []
-
-CONSTELLATION_TO_SYMBOL = dict()
-
-for i in range(0b1_00000):
-    idx = CONSTELLATION_TABLE.index(i)
-    row, col = idx // 9, idx % 9
-    cons_i = col - 4
-    cons_q = 4 - row
-    CONSTELLATION_TO_SYMBOL[(cons_i, cons_q)] = i
-    SYMBOL_TO_CONSTELLATION.append((cons_i, cons_q))
-
-DAC_SAMPLE_RATE = 100_000
+DAC_SAMPLE_RATE = 32_000
 ADC_SAMPLE_RATE = 32_000
 PLOT_SAMPLES = 16_000
 PLOT_TIME = PLOT_SAMPLES / ADC_SAMPLE_RATE
-WINDOW_SIZE = 64
 
 SYMBOL_PERIOD = 5e-3
 SAMPLES_PER_SYMBOL = int(SYMBOL_PERIOD * ADC_SAMPLE_RATE)
 
 
 SAMPLE_BUF = np.array([0.0])
+SAMPLE_IDX = 0
 
 def refill_buf():
     global SAMPLE_BUF
@@ -136,11 +114,21 @@ FILT_POWER = 1.0
 
 def get_samples(count, rate=ADC_SAMPLE_RATE, wait_until_start=True):
     global SAMPLE_BUF
+    global SAMPLE_IDX
     global FILT_POWER
 
+    while len(SAMPLE_BUF) < count:
+        refill_buf()
+
+    result = (SAMPLE_IDX, SAMPLE_BUF[:count])
+    SAMPLE_BUF = SAMPLE_BUF[count:]
+    SAMPLE_IDX += count
+    return result
+
+
     skipped = 0
-    while FILT_POWER > 1e-7:
-        if len(SAMPLE_BUF) == 0:
+    while False and FILT_POWER > 1e-7:
+        if len(SAMPLE_BUF) < 2:
             refill_buf()
 
         skipped += 1
@@ -205,58 +193,122 @@ fr_number = ax_sig.annotate(
 )
 
 fig2, (ax_cons) = plt.subplots(num=2)
+fig2.subplots_adjust(bottom=0.25)
 ax_cons.set_xlim(left=-5, right=5)
 ax_cons.set_ylim(bottom=-5, top=5)
 ax_cons.scatter(i_correct, q_correct)
 ln_cons = ax_cons.scatter(i_correct, q_correct, animated=True)
 
+allowed_freqs = CARRIER_FREQS
+
+MONITOR_FREQ = CARRIER_FREQS[0]
+
+def on_freq_change(val):
+    global MONITOR_FREQ
+    MONITOR_FREQ = val
+
+ax_freq = fig2.add_axes([0.25, 0.15, 0.65, 0.03])
+freq_slider = Slider(
+    ax_freq, "Freq", CARRIER_FREQS[0], CARRIER_FREQS[-1],
+    valinit=CARRIER_FREQS[0], valstep=CARRIER_FREQS
+)
+freq_slider.on_changed(on_freq_change)
+
+#fig3, (ax_power) = plt.subplots(num=3)
+#(ln_power,) = ax_power.semilogy(x, np.ones_like(x))
+
 bm1 = BlitManager(fig1.canvas, [ln_sig, fr_number, ln_i, ln_q, ln_p])
 bm2 = BlitManager(fig2.canvas, [ln_cons])
+#bm3 = BlitManager(fig3.canvas, [ln_power])
 # make sure our window is on the screen and drawn
 plt.show(block=False)
 plt.pause(.1)
 
-p = Serial('/dev/tty.usbmodem1301', 115200)
+#p = Serial('/dev/tty.usbmodem1401', 115200)
+p = Serial('/dev/tty.usbmodem1401', 115200)
 
 t = time.perf_counter()
 
-freq = 5.5e3
 
-j = 0
+plot_samples = np.zeros(PLOT_SAMPLES)
+
+POWER_WINDOW_SIZE = WINDOW_SIZE * 2
+
+pow_data = np.zeros(PLOT_SAMPLES // POWER_WINDOW_SIZE)
+
+l = 0
 while True:
-    samples = get_samples(PLOT_SAMPLES)
+    k = 0
+    while True:
+        t, samples = get_samples(POWER_WINDOW_SIZE)
+        x = np.linspace(t, t + POWER_WINDOW_SIZE, POWER_WINDOW_SIZE, endpoint=False) / ADC_SAMPLE_RATE
+        k += 1
 
-    x = np.linspace(PLOT_TIME * j, PLOT_TIME * (j + 1), PLOT_SAMPLES, endpoint=False)
+        avg_power = 0.0
+        for freq in CARRIER_FREQS:
+            avg_power += np.average(np.abs(np.exp(1j * freq * 2.0 * math.pi * x) * samples))
+        
+        if True:
+            if avg_power < 0.7:
+            #if avg_power < 0.09:
+                print('found quiet')
+                break
+        else:
+            pow_data[l] = avg_power
+            l += 1
+            if l == PLOT_SAMPLES // POWER_WINDOW_SIZE:
+                l = 0
+                ln_power.set_ydata(np.repeat(pow_data, POWER_WINDOW_SIZE, axis=0))
+                bm3.update()
 
-    cos_part = np.cos(freq * 2.0 * math.pi * x)
-    sin_part = np.sin(freq * 2.0 * math.pi * x)
+    filt_power = 0.0
 
-    cos_mixed = cos_part * samples
-    sin_mixed = sin_part * samples
+    t, samples = get_samples(PLOT_SAMPLES)
+    x = np.linspace(t, t + PLOT_SAMPLES, PLOT_SAMPLES, endpoint=False) / ADC_SAMPLE_RATE
+    i = WINDOW_SIZE
+    while True:
+        total_power = 0.0
+        f = fft.fft(samples[i:i+64])
+        for freq in CARRIER_FREQS:
+            total_power += np.abs(f[round(freq / 500)])
+        if total_power > 5.0:
+            break
+        i += 1
+    
+    i += SAMPLES_PER_SYMBOL * 2 // 8
+    #i += 2
+    t += i
+    _, samples2 = get_samples(i)
+    samples = np.concatenate([samples[i:], samples2])
 
-    window_filt = np.concatenate([np.zeros(WINDOW_SIZE-1), np.ones(WINDOW_SIZE)]) / WINDOW_SIZE
+    print(decode(samples, CARRIER_FREQS, ADC_SAMPLE_RATE, 5e-3, skip=2, sample_offset=10))
 
-    iq_lpf = np.convolve(cos_mixed, window_filt, mode='same') + 1j * np.convolve(sin_mixed, window_filt, mode='same')
+    iq_values = mix_and_filt(samples, CARRIER_FREQS, ADC_SAMPLE_RATE)
 
-    phase = np.angle(iq_lpf[SAMPLES_PER_SYMBOL * 3 // 2])
-    mag = np.abs(iq_lpf[SAMPLES_PER_SYMBOL * 3 // 2])
-    print(phase, mag)
+    #phase = np.angle(iq_lpf[SAMPLES_PER_SYMBOL * 3 // 2])
+    #mag = np.abs(iq_lpf[SAMPLES_PER_SYMBOL * 3 // 2])
+    #print(phase, mag)
 
-    iq_lpf = iq_lpf * (np.exp(-1j * phase) * 4.0 / mag)
+    #iq_lpf = iq_lpf * (np.exp(-1j * phase) * 4.0 / mag)
 
-    cons_points = iq_lpf[SAMPLES_PER_SYMBOL::SAMPLES_PER_SYMBOL].copy()
+    samples_per_symbol = int(5e-3 * ADC_SAMPLE_RATE)
 
-    j += 1
+    adjusts = 4.0 / iq_values[:,int(samples_per_symbol*2-10)]
+    freq_idx = CARRIER_FREQS.index(MONITOR_FREQ)
+
+    cons_points = iq_values * adjusts.reshape((len(CARRIER_FREQS), 1))
+
+    cons_samples = cons_points[freq_idx,samples_per_symbol*(2+1) - 10::samples_per_symbol].copy()
 
     # update the artists
     #ln.set_xdata(x)
     ln_sig.set_ydata(samples)
-    ln_i.set_ydata(np.real(iq_lpf))
-    ln_q.set_ydata(np.imag(iq_lpf))
+    ln_i.set_ydata(np.real(cons_points[freq_idx]))
+    ln_q.set_ydata(np.imag(cons_points[freq_idx]))
     # From https://stackoverflow.com/questions/38900344/convert-complex-numpy-array-into-n-2-array-of-real-and-imaginary-parts
-    ln_cons.set_offsets(cons_points.view(float).reshape(-1, 2))
+    ln_cons.set_offsets(cons_samples.view(float).reshape(-1, 2))
     #ln_p.set_ydata(np.log(pow_lpf) + 5.0)
-    fr_number.set_text(f"frame: {j}")
+    fr_number.set_text(f"time: {t / ADC_SAMPLE_RATE}")
     # tell the blitting manager to do its thing
     bm1.update()
     bm2.update()

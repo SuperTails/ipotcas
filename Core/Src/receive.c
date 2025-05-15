@@ -1,6 +1,7 @@
 #include "receive.h"
 #include "fast_math.h"
 #include "stm32f7xx_hal.h"
+#include "tusb.h"
 #include "modulation.h"
 #include "ethernet.h"
 #include <stdio.h>
@@ -242,6 +243,7 @@ void receive_task(void) {
         return;
     }
 
+
     new_data = false;
 
     static int abc = 0;
@@ -421,6 +423,11 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
     if (sample_buf_head >= SAMPLE_BUF_SZ) sample_buf_head = 0;
     new_data = true;
     ++samples;
+
+    if (sample_buf_head == 0) {
+        tud_cdc_write(sample_buf, sizeof(sample_buf));
+    }
+
     //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, adc_val);
 }
 

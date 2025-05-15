@@ -272,7 +272,7 @@ static int current_dac_value(transmitter_t *t) {
             //amp = smlad(*(int32_t *)&t->mod[i], cos_sin_table[ang & 0xFF], amp);
             int32_t i_part = t->mod[in0][i].i * fn0 + t->mod[i00][i].i * f00 + t->mod[ip0][i].i * fp0;
             int32_t q_part = t->mod[in0][i].q * fn0 + t->mod[i00][i].q * f00 + t->mod[ip0][i].q * fp0;
-            /*if (t->mod[ip0][i].i == 4 && t->mod[ip0][i].q == 0 && fn0 < -0.0) {
+            /*if (t->mod[i00][i].i == 4 && t->mod[i00][i].q == 0 && fn0 < -0.0) {
                 i_part = 4 * 256;
                 q_part = 0;
             }*/
