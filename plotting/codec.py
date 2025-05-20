@@ -336,6 +336,10 @@ def trellis_decode(samples):
     
     return result.to_bytes()
 
+def symbol_sample_indices(num_samples, symbol_period, sample_rate, sample_offset):
+    samples_per_symbol = int(symbol_period * sample_rate)
+    result = np.linspace(0, num_samples, num=num_samples, endpoint=False)
+    return result * samples_per_symbol + samples_per_symbol - sample_offset 
 
 def decode(sig, freqs, sample_rate, symbol_period, skip, sample_offset=40):
     assert len(sig.shape) == 1
@@ -346,7 +350,7 @@ def decode(sig, freqs, sample_rate, symbol_period, skip, sample_offset=40):
     iq_filt = mix_and_filt(sig, freqs, sample_rate)
 
     adjusts = 4.0 / iq_filt[:,samples_per_symbol*skip-sample_offset]
-    print('Adjustments: ', adjusts)
+    print('Adjustments: ', np.abs(adjusts) / np.min(np.abs(adjusts)))
 
     #samp_x = []
     #for x in range(symbols):
@@ -361,7 +365,11 @@ def decode(sig, freqs, sample_rate, symbol_period, skip, sample_offset=40):
     
     return trellis_decode(samples)
     
-CARRIER_FREQS = [4.5e3, 5e3, 5.5e3, 6e3, 6.5e3, 7e3, 7.5e3, 8e3]
+#CARRIER_FREQS = [4.5e3, 5e3, 5.5e3, 6e3, 6.5e3, 7e3, 7.5e3, 8e3]
+#CARRIER_FREQS = [1.0e3, 1.5e3, 2.0e3, 2.5e3, 3.0e3, 3.5e3, 7.5e3, 8e3]
+#CARRIER_FREQS = [4.0e3, 4.5e3, 5.0e3, 5.5e3, 6.0e3, 6.5e3, 7.0e3, 7.5e3]
+CARRIER_FREQS = [8.0e3, 8.5e3, 9.0e3, 9.5e3, 10.0e3, 10.5e3, 11.0e3, 11.5e3, 12e3, 12.5e3, 13e3, 13.5e3]
+#CARRIER_FREQS = [10.0e3, 10.5e3, 11.0e3, 11.5e3, 12e3, 12.5e3, 13e3, 13.5e3]
 #CARRIER_FREQS = [4.5e3]
 
 ENCODED_DATA = b"Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow"

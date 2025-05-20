@@ -2,6 +2,7 @@
 #include "fast_math.h"
 #include "modulation.h"
 #include "ethernet.h"
+#include "stm32f7xx_hal.h"
 #include "tusb.h"
 #include "stm32f7xx_hal_dac.h"
 #include "stm32f7xx_hal_dma_ex.h"
@@ -174,7 +175,7 @@ void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
     }
 }
 
-#define HISTORY 3
+#define HISTORY 1
 
 typedef struct {
     tx_cstream_t cs;
@@ -226,11 +227,13 @@ static int32_t raised_cos_filt_impulse_2(int32_t t) {
     return (numer << 16) / denom; // << 12
 }
 
-static int current_dac_value(transmitter_t *t) {
+int current_dac_value(transmitter_t *t) {
     if (0) {
+        int64_t u = t->current_micros;
+
         double amp = 0.0;
         static int last_step = 0;
-        int freq_step = (micros() / 20000) % 2000;
+        int freq_step = (u / 20000) % 2000;
         double t = freq_step / 2000.0;
         // 100 Hz to 100kHz
         double freq = exp(4.6 + (9.9 - 4.6) * t);
@@ -239,45 +242,25 @@ static int current_dac_value(transmitter_t *t) {
             HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_0);
             last_step = freq_step;
         }
-        double rad = freq * micros() * (2.0 * M_PI / 1e6);
-        amp += 2.0 * fast_cos(rad);
+        double rad = freq * u * (2.0 * M_PI / 1e6);
+        amp += fast_cos(rad) / 2.0;
         //int i = (micros() / 100000) - ((micros() - 50) / 100000);
         //amp = (i * 8.0) - 4.0;
         // scale -8 to 8 range into 0 to 1, then convert to int
         return (int)(((amp + 8.0) / 16.0) * 4096.0);
 
     } else {
-        int64_t u = t->current_micros;
+        int u = t->current_micros % 2000;
         int32_t amp = 0;
 
-        double d00 = (u - t->cur_symbol_center) * (1.0 / SYMBOL_PERIOD_US);
-        double dn0 = d00 + 1.0;
-        double dp0 = d00 - 1.0;
-
-        // these are all (20.12) fixed point
-        /*int fn0 = raised_cos_filt_impulse_2(dn0 * (1 << 12));
-        int f00 = raised_cos_filt_impulse_2(d00 * (1 << 12));
-        int fp0 = raised_cos_filt_impulse_2(dp0 * (1 << 12));*/
-        int fn0 = 0;
-        int f00 = 0;
-        int fp0 = 1 << 12;
-
-        int in0 = (t->cur_symbol + HISTORY - 2) % HISTORY;
-        int i00 = (t->cur_symbol + HISTORY - 1) % HISTORY;
         int ip0 = t->cur_symbol;
+
+        // TODO: Manually const-fold math on CARRIER_FREQUENCIES_HZ
 
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         for (int i = 0; i < CARRIERS; ++i) {
-            int ang = u * 256000 / CARRIER_PERIODS_NS[i];
-            //amp = smlad(*(int32_t *)&t->mod[i], cos_sin_table[ang & 0xFF], amp);
-            int32_t i_part = t->mod[in0][i].i * fn0 + t->mod[i00][i].i * f00 + t->mod[ip0][i].i * fp0;
-            int32_t q_part = t->mod[in0][i].q * fn0 + t->mod[i00][i].q * f00 + t->mod[ip0][i].q * fp0;
-            /*if (t->mod[i00][i].i == 4 && t->mod[i00][i].q == 0 && fn0 < -0.0) {
-                i_part = 4 * 256;
-                q_part = 0;
-            }*/
-            //amp += t->mod[h][i].i * icos(ang) + t->mod[h][i].q * isin(ang);
-            amp += i_part * icos(ang) + q_part * isin(ang);
+            int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
+            amp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], amp);
         }
         // amp is now in 12.20 fixed-point
 
@@ -285,7 +268,8 @@ static int current_dac_value(transmitter_t *t) {
         // *4096:  12-bit DAC
         // /128:   convert cos/sin to -1 to 1
         // /16:    scale down (2*) -4 to 4 range
-        //amp *= 2;
+        amp *= 1 << 12;
+        amp *= 2;
         amp /= 128 * 16 * CARRIERS;
         amp += 2048;
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);

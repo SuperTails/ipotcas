@@ -4,19 +4,51 @@
 //#define SAMPLE_PERIOD_NS 62500 // 16khz
 #define SAMPLE_PERIOD_NS 31250 // 32khz
 
-#define CARRIERS 8
+#define CARRIERS 12
+
+static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
+   8000,
+   8500,
+   9000,
+   9500,
+  10000,
+  10500,
+  11000,
+  11500,
+  12000,
+  12500,
+  13000,
+  13500,
+};
 
 static const int CARRIER_PERIODS_NS[CARRIERS] = {
+  //1000000, // 1 kHz
+  //666666, // 1.5 kHz
+  //500000, // 2.0 kHz
+  //400000, // 2.5 kHz
+  //333333, // 3 kHz
+  //285714, // 3.5 kHz (GOOD)
+
+  /*250000, // 4 kHz
   222222, // 4.5 kHz
   200000, // 5 kHz
-  181818, // 5.5 kHz
+  181818, // 5.5 kHz (AWFUL??)
   166666, // 6 kHz
   153846, // 6.5 kHz
   142857, // 7 kHz
-  133333, // 7.5 kHz
+  133333, // 7.5 kHz*/
   125000, // 8 kHz
-  //250000, // 4 kHz
-  //333333  // 3 kHz
+  117647, // 8.5 kHz
+  111111, // 9 kHz
+  105263, // 9.5 kHz
+  100000, // 10 kHz
+  95238, // 10.5 kHz
+  90909, // 11 kHz
+  86957, // 11.5 kHz
+  83333, // 12 kHz
+  80000, // 12.5 kHz
+  76923, // 13 kHz
+  74074, // 13.5 kHz
 };
 
 //#define CARRIER_PERIOD_NS 250000 // 4khz

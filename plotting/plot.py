@@ -82,7 +82,7 @@ class BlitManager:
  
 DAC_SAMPLE_RATE = 32_000
 ADC_SAMPLE_RATE = 32_000
-PLOT_SAMPLES = 16_000
+PLOT_SAMPLES = 12_000
 PLOT_TIME = PLOT_SAMPLES / ADC_SAMPLE_RATE
 
 SYMBOL_PERIOD = 5e-3
@@ -177,6 +177,7 @@ ax_iq.grid(visible=True, which='major', axis='y')
 (ln_i,) = ax_iq.plot(x, np.zeros_like(x), animated=True, label='I')
 (ln_q,) = ax_iq.plot(x, np.zeros_like(x), animated=True, label='Q')
 (ln_p,) = ax_iq.plot(x, np.zeros_like(x), animated=True, label='P')
+ln_iq_samples = ax_iq.scatter(x, np.zeros_like(x), animated=True, label='Samples')
 ax_iq.legend()
 
 
@@ -217,7 +218,7 @@ freq_slider.on_changed(on_freq_change)
 #fig3, (ax_power) = plt.subplots(num=3)
 #(ln_power,) = ax_power.semilogy(x, np.ones_like(x))
 
-bm1 = BlitManager(fig1.canvas, [ln_sig, fr_number, ln_i, ln_q, ln_p])
+bm1 = BlitManager(fig1.canvas, [ln_sig, fr_number, ln_i, ln_q, ln_p, ln_iq_samples])
 bm2 = BlitManager(fig2.canvas, [ln_cons])
 #bm3 = BlitManager(fig3.canvas, [ln_power])
 # make sure our window is on the screen and drawn
@@ -234,7 +235,11 @@ plot_samples = np.zeros(PLOT_SAMPLES)
 
 POWER_WINDOW_SIZE = WINDOW_SIZE * 2
 
+SAMPLE_OFFSET = 40
+
 pow_data = np.zeros(PLOT_SAMPLES // POWER_WINDOW_SIZE)
+
+abc = 0
 
 l = 0
 while True:
@@ -247,9 +252,9 @@ while True:
         avg_power = 0.0
         for freq in CARRIER_FREQS:
             avg_power += np.average(np.abs(np.exp(1j * freq * 2.0 * math.pi * x) * samples))
-        
+
         if True:
-            if avg_power < 0.7:
+            if avg_power < 1.0:
             #if avg_power < 0.09:
                 print('found quiet')
                 break
@@ -271,7 +276,7 @@ while True:
         f = fft.fft(samples[i:i+64])
         for freq in CARRIER_FREQS:
             total_power += np.abs(f[round(freq / 500)])
-        if total_power > 5.0:
+        if total_power > 4.0:
             break
         i += 1
     
@@ -281,7 +286,11 @@ while True:
     _, samples2 = get_samples(i)
     samples = np.concatenate([samples[i:], samples2])
 
-    print(decode(samples, CARRIER_FREQS, ADC_SAMPLE_RATE, 5e-3, skip=2, sample_offset=10))
+    print(decode(samples, CARRIER_FREQS, ADC_SAMPLE_RATE, SYMBOL_PERIOD, skip=2, sample_offset=SAMPLE_OFFSET))
+
+    sample_times = symbol_sample_indices(len(samples), SYMBOL_PERIOD, ADC_SAMPLE_RATE, sample_offset=SAMPLE_OFFSET) / ADC_SAMPLE_RATE
+
+    print('SAMPLE TIMES: ', sample_times)
 
     iq_values = mix_and_filt(samples, CARRIER_FREQS, ADC_SAMPLE_RATE)
 
@@ -291,14 +300,16 @@ while True:
 
     #iq_lpf = iq_lpf * (np.exp(-1j * phase) * 4.0 / mag)
 
-    samples_per_symbol = int(5e-3 * ADC_SAMPLE_RATE)
-
-    adjusts = 4.0 / iq_values[:,int(samples_per_symbol*2-10)]
+    adjusts = 4.0 / iq_values[:,int(SAMPLES_PER_SYMBOL*2-SAMPLE_OFFSET)]
     freq_idx = CARRIER_FREQS.index(MONITOR_FREQ)
 
     cons_points = iq_values * adjusts.reshape((len(CARRIER_FREQS), 1))
 
-    cons_samples = cons_points[freq_idx,samples_per_symbol*(2+1) - 10::samples_per_symbol].copy()
+    cons_samples = cons_points[freq_idx,SAMPLES_PER_SYMBOL*(2+1) - SAMPLE_OFFSET::SAMPLES_PER_SYMBOL].copy()
+
+    sample_times = sample_times.reshape((len(sample_times), 1))
+
+    ln_iq_samples.set_offsets(np.concatenate([sample_times, np.zeros((len(sample_times), 1))], axis=1))
 
     # update the artists
     #ln.set_xdata(x)
