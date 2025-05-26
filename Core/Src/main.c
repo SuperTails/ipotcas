@@ -274,8 +274,8 @@ int main(void)
     }
 
     ++calls;
-    transmit_task(&hdac);
-    //receive_task();
+    //transmit_task(&hdac);
+    receive_task();
     //ethernet_task();
     tud_task();
   }

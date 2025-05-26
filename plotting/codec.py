@@ -368,7 +368,8 @@ def decode(sig, freqs, sample_rate, symbol_period, skip, sample_offset=40):
 #CARRIER_FREQS = [4.5e3, 5e3, 5.5e3, 6e3, 6.5e3, 7e3, 7.5e3, 8e3]
 #CARRIER_FREQS = [1.0e3, 1.5e3, 2.0e3, 2.5e3, 3.0e3, 3.5e3, 7.5e3, 8e3]
 #CARRIER_FREQS = [4.0e3, 4.5e3, 5.0e3, 5.5e3, 6.0e3, 6.5e3, 7.0e3, 7.5e3]
-CARRIER_FREQS = [8.0e3, 8.5e3, 9.0e3, 9.5e3, 10.0e3, 10.5e3, 11.0e3, 11.5e3, 12e3, 12.5e3, 13e3, 13.5e3]
+#CARRIER_FREQS = [8.0e3, 8.5e3, 9.0e3, 9.5e3, 10.0e3, 10.5e3, 11.0e3, 11.5e3, 12e3, 12.5e3, 13e3, 13.5e3]
+CARRIER_FREQS = [8.0e3, 8.5e3, 9.0e3, 9.5e3, 10.0e3, 10.5e3, 11.0e3, 11.5e3]
 #CARRIER_FREQS = [10.0e3, 10.5e3, 11.0e3, 11.5e3, 12e3, 12.5e3, 13e3, 13.5e3]
 #CARRIER_FREQS = [4.5e3]
 

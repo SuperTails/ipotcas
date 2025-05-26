@@ -4,7 +4,7 @@
 //#define SAMPLE_PERIOD_NS 62500 // 16khz
 #define SAMPLE_PERIOD_NS 31250 // 32khz
 
-#define CARRIERS 12
+#define CARRIERS 8
 
 static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
    8000,

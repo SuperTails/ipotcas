@@ -268,9 +268,8 @@ int current_dac_value(transmitter_t *t) {
         // *4096:  12-bit DAC
         // /128:   convert cos/sin to -1 to 1
         // /16:    scale down (2*) -4 to 4 range
-        amp *= 1 << 12;
-        amp *= 2;
-        amp /= 128 * 16 * CARRIERS;
+        amp *= 1 << 8;
+        amp /= 128 * CARRIERS;
         amp += 2048;
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
 

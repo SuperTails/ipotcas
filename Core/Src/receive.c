@@ -10,7 +10,9 @@
 #include <math.h>
 #include <stdint.h>
 
-#define SAMPLE_BUF_SZ 64
+#define WINDOW_SIZE 64
+
+#define SAMPLE_BUF_SZ (WINDOW_SIZE)
 
 #define RAD_PER_SAMPLE(i) (2.0 * M_PI * SAMPLE_PERIOD_NS / CARRIER_PERIODS_NS[i])
 
@@ -172,16 +174,17 @@ typedef struct {
     trellis_t trellis;
     float phase_adj;
     float mag_adj;
+    float i_adj;
+    float q_adj;
 } carrier_t;
 
 carrier_t carriers[CARRIERS];
   
-int16_t sample_buf[SAMPLE_BUF_SZ] __ALIGNED(4);
+int16_t sample_buf[SAMPLE_BUF_SZ] __ALIGNED(4) = { 0 };
 int sample_buf_head = 0;
 int quiet_time = 0;
 int samples = 0;
 int next_symbol_time = 0;
-bool new_data = false;
 
 extern DAC_HandleTypeDef hdac;
 
@@ -228,6 +231,13 @@ void init_coeff_buf(carrier_t *c, int i) {
     }
 }
 
+float min_power = INFINITY;
+float filt_power = 0.0;
+
+int32_t b_i_accum[CARRIERS] = { 0 };
+int32_t b_q_accum[CARRIERS] = { 0 };
+int prev_sample_buf_head = 0;
+
 void receive_init(void) {
     HAL_ADC_Start_IT(&hadc1);
     for (int i = 0; i < CARRIERS; ++i) {
@@ -235,47 +245,34 @@ void receive_init(void) {
     }
 }
 
-float min_power = INFINITY;
-float filt_power = 0.0;
-
 void receive_task(void) {
-    if (!new_data) {
+    if (prev_sample_buf_head == sample_buf_head) {
         return;
     }
+    prev_sample_buf_head = sample_buf_head;
 
-
-    new_data = false;
-
-    static int abc = 0;
-    ++abc;
-
-    /*if (abc % 1000 == 0) {
-        printf("logf %d\n", (int)(logf(filt_power) * 100.0));
-    }*/
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
 
     bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
     bool data_sample = (quiet_time < SAMPLES_PER_SYMBOL / 4 && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time));
 
+    float c_pwr[CARRIERS] = { 0.0 };
+
+    // copy into tmp buffer to make sure we don't get new data halfway through
+    int32_t bia[CARRIERS];
+    int32_t bqa[CARRIERS];
+    memcpy(bia, b_i_accum, sizeof(bia));
+    memcpy(bqa, b_q_accum, sizeof(bqa));
+
     float total_power = 0.0;
-
-    int32_t sample_buf2[SAMPLE_BUF_SZ/2];
-    memcpy(sample_buf2, sample_buf, sizeof(sample_buf));
-
     for (int c = 0; c < CARRIERS; ++c) {
-        // this block takes like 10us
-        int32_t b_i_int = 0;
-        int32_t b_q_int = 0;
-
-        for (int k = 0; k < SAMPLE_BUF_SZ; k += 2) {
-            b_i_int = smlad(*(int32_t *)&carriers[c].cos_buf[k], sample_buf2[k/2], b_i_int);
-            b_q_int = smlad(*(int32_t *)&carriers[c].sin_buf[k], sample_buf2[k/2], b_q_int);
-        }
-
-        float b_i = b_i_int * (3.3 / (2048 * 4096 * SAMPLE_BUF_SZ));
-        float b_q = b_q_int * (3.3 / (2048 * 4096 * SAMPLE_BUF_SZ));
+        float b_i = bia[c] * (3.3 / (256 * 4096 * WINDOW_SIZE));
+        float b_q = bqa[c] * (3.3 / (256 * 4096 * WINDOW_SIZE));
 
         float b_mag_sq = (b_i * b_i + b_q * b_q);
         if (training_sample) {
+            carriers[c].i_adj =  4.0f * b_i / b_mag_sq;
+            carriers[c].q_adj = -4.0f * b_q / b_mag_sq;
             //gpio_put(1, true);
             carriers[c].phase_adj -= atan2(b_q, b_i);
             init_coeff_buf(&carriers[c], c);
@@ -283,14 +280,15 @@ void receive_task(void) {
             //gpio_put(1, false);
         }
 
+        c_pwr[c] = b_mag_sq;
+
         total_power += b_mag_sq;
 
-        b_i *= carriers[c].mag_adj;
-        b_q *= carriers[c].mag_adj;
+        //b_i *= carriers[c].mag_adj;
+        //b_q *= carriers[c].mag_adj;
 
-        /*if (abc % 10000 == 0) {
-            printf("%d %d\n", b_i_int, b_q_int);
-        }*/
+        float b_i_adj = b_i * carriers[c].i_adj - b_q * carriers[c].q_adj;
+        float b_q_adj = b_i * carriers[c].q_adj + b_q * carriers[c].i_adj;
 
         if (data_sample) {
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
@@ -299,8 +297,8 @@ void receive_task(void) {
             int best_q = 0;
             float best_dist = INFINITY;
             for (int i = 0; i < 32; ++i) { 
-                float i_dist = b_i - SYMBOL_TO_CONSTELLATION_I[i];
-                float q_dist = b_q - SYMBOL_TO_CONSTELLATION_Q[i];
+                float i_dist = b_i_adj - SYMBOL_TO_CONSTELLATION_I[i];
+                float q_dist = b_q_adj - SYMBOL_TO_CONSTELLATION_Q[i];
                 float dist = i_dist * i_dist + q_dist * q_dist;
                 if (dist < best_dist) {
                     best_dist = dist;
@@ -309,44 +307,46 @@ void receive_task(void) {
                 }
             }
 
-            bool phase_changed = false;
+            float b_mag = sqrtf(b_i_adj * b_i_adj + b_q_adj * b_q_adj);
+            float new_i =  (carriers[c].i_adj * b_i_adj + carriers[c].q_adj * b_q_adj) / b_mag;
+            float new_q =  (carriers[c].q_adj * b_i_adj - carriers[c].i_adj * b_q_adj) / b_mag;
+
             if (best_i == 1 && best_q == 0) {
-                carriers[c].phase_adj -= signed_angle_diff(atan2(b_q, b_i), 0.0f) * 0.2f;
-                phase_changed = true;
-            } else if (best_i == 0 && best_q == 1) {
-                carriers[c].phase_adj -= signed_angle_diff(atan2(b_q, b_i), M_PI_2) * 0.2f;
-                phase_changed = true;
+                carriers[c].i_adj =  new_i;
+                carriers[c].q_adj =  new_q;
             } else if (best_i == -1 && best_q == 0) {
-                carriers[c].phase_adj -= signed_angle_diff(atan2(b_q, b_i), M_PI) * 0.2f;
-                phase_changed = true;
+                carriers[c].i_adj = -new_i;
+                carriers[c].q_adj = -new_q;
+            }
+
+            #if 0
+            else if (best_i == 0 && best_q == 1) {
+                carriers[c].i_adj =  new_q;
+                carriers[c].q_adj = -new_i;
             } else if (best_i == 0 && best_q == -1) {
-                carriers[c].phase_adj -= signed_angle_diff(atan2(b_q, b_i), -M_PI_2) * 0.2f;
-                phase_changed = true;
+                carriers[c].i_adj = -new_q;
+                carriers[c].q_adj =  new_i;
             }
-
-            if (phase_changed) {
-                init_coeff_buf(&carriers[c], c);
-                //printf("phase adj: %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj));
-            }
-
+                #endif
 
             //printf("%d: %2d %2d %d %d\n", c, best_i, best_q, (int)(b_i * 1000), (int)(b_q * 1000));
             //my_printf("%f,%f\n", mag_adj * b_i1, mag_adj * b_q1);
 
-            int s = trellis_push_head(&carriers[c].trellis, b_i, b_q);
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
+
+            int s = trellis_push_head(&carriers[c].trellis, b_i_adj, b_q_adj);
             if (s >= 0) {
                 rx_stream_push(&rxs, s);
             }
-
-            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
     }
 
     filt_power = filt_power * 0.5 + total_power * 0.5;
 
-    HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 100.0 + 4096));
-    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 300.0 + 2048));
-
+    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)((b_i_accum[0] >> 10) + 2048));
+    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 500.0 + 4096));
+    HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(total_power * 1e5));
+    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, total_power2 / CARRIERS / 2);
 
     if ((quiet_time < SAMPLES_PER_SYMBOL / 2) && samples > 2 * SAMPLES_PER_SYMBOL) {
         if (samples >= next_symbol_time) {
@@ -397,10 +397,10 @@ void receive_task(void) {
     }
 
     if (filt_power < 1e-3) {
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
+        //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
         ++quiet_time;
     } else {
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
+        //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
             // we just started a new transmission, sample as late as possible
             samples = 0;
@@ -414,20 +414,31 @@ void receive_task(void) {
         }
         quiet_time = 0;
     }
+
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
+
+int startup_samples = 96;
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
     (void)hadc;
-    uint16_t adc_val = HAL_ADC_GetValue(&hadc1);
-    sample_buf[sample_buf_head++] = adc_val;
-    if (sample_buf_head >= SAMPLE_BUF_SZ) sample_buf_head = 0;
-    new_data = true;
+
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
+
+    int16_t adc_val = HAL_ADC_GetValue(&hadc1);
     ++samples;
 
-    if (sample_buf_head == 0) {
+    for (int c = 0; c < CARRIERS; ++c) {
+        int ang = sample_buf_head * (SAMPLE_PERIOD_NS * (CARRIER_FREQUENCIES_HZ[c] / 100)) / (10000000 / 256);
+        b_i_accum[c] += icos(ang) * (adc_val - sample_buf[sample_buf_head]);
+        b_q_accum[c] += isin(ang) * (adc_val - sample_buf[sample_buf_head]);
+    }
+    sample_buf[sample_buf_head++] = adc_val;
+
+    if (sample_buf_head >= SAMPLE_BUF_SZ) {
+        sample_buf_head = 0;
         tud_cdc_write(sample_buf, sizeof(sample_buf));
     }
 
-    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, adc_val);
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
 }
-
