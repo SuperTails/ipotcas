@@ -4,20 +4,19 @@ from matplotlib.widgets import Slider
 import numpy as np
 import time
 import math
+from threading import Thread
+from queue import Queue
 from plotutil import *
 from numpy import fft
 from scipy import signal
 from codec import *
 
-PLOT_SAMPLES = 32_000
+PLOT_SAMPLES = 16_000
 PLOT_TIME = PLOT_SAMPLES / ADC_SAMPLE_RATE
 
-SYMBOL_PERIOD = 5e-3
 SAMPLES_PER_SYMBOL = int(SYMBOL_PERIOD * ADC_SAMPLE_RATE)
 
 x = np.linspace(0.0, PLOT_SAMPLES / ADC_SAMPLE_RATE, PLOT_SAMPLES, endpoint=False)
-
-p = WaveSource('/dev/tty.usbmodem1401', in_rate=ADC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
 
 i_correct = []
 q_correct = []
@@ -86,7 +85,8 @@ bm2 = BlitManager(fig2.canvas, [ln_cons])
 plt.show(block=False)
 plt.pause(.1)
 
-p = WaveSource('/dev/tty.usbmodem1401', in_rate=ADC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
+#p = WaveSource('/dev/tty.usbmodem1401', in_rate=ADC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
+p = WaveSource('/dev/tty.usbmodem1303', in_rate=DAC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
 
 t = time.perf_counter()
 
@@ -95,47 +95,76 @@ plot_samples = np.zeros(PLOT_SAMPLES)
 
 POWER_WINDOW_SIZE = WINDOW_SIZE * 2
 
-SAMPLE_OFFSET = 50
+SAMPLE_OFFSET = 30
 
 pow_data = np.zeros(PLOT_SAMPLES // POWER_WINDOW_SIZE)
 
 abc = 0
 
+SEARCH_SAMPLES = 32_000
+
+t_start, samples = p.get_samples(SEARCH_SAMPLES)
+
+segment_queue = Queue()
+
+def get_segments():
+    samples = np.array([0.0])
+
+    def refill_buffer():
+        nonlocal samples
+        while len(samples) < SEARCH_SAMPLES:
+            _, new_samples = p.get_samples(SEARCH_SAMPLES)
+            samples = np.concatenate([samples, new_samples], axis=0)
+
+    while True:
+        refill_buffer()
+
+        print('S: ', samples.shape)
+
+        iq_values = mix_and_filt(samples, CARRIER_FREQS, ADC_SAMPLE_RATE)
+        pwr = np.sum(np.square(np.absolute(iq_values)), axis=0)
+
+        pwr_thresh = pwr < 1e-9
+        pwr_thresh[:100] = False
+
+        (quiet_indices,) = np.nonzero(pwr_thresh)
+
+        first_quiet = quiet_indices[0]
+        print('FIRST QUIET: ', first_quiet / ADC_SAMPLE_RATE)
+
+        samples = samples[first_quiet:]
+
+        refill_buffer()
+
+        iq_values = mix_and_filt(samples, CARRIER_FREQS, ADC_SAMPLE_RATE)
+        pwr = np.sum(np.square(np.absolute(iq_values)), axis=0)
+
+        #pwr_thresh2 = pwr > 1e-3
+        pwr_thresh2 = pwr > 1e-4
+        (loud_indices,) = np.nonzero(pwr_thresh2)
+        first_loud = loud_indices[0]
+
+        samples = samples[first_loud:]
+
+        segment_queue.put(samples[:PLOT_SAMPLES])
+        samples = samples[PLOT_SAMPLES:]
+
+segment_thread = Thread(target=get_segments)
+segment_thread.start()
+
 l = 0
 while True:
     k = 0
 
-    SEARCH_SAMPLES = 64_000
+    samples = segment_queue.get()
 
-    t, samples = p.get_samples(SEARCH_SAMPLES)
-    x = np.linspace(t, t + SEARCH_SAMPLES, SEARCH_SAMPLES, endpoint=False) / ADC_SAMPLE_RATE
+    plot_samples = samples[:PLOT_SAMPLES]
 
-    iq_values = mix_and_filt(samples, CARRIER_FREQS, ADC_SAMPLE_RATE)
-    print('SHAPE: ', iq_values.shape)
-    pwr = np.sum(np.square(np.absolute(iq_values)), axis=0)
+    print('SAMP SHAPE: ', plot_samples.shape, samples.shape)
 
-    pwr_thresh = pwr < 1e-4
-    pwr_thresh[:100] = False
+    #print(decode(plot_samples, CARRIER_FREQS, ADC_SAMPLE_RATE, SYMBOL_PERIOD, skip=2, sample_offset=SAMPLE_OFFSET))
 
-    (quiet_indices,) = np.nonzero(pwr_thresh)
-    first_quiet = quiet_indices[0]
-    print('FIRST QUIET: ', first_quiet / ADC_SAMPLE_RATE)
-
-    samples = samples[first_quiet:]
-    iq_values = iq_values[:,first_quiet:]
-    pwr = pwr[first_quiet:]
-
-    pwr_thresh2 = pwr > 1e-2
-    (loud_indices,) = np.nonzero(pwr_thresh2)
-    first_loud = loud_indices[0]
-
-    samples = samples[first_loud:first_loud+PLOT_SAMPLES]
-    iq_values = iq_values[:,first_loud:first_loud+PLOT_SAMPLES]
-    pwr = pwr[first_loud:first_loud+PLOT_SAMPLES]
-
-    print(decode(samples, CARRIER_FREQS, ADC_SAMPLE_RATE, SYMBOL_PERIOD, skip=2, sample_offset=SAMPLE_OFFSET))
-
-    sample_times = symbol_sample_indices(len(samples), SYMBOL_PERIOD, ADC_SAMPLE_RATE, sample_offset=SAMPLE_OFFSET) / ADC_SAMPLE_RATE
+    sample_times = symbol_sample_indices(len(plot_samples), SYMBOL_PERIOD, ADC_SAMPLE_RATE, sample_offset=SAMPLE_OFFSET) / ADC_SAMPLE_RATE
 
     print('SAMPLE TIMES: ', sample_times)
 
@@ -145,6 +174,8 @@ while True:
 
     #iq_lpf = iq_lpf * (np.exp(-1j * phase) * 4.0 / mag)
 
+    iq_values = mix_and_filt(plot_samples, CARRIER_FREQS, ADC_SAMPLE_RATE)
+    pwr = np.sum(np.square(np.absolute(iq_values)), axis=0)
     adjusts = 4.0 / iq_values[:,int(SAMPLES_PER_SYMBOL*2-SAMPLE_OFFSET)]
     #adjusts = np.array([4.0 + 0j for _ in range(len(CARRIER_FREQS))])
     freq_idx = CARRIER_FREQS.index(MONITOR_FREQ)
@@ -159,15 +190,16 @@ while True:
 
     # update the artists
     #ln.set_xdata(x)
-    ln_sig.set_ydata(samples)
+    ln_sig.set_ydata(plot_samples)
     ln_i.set_ydata(np.real(cons_points[freq_idx]))
     ln_q.set_ydata(np.imag(cons_points[freq_idx]))
     # From https://stackoverflow.com/questions/38900344/convert-complex-numpy-array-into-n-2-array-of-real-and-imaginary-parts
     ln_cons.set_offsets(cons_samples.view(float).reshape(-1, 2))
-    ln_p.set_ydata(pwr * 1e2)
+    ln_p.set_ydata(pwr * 1e4)
     fr_number.set_text(f"time: {t / ADC_SAMPLE_RATE}")
     # tell the blitting manager to do its thing
     bm1.update()
     bm2.update()
+
 
     t3 = time.perf_counter()

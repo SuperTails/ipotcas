@@ -1,11 +1,15 @@
 import numpy as np
+import time
+from threading import Thread, Lock
+import queue
+from queue import Queue
 from serial import Serial
 from scipy import signal
 from codec import *
 
 DAC_SAMPLE_RATE = 100_000
 ADC_SAMPLE_RATE = 32_000
-SYMBOL_PERIOD = 5e-3
+SYMBOL_PERIOD = 4e-3
 
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
@@ -86,29 +90,50 @@ class WaveSource:
         self.out_rate = out_rate
         self.sample_buf = np.array([0.0])
         self.sample_idx = 0
+        self.sample_queue = Queue()
+        self.read_thread = Thread(target=self._read_port)
+        self.read_thread.start()
+    
+    def _read_port(self):
+        count = 2000
+        block_size = count * self.in_rate // self.out_rate
+        while True:
+            d = self.port.read(block_size * 2)
+            if d[1] > 16:
+                print(f'Skipping byte! {d[0]} {d[1]} {d[2]}')
+                d = d[1:] + self.port.read(1)
+            samples = np.array([(int.from_bytes(d[i:i+2], 'little') - 2048.0) / 2048.0 for i in range(0, len(d), 2)])
+            samples = signal.resample(samples, count)
+            self.sample_queue.put(samples)
 
-    def refill_buf(self):
+    def refill_buf(self, callback=None):
         count = 2000
 
+        s = time.perf_counter()
+
         raw_count = count * self.in_rate // self.out_rate
-        d = p.read(raw_count * 2)
-        if p.in_waiting > count:
+        d = b''
+        while len(d) < raw_count * 2:
+            l = min(raw_count * 2 - len(d), self.port.in_waiting)
+            d += self.port.read(l)
+            if callback is not None:
+                callback()
+        if self.port.in_waiting > count:
             print('FALLING BEHIND!')
-        if d[1] > 16:
-            print(f'Skipping byte! {d[0]} {d[1]} {d[2]}')
-            d = d[1:] + p.read(1)
-        samples = np.array([(int.from_bytes(d[i:i+2], 'little') - 2048.0) / 2048.0 for i in range(0, len(d), 2)])
-        samples = signal.resample(samples, count)
-        self.sample_buf = np.concatenate([self.sample_buf, samples])
+
+        print(raw_count / (time.perf_counter() - s), ' samples per s')
 
     
-    def get_samples(self, count):
+    def get_samples(self, count, callback=None):
         while len(self.sample_buf) < count:
-            self.refill_buf()
+            try:
+                while True:
+                    new_samples = self.sample_queue.get_nowait()
+                    self.sample_buf = np.concatenate([self.sample_buf, new_samples])
+            except queue.Empty:
+                pass
 
         result = (self.sample_idx, self.sample_buf[:count])
         self.sample_buf = self.sample_buf[count:]
         self.sample_idx += count
         return result
-
-p = Serial('/dev/tty.usbmodem1401', 115200)

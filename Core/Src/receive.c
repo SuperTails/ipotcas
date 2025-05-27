@@ -169,11 +169,7 @@ int trellis_push_head(trellis_t *t, float i_pt, float q_pt) {
 }
 
 typedef struct {
-    int16_t cos_buf[SAMPLE_BUF_SZ] __ALIGNED(4);
-    int16_t sin_buf[SAMPLE_BUF_SZ] __ALIGNED(4);
     trellis_t trellis;
-    float phase_adj;
-    float mag_adj;
     float i_adj;
     float q_adj;
 } carrier_t;
@@ -224,13 +220,6 @@ float signed_angle_diff(float lhs, float rhs) {
 }
 
 
-void init_coeff_buf(carrier_t *c, int i) {
-    for (int k = 0; k < SAMPLE_BUF_SZ; ++k) {
-        c->cos_buf[k] = cos(RAD_PER_SAMPLE(i) * k + c->phase_adj) * 2048;
-        c->sin_buf[k] = sin(RAD_PER_SAMPLE(i) * k + c->phase_adj) * 2048;
-    }
-}
-
 float min_power = INFINITY;
 float filt_power = 0.0;
 
@@ -240,9 +229,6 @@ int prev_sample_buf_head = 0;
 
 void receive_init(void) {
     HAL_ADC_Start_IT(&hadc1);
-    for (int i = 0; i < CARRIERS; ++i) {
-        init_coeff_buf(&carriers[i], i);
-    }
 }
 
 void receive_task(void) {
@@ -271,13 +257,10 @@ void receive_task(void) {
 
         float b_mag_sq = (b_i * b_i + b_q * b_q);
         if (training_sample) {
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
             carriers[c].i_adj =  4.0f * b_i / b_mag_sq;
             carriers[c].q_adj = -4.0f * b_q / b_mag_sq;
-            //gpio_put(1, true);
-            carriers[c].phase_adj -= atan2(b_q, b_i);
-            init_coeff_buf(&carriers[c], c);
-            carriers[c].mag_adj = 4.0 / sqrt(b_mag_sq);
-            //gpio_put(1, false);
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
 
         c_pwr[c] = b_mag_sq;
@@ -311,6 +294,7 @@ void receive_task(void) {
             float new_i =  (carriers[c].i_adj * b_i_adj + carriers[c].q_adj * b_q_adj) / b_mag;
             float new_q =  (carriers[c].q_adj * b_i_adj - carriers[c].i_adj * b_q_adj) / b_mag;
 
+            #if 0
             if (best_i == 1 && best_q == 0) {
                 carriers[c].i_adj =  new_i;
                 carriers[c].q_adj =  new_q;
@@ -319,7 +303,6 @@ void receive_task(void) {
                 carriers[c].q_adj = -new_q;
             }
 
-            #if 0
             else if (best_i == 0 && best_q == 1) {
                 carriers[c].i_adj =  new_q;
                 carriers[c].q_adj = -new_i;
@@ -369,20 +352,32 @@ void receive_task(void) {
         }
 
         if (rxs.len > 0) {
-            printf("RX: ");
-            for (int i = 0; i < rxs.len; ++i) {
+            uint16_t exp_len = (rxs.data[1] << 8) | rxs.data[0];
+            printf("RX (%u %u): ", exp_len, rxs.len - 2);
+            if (rxs.len < exp_len + 2 + 8) {
+                rxs.len = exp_len + 2;
+            }
+
+            for (size_t i = 2; i < rxs.len; ++i) {
                 printf("%c", rxs.data[i]);
             }
             printf("\n");
             int l = (rxs.len < expected_len) ? rxs.len : expected_len;
             int byt_errors = 0;
+            int first_err = -1;
             int err_dist[CARRIERS] = { 0 };
-            for (int i = 0; i < 2*l; ++i) {
-                if ((rxs.data[i/2] ^ expected_data[i/2]) & (0xF << (4 * (i % 2)))) {
+            for (int i = 4; i < 2*l; ++i) {
+                int mask = (0xF << (4 * (i % 2)));
+                int errs = (rxs.data[i/2] ^ expected_data[(i-4)/2]) & mask;
+                if (errs) {
+                    if (first_err == -1) {
+                        first_err = i;
+                    }
                     ++err_dist[i % CARRIERS];
                     ++byt_errors;
                 }
             }
+            printf("%d %d: ", 2*l/CARRIERS, first_err);
             for (int i = 0; i < CARRIERS; ++i) {
                 printf("%d ", err_dist[i]);
             }
@@ -396,7 +391,7 @@ void receive_task(void) {
         }
     }
 
-    if (filt_power < 1e-3) {
+    if (filt_power < 0.5e-3) {
         //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
         ++quiet_time;
     } else {
@@ -417,6 +412,7 @@ void receive_task(void) {
 
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
+
 
 int startup_samples = 96;
 

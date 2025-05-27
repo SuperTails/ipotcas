@@ -107,11 +107,13 @@ size_t sym_len = 539;
 typedef struct {
     size_t idx;
     int hi;
+    int len_bytes;
 } tx_bitstream_t;
 
 void txbs_reload_data(tx_bitstream_t *s) {
     s->idx = 0;
     s->hi = false;
+    s->len_bytes = 0;
 }
 
 bool txbs_data_exhausted(const tx_bitstream_t *s) {
@@ -121,6 +123,16 @@ bool txbs_data_exhausted(const tx_bitstream_t *s) {
 int txbs_munch_symbol(tx_bitstream_t *s) {
     if (s->idx >= sym_len) {
         return 0;
+    } else if (s->len_bytes < 2) {
+        int len_byte = sym_len >> (8 * s->len_bytes);
+        if (s->hi) {
+            s->hi = false;
+            ++s->len_bytes;
+            return (len_byte >> 4) & 0xF;
+        } else {
+            s->hi = true;
+            return len_byte & 0xF;
+        }
     } else if (s->hi) {
         s->hi = false;
         return (sym_data[s->idx++] >> 4) & 0xF;
@@ -278,8 +290,8 @@ int current_dac_value(transmitter_t *t) {
 }
 
 static int tx_update(transmitter_t *tx) {
-    if (tx->current_micros > tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
-        HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_1);
+    if (tx->current_micros >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         tx->cur_symbol_center += SYMBOL_PERIOD_US;
         ++tx->cur_symbol; if (tx->cur_symbol >= HISTORY) tx->cur_symbol = 0;
 
@@ -297,6 +309,7 @@ static int tx_update(transmitter_t *tx) {
         } else {
             txcs_munch_period(&tx->cs, tx->mod[tx->cur_symbol]);
         }
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
     }
 
     tx->current_micros += DAC_PERIOD_US;
@@ -372,9 +385,9 @@ void transmit_task(DAC_HandleTypeDef *hdac) {
         bool dma_which = (hdac->DMA_Handle1->Instance->CR & DMA_SxCR_CT) != 0;
         if (dma_which == dac_dma_which) {
             if (dac_dma_which) {
-                tud_cdc_write(dac_dma_buf_b, sizeof(dac_dma_buf_b));
+                tud_cdc_n_write(1, dac_dma_buf_b, sizeof(dac_dma_buf_b));
             } else {
-                tud_cdc_write(dac_dma_buf_a, sizeof(dac_dma_buf_a));
+                tud_cdc_n_write(1, dac_dma_buf_a, sizeof(dac_dma_buf_a));
             }
             // DMA is now using the buffer we just filled, start filling the one it just emptied
             dac_dma_which = !dac_dma_which;

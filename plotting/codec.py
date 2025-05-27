@@ -350,7 +350,8 @@ def decode(sig, freqs, sample_rate, symbol_period, skip, sample_offset=40):
     iq_filt = mix_and_filt(sig, freqs, sample_rate)
 
     adjusts = 4.0 / iq_filt[:,samples_per_symbol*skip-sample_offset]
-    print('Adjustments: ', np.abs(adjusts) / np.min(np.abs(adjusts)))
+    print('Adjustment mags: ', np.abs(adjusts) / np.min(np.abs(adjusts)))
+    print('Adjustment phases: ', [math.degrees(r) for r in np.angle(adjusts)])
 
     #samp_x = []
     #for x in range(symbols):
