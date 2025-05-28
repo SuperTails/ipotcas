@@ -100,47 +100,56 @@ double fast_sin(double rad) {
 const void *current_packet = NULL;
 //const uint8_t *sym_data = NULL;
 //size_t sym_len = 0;
-const char *sym_data = "Somebody once told me the world is gonna roll me / I ain't the sharpest tool in the shed / She was looking kind of dumb with her finger and her thumb / In the shape of an \"L\" on her forehead / Well, the years start comin' and they don't stop comin' / Fed to the rules and I hit the ground runnin' / Didn't make sense not to live for fun / Your brain gets smart but your head gets dumb / So much to do, so much to see / So what's wrong with taking the backstreets? / You'll never know if you don't go / You'll never shine if you don't glow";
-size_t sym_len = 539;
+const char *sym_data =
+    "Somebody once told me the world is gonna roll me / "
+    "I ain't the sharpest tool in the shed / "
+    "She was looking kind of dumb with her finger and her thumb / "
+    "In the shape of an \"L\" on her forehead / "
+    "Well, the years start comin' and they don't stop comin' / "
+    "Fed to the rules and I hit the ground runnin' / "
+    "Didn't make sense not to live for fun / "
+    "Your brain gets smart but your head gets dumb / "
+    "So much to do, so much to see / "
+    "So what's wrong with taking the backstreets? / "
+    "You'll never know if you don't go / "
+    "You'll never shine if you don't glow / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(And all that glitters is gold) / "
+    "Only shootin' stars break the mold";
+size_t sym_len = 725;
 //const char *sym_data = "Hello, world!\n";
 //size_t sym_len = 15;
 
 typedef struct {
     size_t idx;
-    int hi;
+    uint32_t buf;
+    int bits;
     int len_bytes;
 } tx_bitstream_t;
 
 void txbs_reload_data(tx_bitstream_t *s) {
     s->idx = 0;
-    s->hi = false;
-    s->len_bytes = 0;
+    s->buf = sym_len;
+    s->bits = 16;
 }
 
 bool txbs_data_exhausted(const tx_bitstream_t *s) {
-    return s->idx >= sym_len;
+    return s->idx >= sym_len && s->bits == 0;
 }
 
-int txbs_munch_symbol(tx_bitstream_t *s) {
-    if (s->idx >= sym_len) {
-        return 0;
-    } else if (s->len_bytes < 2) {
-        int len_byte = sym_len >> (8 * s->len_bytes);
-        if (s->hi) {
-            s->hi = false;
-            ++s->len_bytes;
-            return (len_byte >> 4) & 0xF;
-        } else {
-            s->hi = true;
-            return len_byte & 0xF;
-        }
-    } else if (s->hi) {
-        s->hi = false;
-        return (sym_data[s->idx++] >> 4) & 0xF;
-    } else {
-        s->hi = true;
-        return sym_data[s->idx] & 0xF;
+int txbs_munch_bits(tx_bitstream_t *s, int num_bits) {
+    while (num_bits > s->bits && s->idx < sym_len) {
+        s->buf |= sym_data[s->idx++] << s->bits;
+        s->bits += 8;
     }
+
+    int result = s->buf & ((1 << num_bits) - 1);
+    s->buf >>= num_bits;
+    s->bits = (s->bits > num_bits) ? (s->bits - num_bits) : 0;
+    return result;
 }
 
 typedef struct {
@@ -181,9 +190,17 @@ void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
             mod[i].i = 0; mod[i].q = 0;
         }
     } else {
+        int symbols[CARRIERS] = { 0 };
+
+        for (int b = 0; b < 4; ++b) {
+            int stripe = txbs_munch_bits(&tx->bs, CARRIERS);
+            for (int c = 0; c < CARRIERS; ++c) {
+                symbols[c] |= ((stripe >> c) & 1) << b;
+            }
+        }
+
         for (int i = 0; i < CARRIERS; ++i) {
-            int symbol = txbs_munch_symbol(&tx->bs);
-            encoder_enc(&tx->enc[i], symbol, &mod[i].i, &mod[i].q);
+            encoder_enc(&tx->enc[i], symbols[i], &mod[i].i, &mod[i].q);
         }
     }
 }
@@ -273,7 +290,8 @@ int current_dac_value(transmitter_t *t) {
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
         for (int i = 0; i < CARRIERS; ++i) {
             int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
-            amp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], amp);
+            int32_t tmp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], 0);
+            if (i == 6) { amp += tmp * 2; } else { amp += tmp; }
         }
         // amp is now in 12.20 fixed-point
 

@@ -193,6 +193,28 @@ typedef struct {
     uint8_t data[RX_STREAM_SIZE];
 } rx_stream_t;
 
+static void rx_push_bitstring(rx_stream_t *rxs, int value, int num_bits) {
+    rxs->next_byte |= (value << rxs->bits);
+    rxs->bits += num_bits;
+    while (rxs->bits >= 8) {
+        if (rxs->len < RX_STREAM_SIZE) {
+            rxs->data[rxs->len++] = rxs->next_byte & 0xFF;
+        }
+        rxs->next_byte >>= 8;
+        rxs->bits -= 8;
+    }
+
+}
+
+void rx_stream_push_block(rx_stream_t *rxs, int symbols[CARRIERS]) {
+    for (int b = 0; b < 4; ++b) {
+        for (int c = 0; c < CARRIERS; ++c) {
+            rx_push_bitstring(rxs, (symbols[c] >> b) & 0x1, 1);
+        }
+    }
+}
+
+
 void rx_stream_push(rx_stream_t *rxs, int symbol) {
     rxs->next_byte |= (symbol << rxs->bits);
     rxs->bits += BITS_PER_SYMBOL;
@@ -248,16 +270,15 @@ void receive_task(void) {
 
     if (data_sample_ready) {
         data_sample_ready = false;
+        int symbols[CARRIERS] = { 0 };
+        bool symbols_valid = false;
         for (int c = 0; c < CARRIERS; ++c) {
             float b_i_adj = data_b_i[c] * carriers[c].i_adj - data_b_q[c] * carriers[c].q_adj;
             float b_q_adj = data_b_i[c] * carriers[c].q_adj + data_b_q[c] * carriers[c].i_adj;
 
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
-            int s = trellis_push_head(&carriers[c].trellis, b_i_adj, b_q_adj);
-            if (s >= 0) {
-                rx_stream_push(&rxs, s);
-            }
+            symbols[c] = trellis_push_head(&carriers[c].trellis, b_i_adj, b_q_adj);
 
             #if 0
             float b_mag = sqrtf(b_i_adj * b_i_adj + b_q_adj * b_q_adj);
@@ -283,30 +304,34 @@ void receive_task(void) {
 
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
+
+        if (symbols[0] >= 0) {
+            rx_stream_push_block(&rxs, symbols);
+        }
     }
 
     if (frame_finished) {
         frame_finished = false;
 
-        int done = 0;
-        while (!done) {
+        while (1) {
+            int symbols[CARRIERS] = { 0 };
             for (int c = 0; c < CARRIERS; ++c) {
-                int s = trellis_pop_tail(&carriers[c].trellis);
-                if (s < 0) {
-                    done = 1;
-                    break;
-                }
-
-                rx_stream_push(&rxs, s);
+                symbols[c] = trellis_pop_tail(&carriers[c].trellis);
             }
+
+            if (symbols[0] < 0) {
+                break;
+            }
+
+            rx_stream_push_block(&rxs, symbols);
         }
 
         if (rxs.len > 0) {
             uint16_t exp_len = (rxs.data[1] << 8) | rxs.data[0];
             printf("RX (%u %u): ", exp_len, rxs.len - 2);
-            if (rxs.len < exp_len + 2 + 8) {
+            /*if (rxs.len < exp_len + 2 + 8) {
                 rxs.len = exp_len + 2;
-            }
+            }*/
 
             for (size_t i = 2; i < rxs.len; ++i) {
                 printf("%c", rxs.data[i]);
