@@ -3,6 +3,7 @@
 #include "modulation.h"
 #include "ethernet.h"
 #include "stm32f7xx_hal.h"
+#include "stm32f7xx_hal_dma.h"
 #include "tusb.h"
 #include "stm32f7xx_hal_dac.h"
 #include "stm32f7xx_hal_dma_ex.h"
@@ -269,7 +270,7 @@ int current_dac_value(transmitter_t *t) {
 
         // TODO: Manually const-fold math on CARRIER_FREQUENCIES_HZ
 
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
         for (int i = 0; i < CARRIERS; ++i) {
             int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
             amp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], amp);
@@ -283,7 +284,7 @@ int current_dac_value(transmitter_t *t) {
         amp *= 1 << 8;
         amp /= 128 * CARRIERS;
         amp += 2048;
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
+        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
 
         return amp;
     }
@@ -291,7 +292,6 @@ int current_dac_value(transmitter_t *t) {
 
 static int tx_update(transmitter_t *tx) {
     if (tx->current_micros >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
         tx->cur_symbol_center += SYMBOL_PERIOD_US;
         ++tx->cur_symbol; if (tx->cur_symbol >= HISTORY) tx->cur_symbol = 0;
 
@@ -309,7 +309,6 @@ static int tx_update(transmitter_t *tx) {
         } else {
             txcs_munch_period(&tx->cs, tx->mod[tx->cur_symbol]);
         }
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
     }
 
     tx->current_micros += DAC_PERIOD_US;
@@ -366,43 +365,36 @@ void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
 }
 #endif
 
-
-//const char sym_data[] = "Hello, world!\n";
-
 #define TX_SAMPLES_PER_SYMBOL (SYMBOL_PERIOD_US / DAC_PERIOD_US)
 
-bool dac_dma_which = 1;
-int dac_dma_head = 0;
-uint16_t dac_dma_buf_a[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
-uint16_t dac_dma_buf_b[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
+static uint16_t dac_dma_buf_a[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
+static uint16_t dac_dma_buf_b[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 
-transmitter_t TRANSMITTER;
+static transmitter_t TRANSMITTER;
+
+void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
+    (void)dma;
+
+    // buffer A just finished being read from, refill it
+    for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
+        uint16_t value = tx_update(&TRANSMITTER);
+        dac_dma_buf_a[i] = value;
+    }
+    tud_cdc_n_write(1, dac_dma_buf_a, sizeof(dac_dma_buf_a));
+}
+
+void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
+    (void)dma;
+
+    // buffer B just finished being read from, refill it
+    for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
+        uint16_t value = tx_update(&TRANSMITTER);
+        dac_dma_buf_b[i] = value;
+    }
+    tud_cdc_n_write(1, dac_dma_buf_b, sizeof(dac_dma_buf_b));
+}
 
 void transmit_task(DAC_HandleTypeDef *hdac) {
-    if (dac_dma_head >= TX_SAMPLES_PER_SYMBOL) {
-        // we've filled up our buffer as much as possible,
-        // wait for DMA to finish the one it is using...
-        bool dma_which = (hdac->DMA_Handle1->Instance->CR & DMA_SxCR_CT) != 0;
-        if (dma_which == dac_dma_which) {
-            if (dac_dma_which) {
-                tud_cdc_n_write(1, dac_dma_buf_b, sizeof(dac_dma_buf_b));
-            } else {
-                tud_cdc_n_write(1, dac_dma_buf_a, sizeof(dac_dma_buf_a));
-            }
-            // DMA is now using the buffer we just filled, start filling the one it just emptied
-            dac_dma_which = !dac_dma_which;
-            dac_dma_head = 0;
-        }
-    } else {
-        uint16_t value = tx_update(&TRANSMITTER);
-        if (dac_dma_which) {
-            dac_dma_buf_b[dac_dma_head++] = value;
-        } else {
-            dac_dma_buf_a[dac_dma_head++] = value;
-        }
-    }
-    
-    //HAL_DAC_SetValue(hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
 }
 
 HAL_StatusTypeDef transmit_init(DAC_HandleTypeDef *hdac) {
@@ -418,13 +410,8 @@ HAL_StatusTypeDef transmit_init(DAC_HandleTypeDef *hdac) {
     hdac->State = HAL_DAC_STATE_BUSY;
 
     /* Set the DMA transfer complete callback for channel1 */
-    hdac->DMA_Handle1->XferCpltCallback = DAC_DMAConvCpltCh1;
-
-    /* Set the DMA half transfer complete callback for channel1 */
-    hdac->DMA_Handle1->XferHalfCpltCallback = DAC_DMAHalfConvCpltCh1;
-
-    /* Set the DMA error callback for channel1 */
-    hdac->DMA_Handle1->XferErrorCallback = DAC_DMAErrorCh1;
+    hdac->DMA_Handle1->XferCpltCallback = DMA_DAC_M0_Cplt;
+    hdac->DMA_Handle1->XferM1CpltCallback = DMA_DAC_M1_Cplt;
 
     /* Enable the selected DAC channel1 DMA request */
     SET_BIT(hdac->Instance->CR, DAC_CR_DMAEN1);
@@ -436,7 +423,7 @@ HAL_StatusTypeDef transmit_init(DAC_HandleTypeDef *hdac) {
     __HAL_DAC_ENABLE_IT(hdac, DAC_IT_DMAUDR1);
 
     /* Enable the DMA Stream */
-    status = HAL_DMAEx_MultiBufferStart(hdac->DMA_Handle1, (uint32_t)dac_dma_buf_a, tmpreg, (uint32_t)dac_dma_buf_b, TX_SAMPLES_PER_SYMBOL);
+    status = HAL_DMAEx_MultiBufferStart_IT(hdac->DMA_Handle1, (uint32_t)dac_dma_buf_a, tmpreg, (uint32_t)dac_dma_buf_b, TX_SAMPLES_PER_SYMBOL);
 
     /* Process Unlocked */
     __HAL_UNLOCK(hdac);

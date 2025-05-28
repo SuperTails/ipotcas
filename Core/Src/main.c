@@ -177,6 +177,10 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
+  // FIXME: Can't configure this in stm32cubemx for some reason?
+  // Refilling the tx buffer is a very long process but not very latency-sensitive
+  // so it gets a lower priority to allow the ADC interrupt to preempt it
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 2, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -219,82 +219,51 @@ float signed_angle_diff(float lhs, float rhs) {
     return fmod(lhs - rhs + 3.0 * M_PI, 2.0 * M_PI) - M_PI;
 }
 
-
-float min_power = INFINITY;
-float filt_power = 0.0;
-
-int32_t b_i_accum[CARRIERS] = { 0 };
-int32_t b_q_accum[CARRIERS] = { 0 };
-int prev_sample_buf_head = 0;
+bool frame_finished = false;
+bool data_sample_ready = false;
+float data_b_i[CARRIERS];
+float data_b_q[CARRIERS];
 
 void receive_init(void) {
     HAL_ADC_Start_IT(&hadc1);
 }
 
-void receive_task(void) {
-    if (prev_sample_buf_head == sample_buf_head) {
-        return;
+static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
+    float best_dist = INFINITY;
+    for (int i = 0; i < 32; ++i) { 
+        float i_dist = b_i - SYMBOL_TO_CONSTELLATION_I[i];
+        float q_dist = b_q - SYMBOL_TO_CONSTELLATION_Q[i];
+        float dist = i_dist * i_dist + q_dist * q_dist;
+        if (dist < best_dist) {
+            best_dist = dist;
+            *best_i = SYMBOL_TO_CONSTELLATION_I[i];
+            *best_q = SYMBOL_TO_CONSTELLATION_Q[i];
+        }
     }
-    prev_sample_buf_head = sample_buf_head;
+}
 
+
+void receive_task(void) {
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
 
-    bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
-    bool data_sample = (quiet_time < SAMPLES_PER_SYMBOL / 4 && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time));
+    if (data_sample_ready) {
+        data_sample_ready = false;
+        for (int c = 0; c < CARRIERS; ++c) {
+            float b_i_adj = data_b_i[c] * carriers[c].i_adj - data_b_q[c] * carriers[c].q_adj;
+            float b_q_adj = data_b_i[c] * carriers[c].q_adj + data_b_q[c] * carriers[c].i_adj;
 
-    float c_pwr[CARRIERS] = { 0.0 };
-
-    // copy into tmp buffer to make sure we don't get new data halfway through
-    int32_t bia[CARRIERS];
-    int32_t bqa[CARRIERS];
-    memcpy(bia, b_i_accum, sizeof(bia));
-    memcpy(bqa, b_q_accum, sizeof(bqa));
-
-    float total_power = 0.0;
-    for (int c = 0; c < CARRIERS; ++c) {
-        float b_i = bia[c] * (3.3 / (256 * 4096 * WINDOW_SIZE));
-        float b_q = bqa[c] * (3.3 / (256 * 4096 * WINDOW_SIZE));
-
-        float b_mag_sq = (b_i * b_i + b_q * b_q);
-        if (training_sample) {
-            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
-            carriers[c].i_adj =  4.0f * b_i / b_mag_sq;
-            carriers[c].q_adj = -4.0f * b_q / b_mag_sq;
-            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
-        }
-
-        c_pwr[c] = b_mag_sq;
-
-        total_power += b_mag_sq;
-
-        //b_i *= carriers[c].mag_adj;
-        //b_q *= carriers[c].mag_adj;
-
-        float b_i_adj = b_i * carriers[c].i_adj - b_q * carriers[c].q_adj;
-        float b_q_adj = b_i * carriers[c].q_adj + b_q * carriers[c].i_adj;
-
-        if (data_sample) {
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
-            int best_i = 0;
-            int best_q = 0;
-            float best_dist = INFINITY;
-            for (int i = 0; i < 32; ++i) { 
-                float i_dist = b_i_adj - SYMBOL_TO_CONSTELLATION_I[i];
-                float q_dist = b_q_adj - SYMBOL_TO_CONSTELLATION_Q[i];
-                float dist = i_dist * i_dist + q_dist * q_dist;
-                if (dist < best_dist) {
-                    best_dist = dist;
-                    best_i = SYMBOL_TO_CONSTELLATION_I[i];
-                    best_q = SYMBOL_TO_CONSTELLATION_Q[i];
-                }
+            int s = trellis_push_head(&carriers[c].trellis, b_i_adj, b_q_adj);
+            if (s >= 0) {
+                rx_stream_push(&rxs, s);
             }
 
+            #if 0
             float b_mag = sqrtf(b_i_adj * b_i_adj + b_q_adj * b_q_adj);
             float new_i =  (carriers[c].i_adj * b_i_adj + carriers[c].q_adj * b_q_adj) / b_mag;
             float new_q =  (carriers[c].q_adj * b_i_adj - carriers[c].i_adj * b_q_adj) / b_mag;
 
-            #if 0
             if (best_i == 1 && best_q == 0) {
                 carriers[c].i_adj =  new_i;
                 carriers[c].q_adj =  new_q;
@@ -310,34 +279,15 @@ void receive_task(void) {
                 carriers[c].i_adj = -new_q;
                 carriers[c].q_adj =  new_i;
             }
-                #endif
-
-            //printf("%d: %2d %2d %d %d\n", c, best_i, best_q, (int)(b_i * 1000), (int)(b_q * 1000));
-            //my_printf("%f,%f\n", mag_adj * b_i1, mag_adj * b_q1);
+            #endif
 
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
-
-            int s = trellis_push_head(&carriers[c].trellis, b_i_adj, b_q_adj);
-            if (s >= 0) {
-                rx_stream_push(&rxs, s);
-            }
         }
     }
 
-    filt_power = filt_power * 0.5 + total_power * 0.5;
+    if (frame_finished) {
+        frame_finished = false;
 
-    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)((b_i_accum[0] >> 10) + 2048));
-    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(logf(filt_power) * 500.0 + 4096));
-    HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(total_power * 1e5));
-    //HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, total_power2 / CARRIERS / 2);
-
-    if ((quiet_time < SAMPLES_PER_SYMBOL / 2) && samples > 2 * SAMPLES_PER_SYMBOL) {
-        if (samples >= next_symbol_time) {
-            next_symbol_time += SAMPLES_PER_SYMBOL;
-        }
-    }
-
-    if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
         int done = 0;
         while (!done) {
             for (int c = 0; c < CARRIERS; ++c) {
@@ -391,36 +341,18 @@ void receive_task(void) {
         }
     }
 
-    if (filt_power < 0.5e-3) {
-        //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
-        ++quiet_time;
-    } else {
-        //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
-        if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
-            // we just started a new transmission, sample as late as possible
-            samples = 0;
-            // TODO: Don't hardcode this to expect 2 symbol period training
-            next_symbol_time = (SAMPLES_PER_SYMBOL * 23 / 8);
-            rx_stream_reset(&rxs);
-            printf("START\n");
-            for (int i = 0; i < CARRIERS; ++i) {
-                trellis_reset(&carriers[i].trellis);
-            }
-        }
-        quiet_time = 0;
-    }
-
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
 
+static int32_t b_i_accum[CARRIERS] = { 0 };
+static int32_t b_q_accum[CARRIERS] = { 0 };
 
-int startup_samples = 96;
+static float filt_power = 0.0;
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-    (void)hadc;
-
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
 
+    (void)hadc;
     int16_t adc_val = HAL_ADC_GetValue(&hadc1);
     ++samples;
 
@@ -431,10 +363,68 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
     }
     sample_buf[sample_buf_head++] = adc_val;
 
+    bool data_sample = quiet_time < SAMPLES_PER_SYMBOL / 4 && (samples > 2 * SAMPLES_PER_SYMBOL) && (samples >= next_symbol_time);
+    if (data_sample) {
+        data_sample_ready = true;
+    }
+
     if (sample_buf_head >= SAMPLE_BUF_SZ) {
         sample_buf_head = 0;
         tud_cdc_write(sample_buf, sizeof(sample_buf));
     }
 
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
+
+    bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
+
+    float total_power = 0.0f;
+    for (int c = 0; c < CARRIERS; ++c) {
+        float b_i = b_i_accum[c] * (3.3 / (256 * 4096 * WINDOW_SIZE));
+        float b_q = b_q_accum[c] * (3.3 / (256 * 4096 * WINDOW_SIZE));
+
+        float b_mag_sq = (b_i * b_i + b_q * b_q);
+        total_power += b_mag_sq;
+
+        if (training_sample) {
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
+            carriers[c].i_adj =  4.0f * b_i / b_mag_sq;
+            carriers[c].q_adj = -4.0f * b_q / b_mag_sq;
+            HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
+        }
+
+        if (data_sample) {
+            data_b_i[c] = b_i;
+            data_b_q[c] = b_q;
+        }
+    }
+    filt_power = filt_power * 0.5 + total_power * 0.5;
+    HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (int)(total_power * 1e5));
+
+    if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
+        frame_finished = true;
+    }
+
+    if ((quiet_time < SAMPLES_PER_SYMBOL / 2) && samples > 2 * SAMPLES_PER_SYMBOL) {
+        if (samples >= next_symbol_time) {
+            next_symbol_time += SAMPLES_PER_SYMBOL;
+        }
+    }
+
+    if (filt_power < 0.5e-3) {
+        ++quiet_time;
+    } else {
+        if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
+            // we just started a new transmission, sample as late as possible
+            samples = 0;
+            // TODO: Don't hardcode this to expect 2 symbol period training
+            next_symbol_time = (SAMPLES_PER_SYMBOL * 23 / 8);
+            rx_stream_reset(&rxs);
+            for (int i = 0; i < CARRIERS; ++i) {
+                trellis_reset(&carriers[i].trellis);
+            }
+        }
+        quiet_time = 0;
+    }
+
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
