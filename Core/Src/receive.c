@@ -367,8 +367,15 @@ void receive_task(void) {
         }
 
         if (rxs.len > 0) {
-            uint16_t exp_len = (rxs.data[1] << 8) | rxs.data[0];
-            printf("RX (%u %u): ", exp_len, rxs.len - 2);
+            int exp_len = (rxs.data[1] << 8) | rxs.data[0];
+            int len_diff = exp_len - (int)rxs.len - 2;
+            if (-20 <= len_diff && len_diff <= 20) {
+                rxs.len = exp_len + 2;
+                ethernet_send_packet(rxs.data+2, exp_len);
+                printf("RX (%u %u): ", exp_len, rxs.len - 2);
+            } else {
+                printf("BAD LEN");
+            }
             /*if (rxs.len < exp_len + 2 + 8) {
                 rxs.len = exp_len + 2;
             }*/
@@ -401,7 +408,6 @@ void receive_task(void) {
                 printf("byt errors: %d\n", byt_errors);
             }*/
             //printf("phase adj: %d %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj), (int)(1000.0 * (carriers[1].phase_adj - carriers[0].phase_adj)));
-            ethernet_send_packet(rxs.data, rxs.len);
             rx_stream_reset(&rxs);
             rxh_reset(&rxh);
         }
