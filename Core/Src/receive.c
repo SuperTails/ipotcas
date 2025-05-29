@@ -171,8 +171,7 @@ int trellis_push_head(trellis_t *t, float i_pt, float q_pt) {
 
 typedef struct {
     trellis_t trellis;
-    float i_adj;
-    float q_adj;
+    complexf_t adj;
 } carrier_t;
 
 carrier_t carriers[CARRIERS];
@@ -299,7 +298,7 @@ static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
 
 
 void receive_task(void) {
-    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
 
     if (frame_started) {
         frame_started = false;
@@ -313,38 +312,38 @@ void receive_task(void) {
         data_sample_ready = false;
         int symbols[CARRIERS] = { 0 };
         bool symbols_valid = false;
+        float avg_drift = 0.0f;
+        complexf_t diff2;
         for (int c = 0; c < CARRIERS; ++c) {
-            float b_i_adj = data_b_i[c] * carriers[c].i_adj - data_b_q[c] * carriers[c].q_adj;
-            float b_q_adj = data_b_i[c] * carriers[c].q_adj + data_b_q[c] * carriers[c].i_adj;
-
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
-            symbols[c] = trellis_push_head(&carriers[c].trellis, b_i_adj, b_q_adj);
+            complexf_t b_raw = { data_b_i[c], data_b_q[c] };
+            complexf_t b_adj = complexf_mul(b_raw, carriers[c].adj);
 
-            #if 0
-            float b_mag = sqrtf(b_i_adj * b_i_adj + b_q_adj * b_q_adj);
-            float new_i =  (carriers[c].i_adj * b_i_adj + carriers[c].q_adj * b_q_adj) / b_mag;
-            float new_q =  (carriers[c].q_adj * b_i_adj - carriers[c].i_adj * b_q_adj) / b_mag;
+            symbols[c] = trellis_push_head(&carriers[c].trellis, b_adj.re, b_adj.im);
 
-            if (best_i == 1 && best_q == 0) {
-                carriers[c].i_adj =  new_i;
-                carriers[c].q_adj =  new_q;
-            } else if (best_i == -1 && best_q == 0) {
-                carriers[c].i_adj = -new_i;
-                carriers[c].q_adj = -new_q;
-            }
+            int i_int, q_int;
+            find_best_iq(b_adj.re, b_adj.im, &i_int, &q_int);
+            complexf_t best_iq = { i_int, q_int };
+            complexf_t diff = complexf_div(b_adj, best_iq);
 
-            else if (best_i == 0 && best_q == 1) {
-                carriers[c].i_adj =  new_q;
-                carriers[c].q_adj = -new_i;
-            } else if (best_i == 0 && best_q == -1) {
-                carriers[c].i_adj = -new_q;
-                carriers[c].q_adj =  new_i;
-            }
-            #endif
+            diff2 = diff;
+
+            avg_drift += -atan2f(diff.im, diff.re) / (CARRIER_FREQUENCIES_HZ[c] * CARRIERS);
 
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
+
+        for (int c = 0; c < CARRIERS; ++c) {
+            complexf_t phase_adj;
+            phase_adj.re = cosf(avg_drift * CARRIER_FREQUENCIES_HZ[c]);
+            phase_adj.im = sinf(avg_drift * CARRIER_FREQUENCIES_HZ[c]);
+            carriers[c].adj = complexf_mul(carriers[c].adj, phase_adj);
+        }
+
+        /*if (rxs.len == 0) {
+            printf("dr %d %d %d\n", (int)(avg_drift * 1e6), (int)(diff2.re * 1e6), (int)(diff2.im * 1e6));
+        }*/
 
         if (symbols[0] >= 0) {
             rxh_push_block(&rxs, &rxh, symbols);
@@ -408,7 +407,7 @@ void receive_task(void) {
         }
     }
 
-    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
 
 static int32_t b_i_accum[CARRIERS] = { 0 };
@@ -453,8 +452,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 
         if (training_sample) {
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
-            carriers[c].i_adj =  4.0f * b_i / b_mag_sq;
-            carriers[c].q_adj = -4.0f * b_q / b_mag_sq;
+            carriers[c].adj.re =  4.0f * b_i / b_mag_sq;
+            carriers[c].adj.im = -4.0f * b_q / b_mag_sq;
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
 

@@ -119,8 +119,32 @@ const char *sym_data =
     "Hey now, you're a rock star / "
     "Get your show on, get paid / "
     "(And all that glitters is gold) / "
-    "Only shootin' stars break the mold";
-size_t sym_len = 725;
+    "Only shootin' stars break the mold / "
+    "It's a cool place, and they say it gets colder / "
+    "You're bundled up now, wait 'til you get older / "
+    "But the meteor men beg to differ / "
+    "Judging by the hole in the satellite picture / "
+    "The ice we skate is gettin' pretty thin / "
+    "The waters gettin' warm so you might as well swim / "
+    "My world's on fire, how 'bout yours? / "
+    "That's the way I like it and I'll never get bored / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(All that glitters is gold) / "
+    "Only shootin' stars break the mold / "
+    "Go for the moon / "
+    "G-g-g-go for the moon / "
+    "Go for the moon / "
+    "Go-go-go for the moon / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(All that glitters is gold)";
+
+size_t sym_len = 1507;
 //const char *sym_data = "Hello, world!\n";
 //size_t sym_len = 15;
 

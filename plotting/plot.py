@@ -55,7 +55,7 @@ fr_number = ax_sig.annotate(
     animated=True,
 )
 
-TEST_DATA = (725).to_bytes(2, 'little') + b''.join([
+TEST_DATA = (1507).to_bytes(2, 'little') + b''.join([
     b"Somebody once told me the world is gonna roll me / ",
     b"I ain't the sharpest tool in the shed / ",
     b"She was looking kind of dumb with her finger and her thumb / ",
@@ -134,7 +134,7 @@ pow_data = np.zeros(PLOT_SAMPLES // POWER_WINDOW_SIZE)
 
 abc = 0
 
-SEARCH_SAMPLES = 40_000
+SEARCH_SAMPLES = 80_000
 
 t_start, samples = p.get_samples(SEARCH_SAMPLES)
 

@@ -123,6 +123,8 @@ extern int buffer_uses[8];
 extern int uart_rx_tail; // index that is being popped off
 extern uint8_t uart_rx_buf[1024];
 
+int hamming_corrections = 0;
+
 uint16_t adc_val;
 
 /* USER CODE END 0 */
@@ -274,7 +276,7 @@ int main(void)
 
     if (s != s2) {
       s = s2;
-      if (s2 != st) { printf("hewo %d %d\n", calls / (s2 - st), adc_val); }
+      if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), adc_val, hamming_corrections); }
     }
 
     ++calls;

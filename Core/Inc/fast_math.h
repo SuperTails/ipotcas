@@ -35,3 +35,34 @@ static inline int32_t smlad(int32_t lhs, int32_t rhs, int32_t acc) {
     return result;
 }
 
+typedef struct {
+    float re;
+    float im;
+} complexf_t;
+
+static inline complexf_t complexf_mul(complexf_t lhs, complexf_t rhs) {
+    // (a + bj) * (x + yj) 
+    // (ax - by) + (ay + bx)j
+
+    complexf_t dst;
+    dst.re = lhs.re * rhs.re - lhs.im * rhs.im;
+    dst.im = lhs.re * rhs.im + lhs.im * rhs.re;
+    return dst;
+}
+
+static inline complexf_t complexf_conj(complexf_t val) {
+   complexf_t dst;
+   dst.re =  val.re;
+   dst.im = -val.im;
+   return dst;
+}
+
+static inline complexf_t complexf_div(complexf_t lhs, complexf_t rhs) {
+    // (a + bj) / (x + yj)
+    // (a + bj) (x - yj) / ((x + yj) (x - yj))
+    float denom = rhs.re * rhs.re + rhs.im * rhs.im;
+    complexf_t dst = complexf_mul(lhs, complexf_conj(rhs));
+    dst.re /= denom;
+    dst.im /= denom;
+    return dst;
+}
