@@ -6,6 +6,8 @@
 
 #define CARRIERS 8
 
+static const int PILOT_FREQUENCY_HZ = 2000;
+
 static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
    8000,
    8500,

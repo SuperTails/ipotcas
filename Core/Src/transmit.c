@@ -2,6 +2,7 @@
 #include "fast_math.h"
 #include "modulation.h"
 #include "ethernet.h"
+#include "hamming.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dma.h"
 #include "tusb.h"
@@ -127,7 +128,6 @@ typedef struct {
     size_t idx;
     uint32_t buf;
     int bits;
-    int len_bytes;
 } tx_bitstream_t;
 
 void txbs_reload_data(tx_bitstream_t *s) {
@@ -153,7 +153,36 @@ int txbs_munch_bits(tx_bitstream_t *s, int num_bits) {
 }
 
 typedef struct {
+    uint32_t buf;
+    int bits;
+} tx_hamming_t;
+
+static void txhs_reload_data(tx_hamming_t *txh) {
+    txh->buf = 0;
+    txh->bits = 0;
+}
+
+static bool txhs_data_exhausted(const tx_bitstream_t *s, const tx_hamming_t *txh) {
+    return txbs_data_exhausted(s) && (txh->bits == 0);
+}
+
+static int txhs_munch_bits(tx_bitstream_t *s, tx_hamming_t *txh, int num_bits) {
+    while (num_bits > txh->bits) {
+        uint16_t val = txbs_munch_bits(s, 4);
+        uint16_t chunk = hamming_encode_7_4(val);
+        txh->buf |= chunk << txh->bits;
+        txh->bits += 7;
+    }
+
+    int result = txh->buf & ((1 << num_bits) - 1);
+    txh->buf >>= num_bits;
+    txh->bits = (txh->bits > num_bits) ? (txh->bits - num_bits) : 0;
+    return result;
+}
+
+typedef struct {
     tx_bitstream_t bs;
+    tx_hamming_t hs;
     encoder_t enc[CARRIERS];
     int train_periods;
     int gap_periods;
@@ -164,8 +193,9 @@ typedef struct __ALIGNED(4) {
     int16_t q;
 } mod_t;
 
-void txcs_reload_data(tx_cstream_t *tx) {
+static void txcs_reload_data(tx_cstream_t *tx) {
     txbs_reload_data(&tx->bs);
+    txhs_reload_data(&tx->hs);
     for (int i = 0; i < CARRIERS; ++i) {
         encoder_reset(&tx->enc[i]);
     }
@@ -174,17 +204,17 @@ void txcs_reload_data(tx_cstream_t *tx) {
     tx->gap_periods = SYMBOL_GAP_US / SYMBOL_PERIOD_US;
 }
 
-bool txcs_data_exhausted(const tx_cstream_t *tx) {
+static bool txcs_data_exhausted(const tx_cstream_t *tx) {
     return tx->gap_periods == 0;
 }
 
-void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
+static void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
     if (tx->train_periods > 0) {
         for (int i = 0; i < CARRIERS; ++i) {
             mod[i].i = 4; mod[i].q = 0;
         }
         --tx->train_periods;
-    } else if (txbs_data_exhausted(&tx->bs)) {
+    } else if (txhs_data_exhausted(&tx->bs, &tx->hs)) {
         if (tx->gap_periods > 0) --tx->gap_periods;
         for (int i = 0; i < CARRIERS; ++i) {
             mod[i].i = 0; mod[i].q = 0;
@@ -193,7 +223,7 @@ void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
         int symbols[CARRIERS] = { 0 };
 
         for (int b = 0; b < 4; ++b) {
-            int stripe = txbs_munch_bits(&tx->bs, CARRIERS);
+            int stripe = txhs_munch_bits(&tx->bs, &tx->hs, CARRIERS);
             for (int c = 0; c < CARRIERS; ++c) {
                 symbols[c] |= ((stripe >> c) & 1) << b;
             }
@@ -281,9 +311,10 @@ int current_dac_value(transmitter_t *t) {
 
     } else {
         int u = t->current_micros % 2000;
-        int32_t amp = 0;
 
         int ip0 = t->cur_symbol;
+
+        int32_t amp = 0;
 
         // TODO: Manually const-fold math on CARRIER_FREQUENCIES_HZ
 
@@ -291,8 +322,24 @@ int current_dac_value(transmitter_t *t) {
         for (int i = 0; i < CARRIERS; ++i) {
             int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
             int32_t tmp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], 0);
-            if (i == 6) { amp += tmp * 2; } else { amp += tmp; }
+            if (i == 2 || i == 6 || i == 7) { amp += tmp * 2; } else { amp += tmp; }
         }
+
+        int pilot_ang = u * (256 * PILOT_FREQUENCY_HZ / 100) / 10000;
+
+        #if 0
+        bool tx_active = false;
+        for (int i = 0; i < CARRIERS; ++i) {
+            if (t->mod[ip0][i].i != 0 || t->mod[ip0][i].q != 0) {
+                tx_active = true;
+                break;
+            }
+        }
+        if (tx_active) {
+            amp += icos(pilot_ang);
+        }
+        #endif
+
         // amp is now in 12.20 fixed-point
 
         // *2:     increase amplitude

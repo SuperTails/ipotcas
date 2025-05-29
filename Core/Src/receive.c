@@ -2,6 +2,7 @@
 #include "fast_math.h"
 #include "stm32f7xx_hal.h"
 #include "tusb.h"
+#include "hamming.h"
 #include "modulation.h"
 #include "ethernet.h"
 #include <stdio.h>
@@ -186,6 +187,7 @@ extern DAC_HandleTypeDef hdac;
 
 #define RX_STREAM_SIZE 1520
 
+
 typedef struct {
     size_t bits;
     size_t len;
@@ -206,7 +208,7 @@ static void rx_push_bitstring(rx_stream_t *rxs, int value, int num_bits) {
 
 }
 
-void rx_stream_push_block(rx_stream_t *rxs, int symbols[CARRIERS]) {
+static void rx_stream_push_block(rx_stream_t *rxs, int symbols[CARRIERS]) {
     for (int b = 0; b < 4; ++b) {
         for (int c = 0; c < CARRIERS; ++c) {
             rx_push_bitstring(rxs, (symbols[c] >> b) & 0x1, 1);
@@ -214,8 +216,7 @@ void rx_stream_push_block(rx_stream_t *rxs, int symbols[CARRIERS]) {
     }
 }
 
-
-void rx_stream_push(rx_stream_t *rxs, int symbol) {
+static void rx_stream_push(rx_stream_t *rxs, int symbol) {
     rxs->next_byte |= (symbol << rxs->bits);
     rxs->bits += BITS_PER_SYMBOL;
     if (rxs->bits >= 8) {
@@ -227,13 +228,44 @@ void rx_stream_push(rx_stream_t *rxs, int symbol) {
     }
 }
 
-void rx_stream_reset(rx_stream_t *rxs) {
+static void rx_stream_reset(rx_stream_t *rxs) {
     rxs->bits = 0;
     rxs->len = 0;
     rxs->next_byte = 0;
 }
 
-rx_stream_t rxs;
+typedef struct {
+    size_t bits;
+    uint32_t next_chunk;
+} rx_hamming_stream_t;
+
+static void rxh_push_bitstring(rx_stream_t *rxs, rx_hamming_stream_t *rxh, int value, int num_bits) {
+    rxh->next_chunk |= (value << rxh->bits);
+    rxh->bits += num_bits;
+    while (rxh->bits >= 7) {
+        uint16_t chunk = rxh->next_chunk & 0x7F;
+        rxh->next_chunk >>= 7;
+        rxh->bits -= 7;
+
+        rx_push_bitstring(rxs, hamming_decode_7_4(chunk), 4);
+    }
+}
+
+static void rxh_push_block(rx_stream_t *rxs, rx_hamming_stream_t *rxh, int symbols[CARRIERS]) {
+    for (int b = 0; b < 4; ++b) {
+        for (int c = 0; c < CARRIERS; ++c) {
+            rxh_push_bitstring(rxs, rxh, (symbols[c] >> b) & 0x1, 1);
+        }
+    }
+}
+
+static void rxh_reset(rx_hamming_stream_t *rxh) {
+    rxh->bits = 0;
+    rxh->next_chunk = 0;
+}
+
+rx_stream_t rxs = { 0 };
+rx_hamming_stream_t rxh = { 0 };
 
 extern ADC_HandleTypeDef hadc1;
 
@@ -241,6 +273,7 @@ float signed_angle_diff(float lhs, float rhs) {
     return fmod(lhs - rhs + 3.0 * M_PI, 2.0 * M_PI) - M_PI;
 }
 
+bool frame_started = false;
 bool frame_finished = false;
 bool data_sample_ready = false;
 float data_b_i[CARRIERS];
@@ -266,7 +299,15 @@ static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
 
 
 void receive_task(void) {
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
+    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
+
+    if (frame_started) {
+        frame_started = false;
+        rx_stream_reset(&rxs);
+        for (int i = 0; i < CARRIERS; ++i) {
+            trellis_reset(&carriers[i].trellis);
+        }
+    }
 
     if (data_sample_ready) {
         data_sample_ready = false;
@@ -306,7 +347,7 @@ void receive_task(void) {
         }
 
         if (symbols[0] >= 0) {
-            rx_stream_push_block(&rxs, symbols);
+            rxh_push_block(&rxs, &rxh, symbols);
         }
     }
 
@@ -323,7 +364,7 @@ void receive_task(void) {
                 break;
             }
 
-            rx_stream_push_block(&rxs, symbols);
+            rxh_push_block(&rxs, &rxh, symbols);
         }
 
         if (rxs.len > 0) {
@@ -363,10 +404,11 @@ void receive_task(void) {
             //printf("phase adj: %d %d %d\n", (int)(1000.0 * carriers[0].phase_adj), (int)(1000.0 * carriers[1].phase_adj), (int)(1000.0 * (carriers[1].phase_adj - carriers[0].phase_adj)));
             ethernet_send_packet(rxs.data, rxs.len);
             rx_stream_reset(&rxs);
+            rxh_reset(&rxh);
         }
     }
 
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
+    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
 
 static int32_t b_i_accum[CARRIERS] = { 0 };
@@ -398,7 +440,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
         tud_cdc_write(sample_buf, sizeof(sample_buf));
     }
 
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
 
     bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
 
@@ -439,17 +480,14 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
         ++quiet_time;
     } else {
         if (quiet_time > SAMPLES_PER_SYMBOL / 2) {
+            frame_started = true;
             // we just started a new transmission, sample as late as possible
             samples = 0;
             // TODO: Don't hardcode this to expect 2 symbol period training
             next_symbol_time = (SAMPLES_PER_SYMBOL * 23 / 8);
-            rx_stream_reset(&rxs);
-            for (int i = 0; i < CARRIERS; ++i) {
-                trellis_reset(&carriers[i].trellis);
-            }
         }
         quiet_time = 0;
     }
 
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
 }

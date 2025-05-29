@@ -7,6 +7,7 @@ from typing import Optional
 from numpy import fft
 from scipy import signal
 from dataclasses import dataclass
+from hamming import *
 
 def hamming_dist(lhs, rhs, num_bits):
     result = 0
@@ -128,8 +129,11 @@ class BitString:
             bits += 8
         return cls(data, bits)
     
-    def to_bytes(self):
-        assert self.bits % 8 == 0
+    def to_bytes(self, strict=True):
+        if strict:
+            assert self.bits % 8 == 0
+        elif self.bits % 8 != 0:
+            self.bits += 8 - (self.bits % 8)
         return self.data.to_bytes(self.bits // 8, 'little')
 
 
@@ -149,6 +153,21 @@ class BitString:
             self.bits = 0
         return result
    
+def hamming_encode_bs_7_4(bs: BitString):
+    bs = copy.copy(bs)
+    result = BitString(0, 0)
+    while bs.bits > 0:
+        result.push_msb(BitString(hamming_encode_7_4(bs.pop_lsb(4, strict=False)), 7))
+    return result
+
+def hamming_decode_bs_7_4(bs: BitString):
+    bs = copy.copy(bs)
+    result = BitString(0, 0)
+    while bs.bits > 0:
+        result.push_msb(BitString(hamming_decode_7_4(bs.pop_lsb(7, strict=False)), 4))
+    return result
+
+
 def raised_cos_filt(t, rolloff):
     if abs(t) < 1e-3:
         return 1.0
@@ -166,6 +185,8 @@ def bits_to_constellation(d, num_carriers, train_periods=2):
         d = copy.copy(d)
     else:
         raise Exception()
+    
+    d = hamming_encode_bs_7_4(d)
 
     num_symbols = math.ceil(d.bits / 4 / num_carriers)
 
@@ -178,9 +199,15 @@ def bits_to_constellation(d, num_carriers, train_periods=2):
 
     t = train_periods
     while d.bits > 0:
+        q1234 = [0 for _ in range(num_carriers)]
+        for b in range(4):
+            byt = d.pop_lsb(num_carriers, strict=False)
+            for f in range(num_carriers):
+                q1234[f] |= ((byt >> f) & 1) << b
+
         for f in range(num_carriers):
-            q34 = d.pop_lsb(2, strict=False)
-            q12 = d.pop_lsb(2, strict=False)
+            q12 = q1234[f] >> 2
+            q34 = q1234[f] & 0x3
 
             y12s[f] = diff_enc(y12s[f], q12)
             y0 = ccs[f].step(y12s[f])
@@ -332,9 +359,22 @@ def trellis_decode(samples):
             if s.bits == 0:
                 done = True
                 break
-            result.push_msb(BitString(s.pop_lsb(4), 4))
+            result.push_msb(BitString(s.pop_lsb(1), 1))
     
-    return result.to_bytes()
+    return hamming_decode_bs_7_4(result).to_bytes(strict=False)
+
+def nearest_iq(val):
+    best_dist = math.inf
+    best_iq = 0
+    for s in range(32):
+        re, im = SYMBOL_TO_CONSTELLATION[s]
+        pt = re + im * 1j
+        d = np.abs(pt - val)
+        if d < best_dist:
+            best_dist = d
+            best_iq = pt
+    return best_iq, best_dist
+
 
 def symbol_sample_indices(num_samples, symbol_period, sample_rate, sample_offset):
     samples_per_symbol = int(symbol_period * sample_rate)
@@ -363,6 +403,19 @@ def decode(sig, freqs, sample_rate, symbol_period, skip, sample_offset=40):
     q34_list = []
 
     samples = iq_filt[:,samples_per_symbol*(skip+1) - sample_offset::samples_per_symbol] * adjusts.reshape((len(freqs), 1))
+
+    phase_adj = np.zeros_like(samples, dtype=np.complex128)
+
+    avg_drift2 = 0.0
+    for i in range(samples.shape[1]):
+        samples[:,i] *= np.exp(-1j * avg_drift2 * np.array(CARRIER_FREQS))
+        avg_drift = 0.0
+        for f in range(samples.shape[0]):
+            iq, _ = nearest_iq(samples[f][i])
+            avg_drift += np.angle(samples[f][i] / iq) / CARRIER_FREQS[f] / len(CARRIER_FREQS)
+        avg_drift2 += avg_drift
+
+    #samples = samples * phase_adj
     
     return trellis_decode(samples)
     
