@@ -12,7 +12,7 @@ from numpy import fft
 from scipy import signal
 from codec import *
 
-PLOT_SAMPLES = 35_000
+PLOT_SAMPLES = 10_000
 PLOT_TIME = PLOT_SAMPLES / ADC_SAMPLE_RATE
 
 SAMPLES_PER_SYMBOL = int(SYMBOL_PERIOD * ADC_SAMPLE_RATE)
@@ -265,7 +265,7 @@ while True:
     ln_q.set_ydata(np.imag(cons_points[freq_idx]))
     # From https://stackoverflow.com/questions/38900344/convert-complex-numpy-array-into-n-2-array-of-real-and-imaginary-parts
     ln_cons.set_offsets(cons_samples[freq_idx].copy().view(float).reshape(-1, 2))
-    ln_cons_errs.set_segments(errs)
+    #ln_cons_errs.set_segments(errs)
     ln_p.set_ydata(pwr * 1e4)
     fr_number.set_text(f"time: {t / ADC_SAMPLE_RATE}")
     # tell the blitting manager to do its thing

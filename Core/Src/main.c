@@ -217,8 +217,13 @@ int main(void)
   extern uint64_t micros(void);
 
   // here so that it can actually print things
-  int ethernet_ok = ethernet_init();
-  (void)ethernet_ok;
+  for (int i = 0; i < 10; ++i) {
+    if (ethernet_init()) {
+      printf("ETHERNET OK\n");
+      break;
+    }
+    printf("ETHERNET FAILED\n");
+  }
 
   printf("filt %lx\n", heth.Instance->MACFFR);
   printf("eth %lx\n", heth.Instance->DMASR);
@@ -276,7 +281,7 @@ int main(void)
 
     if (s != s2) {
       s = s2;
-      if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), adc_val, hamming_corrections); }
+      if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections); }
     }
 
     ++calls;

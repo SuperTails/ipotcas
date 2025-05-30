@@ -298,7 +298,7 @@ static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
 
 
 void receive_task(void) {
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
+    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
 
     if (frame_started) {
         frame_started = false;
@@ -413,7 +413,7 @@ void receive_task(void) {
         }
     }
 
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
+    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 0);
 }
 
 static int32_t b_i_accum[CARRIERS] = { 0 };

@@ -391,10 +391,6 @@ static int tx_update(transmitter_t *tx) {
                 sym_data = NULL;
                 sym_len = 0;
             }
-
-            // TODO: Needs to be fixed for when ethernet is used
-            // because w/ ethernet we can't just reload immediately, we need idle time
-            txcs_reload_data(&tx->cs);
         } else {
             txcs_munch_period(&tx->cs, tx->mod[tx->cur_symbol]);
         }
@@ -437,6 +433,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 }
 #else
 
+static transmitter_t TRANSMITTER;
 
 bool transmit_ready(size_t len) {
     (void)len;
@@ -451,6 +448,8 @@ void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
     current_packet = pkt;
     sym_data = data;
     sym_len = len;
+
+    txcs_reload_data(&TRANSMITTER.cs);
 }
 #endif
 
@@ -459,7 +458,6 @@ void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
 static uint16_t dac_dma_buf_a[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 static uint16_t dac_dma_buf_b[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 
-static transmitter_t TRANSMITTER;
 
 void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
     (void)dma;

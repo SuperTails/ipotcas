@@ -132,7 +132,7 @@ void HAL_ETH_RxAllocateCallback(uint8_t **buff) {
     }
   }
   *buff = NULL;
-  printf("alloc fail\n");
+  //printf("alloc fail\n");
 }
 
 void HAL_ETH_RxLinkCallback(void **pStart, void **pEnd, uint8_t *buff, uint16_t Length) {
@@ -161,7 +161,7 @@ void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef * heth) {
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
   ETH_AppBuff *frame_Rx;
   if (HAL_ETH_ReadData(heth, (void **)&frame_Rx) != HAL_OK) {
-    printf("eth rx err\n");
+    //printf("eth rx err\n");
     return;
   }
 
@@ -175,12 +175,17 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef * heth) {
   }
   #else
   if (transmit_ready(frame_Rx->AppBuff.len)) {
-    printf("eth rx %lu\n", frame_Rx->AppBuff.len);
+    //printf("eth rx %lu\n", frame_Rx->AppBuff.len);
     transmit_send(frame_Rx, frame_Rx->buffer, frame_Rx->AppBuff.len);
   } else {
+    //printf("eth ov %lu\n", frame_Rx->AppBuff.len);
     ethernet_free_rx_buffer(frame_Rx);
   }
   #endif
+}
+
+void HAL_ETH_ErrorCallback(ETH_HandleTypeDef *heth) {
+  printf("DMA ERR\n");
 }
 
 extern UART_HandleTypeDef huart2;
