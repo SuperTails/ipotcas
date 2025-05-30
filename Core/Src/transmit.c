@@ -379,6 +379,8 @@ int current_dac_value(transmitter_t *t) {
     }
 }
 
+static bool transmit_pop_next(void);
+
 static int tx_update(transmitter_t *tx) {
     if (tx->current_micros >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
         tx->cur_symbol_center += SYMBOL_PERIOD_US;
@@ -391,6 +393,8 @@ static int tx_update(transmitter_t *tx) {
                 sym_data = NULL;
                 sym_len = 0;
             }
+
+            transmit_pop_next();
         } else {
             txcs_munch_period(&tx->cs, tx->mod[tx->cur_symbol]);
         }
@@ -407,51 +411,51 @@ static void tx_reset(transmitter_t *tx) {
     tx->current_micros = 0;
 }
 
-#if 0
-extern UART_HandleTypeDef huart2;
-
-volatile bool dma_ready = true;
-uint8_t dma_buffer[1524+3];
-
-bool transmit_ready(size_t len) {
-    return dma_ready;
-}
-
-void transmit_send(const uint8_t *data, size_t len) {
-    dma_buffer[0] = '%';
-    dma_buffer[1] = len & 0xFF;
-    dma_buffer[2] = (len >> 8) & 0xFF;
-    memcpy(dma_buffer+3, data, len);
-    HAL_UART_Transmit_DMA(&huart2, dma_buffer, len+3);
-    dma_ready = false;
-}
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart == &huart2) {
-        dma_ready = true;
-    }
-}
-#else
-
 static transmitter_t TRANSMITTER;
+
+typedef struct {
+    const void *pkt;
+    const uint8_t *data;
+    size_t len;
+} tx_packet_t;
+
+#define TX_PACKET_QUEUE_DEPTH 4
+
+struct {
+    tx_packet_t buf[TX_PACKET_QUEUE_DEPTH];
+    int head;
+    int tail;
+    int len;
+} TX_PACKET_QUEUE;
 
 bool transmit_ready(size_t len) {
     (void)len;
-    return current_packet == NULL;
+    return TX_PACKET_QUEUE.len < TX_PACKET_QUEUE_DEPTH;
 }
 
 void transmit_send(const void *pkt, const uint8_t *data, size_t len) {
-    if (current_packet) {
-        return;
+    tx_packet_t *entry = &TX_PACKET_QUEUE.buf[TX_PACKET_QUEUE.head++];
+    if (TX_PACKET_QUEUE.head >= TX_PACKET_QUEUE_DEPTH) TX_PACKET_QUEUE.head = 0;
+    entry->pkt = pkt;
+    entry->data = data;
+    entry->len = len;
+    ++TX_PACKET_QUEUE.len;
+}
+
+static bool transmit_pop_next(void) {
+    if (TX_PACKET_QUEUE.len == 0) {
+        return false;
     }
 
-    current_packet = pkt;
-    sym_data = data;
-    sym_len = len;
-
+    tx_packet_t *entry = &TX_PACKET_QUEUE.buf[TX_PACKET_QUEUE.tail++];
+    if (TX_PACKET_QUEUE.tail >= TX_PACKET_QUEUE_DEPTH) TX_PACKET_QUEUE.tail = 0;
+    current_packet = entry->pkt;
+    sym_data = entry->data;
+    sym_len = entry->len;
     txcs_reload_data(&TRANSMITTER.cs);
+    --TX_PACKET_QUEUE.len;
+    return true;
 }
-#endif
 
 #define TX_SAMPLES_PER_SYMBOL (SYMBOL_PERIOD_US / DAC_PERIOD_US)
 
