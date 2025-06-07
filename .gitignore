@@ -6,3 +6,4 @@ Core/Inc/Backup/
 build/
 .cache
 .vscode
+**/*.DS_Store

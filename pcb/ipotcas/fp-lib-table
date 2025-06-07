@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Barrel")(type "KiCad")(uri "${KIPRJMOD}/Custom/PJ-002B")(options "")(descr ""))
+  (lib (name "ScrewTerminal")(type "KiCad")(uri "${KIPRJMOD}/Custom/282837_2")(options "")(descr ""))
+)
