@@ -1,12 +1,13 @@
 #pragma once
 #include <stdint.h>
 
-//#define SAMPLE_PERIOD_NS 62500 // 16khz
-#define SAMPLE_PERIOD_NS 31250 // 32khz
+// 1 / (48 kHz) == 62500 ns / 3
+#define SAMPLE_PERIOD_NS_NUM 62500
+#define SAMPLE_PERIOD_NS_DEN 3
+
+#define SAMPLE_PERIOD_NS (SAMPLE_PERIOD_NS_NUM / SAMPLE_PERIOD_NS_DEN) 
 
 #define CARRIERS 8
-
-static const int PILOT_FREQUENCY_HZ = 2000;
 
 static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
    8000,

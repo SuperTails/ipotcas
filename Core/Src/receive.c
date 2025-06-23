@@ -1,6 +1,7 @@
 #include "receive.h"
 #include "fast_math.h"
 #include "stm32f7xx_hal.h"
+#include "stm32f7xx_hal_sai.h"
 #include "tusb.h"
 #include "hamming.h"
 #include "modulation.h"
@@ -11,7 +12,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#define WINDOW_SIZE 64
+#define WINDOW_SIZE 96
 
 #define SAMPLE_BUF_SZ (WINDOW_SIZE)
 
@@ -278,8 +279,66 @@ bool data_sample_ready = false;
 float data_b_i[CARRIERS];
 float data_b_q[CARRIERS];
 
-void receive_init(void) {
-    HAL_ADC_Start_IT(&hadc1);
+extern SAI_HandleTypeDef hsai_BlockB1;
+
+static void SAI_Receive_IT16Bit_2(SAI_HandleTypeDef *hsai);
+
+static uint32_t SAI_InterruptFlag2(const SAI_HandleTypeDef *hsai)
+{
+  uint32_t tmpIT = SAI_IT_OVRUDR;
+
+  tmpIT |= SAI_IT_FREQ;
+
+  if ((hsai->Init.Protocol == SAI_AC97_PROTOCOL) &&
+      ((hsai->Init.AudioMode == SAI_MODESLAVE_RX) || (hsai->Init.AudioMode == SAI_MODEMASTER_RX)))
+  {
+    tmpIT |= SAI_IT_CNRDY;
+  }
+
+  if ((hsai->Init.AudioMode == SAI_MODESLAVE_RX) || (hsai->Init.AudioMode == SAI_MODESLAVE_TX))
+  {
+    tmpIT |= SAI_IT_AFSDET | SAI_IT_LFSDET;
+  }
+  else
+  {
+    /* hsai has been configured in master mode */
+    tmpIT |= SAI_IT_WCKCFG;
+  }
+  return tmpIT;
+}
+
+int receive_init(void) {
+    SAI_HandleTypeDef *hsai = &hsai_BlockB1;
+
+    if (hsai->State != HAL_SAI_STATE_READY) {
+        printf("sai state is %d\n", hsai->State);
+        return HAL_BUSY;
+    }
+
+    /* Process Locked */
+    __HAL_LOCK(hsai);
+
+    hsai->pBuffPtr = NULL;
+    hsai->XferSize = 0;
+    hsai->XferCount = 0;
+    hsai->ErrorCode = HAL_SAI_ERROR_NONE;
+    hsai->State = HAL_SAI_STATE_BUSY_RX;
+
+    hsai->InterruptServiceRoutine = SAI_Receive_IT16Bit_2;
+
+    /* Enable TXE and OVRUDR interrupts */
+    __HAL_SAI_ENABLE_IT(hsai, SAI_InterruptFlag2(hsai));
+
+    /* Check if the SAI is already enabled */
+    if ((hsai->Instance->CR1 & SAI_xCR1_SAIEN) == RESET) {
+        /* Enable SAI peripheral */
+        __HAL_SAI_ENABLE(hsai);
+    }
+
+    /* Process Unlocked */
+    __HAL_UNLOCK(hsai);
+
+    return HAL_OK;
 }
 
 static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
@@ -421,15 +480,13 @@ static int32_t b_q_accum[CARRIERS] = { 0 };
 
 static float filt_power = 0.0;
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+static void handle_sample_interrupt(int16_t adc_val) {
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 1);
 
-    (void)hadc;
-    int16_t adc_val = HAL_ADC_GetValue(&hadc1);
     ++samples;
 
     for (int c = 0; c < CARRIERS; ++c) {
-        int ang = sample_buf_head * (SAMPLE_PERIOD_NS * (CARRIER_FREQUENCIES_HZ[c] / 100)) / (10000000 / 256);
+        int ang = sample_buf_head * (SAMPLE_PERIOD_NS_NUM * (CARRIER_FREQUENCIES_HZ[c] / 100)) / (10000000 / 256 * SAMPLE_PERIOD_NS_DEN);
         b_i_accum[c] += icos(ang) * (adc_val - sample_buf[sample_buf_head]);
         b_q_accum[c] += isin(ang) * (adc_val - sample_buf[sample_buf_head]);
     }
@@ -495,4 +552,21 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
     }
 
     HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, 0);
+}
+
+static void SAI_Receive_IT16Bit_2(SAI_HandleTypeDef *hsai) {
+    int16_t val = hsai->Instance->DR;
+
+    static int which_slot = 0;
+    if (!which_slot) {
+        handle_sample_interrupt(val);
+    }
+    which_slot = !which_slot;
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+    (void)hadc;
+    int16_t adc_val = HAL_ADC_GetValue(&hadc1);
+
+    handle_sample_interrupt(adc_val);
 }

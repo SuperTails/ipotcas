@@ -99,54 +99,8 @@ double fast_sin(double rad) {
 }
 
 const void *current_packet = NULL;
-//const uint8_t *sym_data = NULL;
-//size_t sym_len = 0;
-const char *sym_data =
-    "Somebody once told me the world is gonna roll me / "
-    "I ain't the sharpest tool in the shed / "
-    "She was looking kind of dumb with her finger and her thumb / "
-    "In the shape of an \"L\" on her forehead / "
-    "Well, the years start comin' and they don't stop comin' / "
-    "Fed to the rules and I hit the ground runnin' / "
-    "Didn't make sense not to live for fun / "
-    "Your brain gets smart but your head gets dumb / "
-    "So much to do, so much to see / "
-    "So what's wrong with taking the backstreets? / "
-    "You'll never know if you don't go / "
-    "You'll never shine if you don't glow / "
-    "Hey now, you're an all star / "
-    "Get your game on, go play / "
-    "Hey now, you're a rock star / "
-    "Get your show on, get paid / "
-    "(And all that glitters is gold) / "
-    "Only shootin' stars break the mold / "
-    "It's a cool place, and they say it gets colder / "
-    "You're bundled up now, wait 'til you get older / "
-    "But the meteor men beg to differ / "
-    "Judging by the hole in the satellite picture / "
-    "The ice we skate is gettin' pretty thin / "
-    "The waters gettin' warm so you might as well swim / "
-    "My world's on fire, how 'bout yours? / "
-    "That's the way I like it and I'll never get bored / "
-    "Hey now, you're an all star / "
-    "Get your game on, go play / "
-    "Hey now, you're a rock star / "
-    "Get your show on, get paid / "
-    "(All that glitters is gold) / "
-    "Only shootin' stars break the mold / "
-    "Go for the moon / "
-    "G-g-g-go for the moon / "
-    "Go for the moon / "
-    "Go-go-go for the moon / "
-    "Hey now, you're an all star / "
-    "Get your game on, go play / "
-    "Hey now, you're a rock star / "
-    "Get your show on, get paid / "
-    "(All that glitters is gold)";
-
-size_t sym_len = 1507;
-//const char *sym_data = "Hello, world!\n";
-//size_t sym_len = 15;
+const char *sym_data = NULL;
+size_t sym_len = 0;
 
 typedef struct {
     size_t idx;
@@ -261,55 +215,18 @@ static void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
 
 #define HISTORY 1
 
+// 48 kHz -> 125/6 microseconds
+#define TICK_NUM 125
+#define TICK_DEN 6
+
 typedef struct {
     tx_cstream_t cs;
     int64_t cur_symbol_center;
     mod_t mod[HISTORY][CARRIERS];
     int cur_symbol; // history index of the current symbol
     int64_t current_micros;
+    int tick_err;
 } transmitter_t;
-
-static double raised_cos_filt_impulse(double t, double rolloff) {
-    if (fabs(t) < 1e-3) {
-        return 1.0;
-    }
-
-    /*if (fabs(t) < 0.5) {
-        //return 1.0 - fabs(t);
-        return 1.0;
-    } else {
-        return 0.0;
-    }*/
-
-    double half_inv_rolloff = 0.5 / rolloff;
-    if (rolloff > 1e-3 && fabs(fabs(t) - half_inv_rolloff) < 1e-3) {
-        return rolloff * 0.5 * fast_sin(M_PI * half_inv_rolloff);
-    }
-
-    double tmp = 2.0 * rolloff * t;
-
-    double numer = fast_sin(M_PI * t) * fast_cos(M_PI * rolloff * t);
-    double denom = M_PI * t * (1.0 - tmp * tmp);
-
-    return numer / denom;
-}
-
-static int32_t raised_cos_filt_impulse_2(int32_t t) {
-    if (abs(t) < 32) {
-        return 1 << 12; // 1.0
-    }
-
-    if (abs(t-2048) < 32 || abs(t+2048) < 32) {
-        return 1 << 11; // 0.5
-    }
-
-    const int32_t ang_mask = (1 << 12) - 1;
-    int32_t numer = isin((t & ang_mask) >> 4); // << 8
-    int32_t denom = (t * ((1<<12) - ((4 * t * t) >> 12))) >> 12; // << 12
-    denom = (denom * 12867) >> 12; // denom *= M_PI
-
-    return (numer << 16) / denom; // << 12
-}
 
 int current_dac_value(transmitter_t *t) {
     if (0) {
@@ -346,23 +263,9 @@ int current_dac_value(transmitter_t *t) {
         for (int i = 0; i < CARRIERS; ++i) {
             int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
             int32_t tmp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], 0);
-            if (i == 2 || i == 6 || i == 7) { amp += tmp * 2; } else { amp += tmp; }
+            if (i == 2 || i > 6) { amp += tmp * 2; } else { amp += tmp; }
+            //if (i == 7) { amp += tmp * 2; }
         }
-
-        int pilot_ang = u * (256 * PILOT_FREQUENCY_HZ / 100) / 10000;
-
-        #if 0
-        bool tx_active = false;
-        for (int i = 0; i < CARRIERS; ++i) {
-            if (t->mod[ip0][i].i != 0 || t->mod[ip0][i].q != 0) {
-                tx_active = true;
-                break;
-            }
-        }
-        if (tx_active) {
-            amp += icos(pilot_ang);
-        }
-        #endif
 
         // amp is now in 12.20 fixed-point
 
@@ -382,7 +285,7 @@ int current_dac_value(transmitter_t *t) {
 static bool transmit_pop_next(void);
 
 static int tx_update(transmitter_t *tx) {
-    if (tx->current_micros >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
+    if (tx->current_micros / TICK_DEN >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
         tx->cur_symbol_center += SYMBOL_PERIOD_US;
         ++tx->cur_symbol; if (tx->cur_symbol >= HISTORY) tx->cur_symbol = 0;
 
@@ -400,7 +303,9 @@ static int tx_update(transmitter_t *tx) {
         }
     }
 
-    tx->current_micros += DAC_PERIOD_US;
+    tx->tick_err += TICK_NUM;
+    tx->current_micros += tx->tick_err / TICK_DEN;
+    tx->tick_err %= TICK_DEN;
 
     return current_dac_value(tx);
 }
@@ -458,9 +363,10 @@ static bool transmit_pop_next(void) {
 }
 
 #define TX_SAMPLES_PER_SYMBOL (SYMBOL_PERIOD_US / DAC_PERIOD_US)
+#define DMA_BUF_SZ (TX_SAMPLES_PER_SYMBOL * 2)
 
-static uint16_t dac_dma_buf_a[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
-static uint16_t dac_dma_buf_b[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
+static uint16_t dac_dma_buf_a[DMA_BUF_SZ] __ALIGNED(8);
+static uint16_t dac_dma_buf_b[DMA_BUF_SZ] __ALIGNED(8);
 
 
 void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
@@ -468,8 +374,9 @@ void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
 
     // buffer A just finished being read from, refill it
     for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-        uint16_t value = tx_update(&TRANSMITTER);
-        dac_dma_buf_a[i] = value;
+        int16_t value = (int16_t)tx_update(&TRANSMITTER) - (1 << 11);
+        dac_dma_buf_a[2*i+0] = value << 4;
+        dac_dma_buf_a[2*i+1] = value << 4;
     }
     tud_cdc_n_write(1, dac_dma_buf_a, sizeof(dac_dma_buf_a));
 }
@@ -479,8 +386,9 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
 
     // buffer B just finished being read from, refill it
     for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-        uint16_t value = tx_update(&TRANSMITTER);
-        dac_dma_buf_b[i] = value;
+        int16_t value = (int16_t)tx_update(&TRANSMITTER) - (1 << 11);
+        dac_dma_buf_b[2*i+0] = value << 4;
+        dac_dma_buf_b[2*i+1] = value << 4;
     }
     tud_cdc_n_write(1, dac_dma_buf_b, sizeof(dac_dma_buf_b));
 }
@@ -488,43 +396,98 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
 void transmit_task(DAC_HandleTypeDef *hdac) {
 }
 
+static uint32_t SAI_InterruptFlag2(const SAI_HandleTypeDef *hsai)
+{
+  uint32_t tmpIT = SAI_IT_OVRUDR;
+
+  if ((hsai->Init.Protocol == SAI_AC97_PROTOCOL) &&
+      ((hsai->Init.AudioMode == SAI_MODESLAVE_RX) || (hsai->Init.AudioMode == SAI_MODEMASTER_RX)))
+  {
+    tmpIT |= SAI_IT_CNRDY;
+  }
+
+  if ((hsai->Init.AudioMode == SAI_MODESLAVE_RX) || (hsai->Init.AudioMode == SAI_MODESLAVE_TX))
+  {
+    tmpIT |= SAI_IT_AFSDET | SAI_IT_LFSDET;
+  }
+  else
+  {
+    /* hsai has been configured in master mode */
+    tmpIT |= SAI_IT_WCKCFG;
+  }
+  return tmpIT;
+}
+
+#define SAI_LONG_TIMEOUT      1000U
+
+extern SAI_HandleTypeDef hsai_BlockA1;
+
 HAL_StatusTypeDef transmit_init(DAC_HandleTypeDef *hdac) {
     tx_reset(&TRANSMITTER);
 
-    HAL_StatusTypeDef status;
-    uint32_t tmpreg;
+    SAI_HandleTypeDef *hsai = &hsai_BlockA1;
 
-    /* Process locked */
-    __HAL_LOCK(hdac);
+    uint32_t tickstart = HAL_GetTick();
 
-    /* Change DAC state */
-    hdac->State = HAL_DAC_STATE_BUSY;
+    if (hsai->State != HAL_SAI_STATE_READY) {
+        return HAL_BUSY;
+    }
 
-    /* Set the DMA transfer complete callback for channel1 */
-    hdac->DMA_Handle1->XferCpltCallback = DMA_DAC_M0_Cplt;
-    hdac->DMA_Handle1->XferM1CpltCallback = DMA_DAC_M1_Cplt;
+    /* Process Locked */
+    __HAL_LOCK(hsai);
 
-    /* Enable the selected DAC channel1 DMA request */
-    SET_BIT(hdac->Instance->CR, DAC_CR_DMAEN1);
+    hsai->pBuffPtr = (uint8_t *)dac_dma_buf_a;
+    hsai->XferSize = TX_SAMPLES_PER_SYMBOL;
+    hsai->XferCount = TX_SAMPLES_PER_SYMBOL;
+    hsai->ErrorCode = HAL_SAI_ERROR_NONE;
+    hsai->State = HAL_SAI_STATE_BUSY_TX;
 
-    /* Get DHR12R1 address */
-    tmpreg = (uint32_t)&hdac->Instance->DHR12R1;
+    /* Set the SAI Tx DMA Half transfer complete callback */
+    //hsai->hdmatx->XferHalfCpltCallback = SAI_DMATxHalfCplt;
+    //hsai->hdmatx->XferErrorCallback = SAI_DMAError;
+    //hsai->hdmatx->XferAbortCallback = NULL;
 
-    /* Enable the DAC DMA underrun interrupt */
-    __HAL_DAC_ENABLE_IT(hdac, DAC_IT_DMAUDR1);
+    /* Set the SAI TxDMA transfer complete callback */
+    hsai->hdmatx->XferCpltCallback   = DMA_DAC_M0_Cplt;
+    hsai->hdmatx->XferM1CpltCallback = DMA_DAC_M1_Cplt;
 
-    /* Enable the DMA Stream */
-    status = HAL_DMAEx_MultiBufferStart_IT(hdac->DMA_Handle1, (uint32_t)dac_dma_buf_a, tmpreg, (uint32_t)dac_dma_buf_b, TX_SAMPLES_PER_SYMBOL);
+    /* Enable the Tx DMA Stream */
+    int dma_ok = HAL_DMAEx_MultiBufferStart_IT(hsai->hdmatx, (uint32_t)dac_dma_buf_a, (uint32_t)&hsai->Instance->DR, (uint32_t)dac_dma_buf_b, DMA_BUF_SZ);
+    if (dma_ok != HAL_OK) {
+      __HAL_UNLOCK(hsai);
+      printf("tx dma init failed %d\n", dma_ok);
+      return  HAL_ERROR;
+    }
+
+    /* Enable the interrupts for error handling */
+    __HAL_SAI_ENABLE_IT(hsai, SAI_InterruptFlag2(hsai));
+
+    /* Enable SAI Tx DMA Request */
+    hsai->Instance->CR1 |= SAI_xCR1_DMAEN;
+
+    /* Wait until FIFO is not empty */
+    while ((hsai->Instance->SR & SAI_xSR_FLVL) == SAI_FIFOSTATUS_EMPTY) {
+      /* Check for the Timeout */
+      if ((HAL_GetTick() - tickstart) > SAI_LONG_TIMEOUT)
+      {
+        /* Update error code */
+        hsai->ErrorCode |= HAL_SAI_ERROR_TIMEOUT;
+
+        /* Process Unlocked */
+        __HAL_UNLOCK(hsai);
+
+        return HAL_TIMEOUT;
+      }
+    }
+
+    /* Check if the SAI is already enabled */
+    if ((hsai->Instance->CR1 & SAI_xCR1_SAIEN) == 0U) {
+      /* Enable SAI peripheral */
+      __HAL_SAI_ENABLE(hsai);
+    }
 
     /* Process Unlocked */
-    __HAL_UNLOCK(hdac);
-
-    if (status == HAL_OK) {
-        /* Enable the Peripheral */
-        __HAL_DAC_ENABLE(hdac, DAC_CHANNEL_1);
-    } else {
-        hdac->ErrorCode |= HAL_DAC_ERROR_DMA;
-    }
+    __HAL_UNLOCK(hsai);
 
     return HAL_OK;
 }

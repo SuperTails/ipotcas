@@ -56,6 +56,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/receive.c
     Core/Src/transmit.c
     Core/Src/usb_descriptors.c
+    Core/Src/codec.c
     tinyusb/src/host/hub.c
     tinyusb/src/host/usbh.c
     tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c

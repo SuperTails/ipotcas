@@ -26,6 +26,7 @@
 #include "transmit.h"
 #include "receive.h"
 #include "modulation.h"
+#include "codec.h"
 #include "ethernet.h"
 #include <stdio.h>
 /* USER CODE END Includes */
@@ -37,6 +38,48 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+const char TEST_DATA[] =
+    "Somebody once told me the world is gonna roll me / "
+    "I ain't the sharpest tool in the shed / "
+    "She was looking kind of dumb with her finger and her thumb / "
+    "In the shape of an \"L\" on her forehead / "
+    "Well, the years start comin' and they don't stop comin' / "
+    "Fed to the rules and I hit the ground runnin' / "
+    "Didn't make sense not to live for fun / "
+    "Your brain gets smart but your head gets dumb / "
+    "So much to do, so much to see / "
+    "So what's wrong with taking the backstreets? / "
+    "You'll never know if you don't go / "
+    "You'll never shine if you don't glow / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(And all that glitters is gold) / "
+    "Only shootin' stars break the mold / "
+    "It's a cool place, and they say it gets colder / "
+    "You're bundled up now, wait 'til you get older / "
+    "But the meteor men beg to differ / "
+    "Judging by the hole in the satellite picture / "
+    "The ice we skate is gettin' pretty thin / "
+    "The waters gettin' warm so you might as well swim / "
+    "My world's on fire, how 'bout yours? / "
+    "That's the way I like it and I'll never get bored / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(All that glitters is gold) / "
+    "Only shootin' stars break the mold / "
+    "Go for the moon / "
+    "G-g-g-go for the moon / "
+    "Go for the moon / "
+    "Go-go-go for the moon / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(All that glitters is gold)";
 
 /* USER CODE END PD */
 
@@ -77,6 +120,7 @@ I2C_HandleTypeDef hi2c1;
 
 SAI_HandleTypeDef hsai_BlockA1;
 SAI_HandleTypeDef hsai_BlockB1;
+DMA_HandleTypeDef hdma_sai1_a;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -191,6 +235,7 @@ int main(void)
   // Refilling the tx buffer is a very long process but not very latency-sensitive
   // so it gets a lower priority to allow the ADC interrupt to preempt it
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 2, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 2, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -201,6 +246,7 @@ int main(void)
 
   printf("Hello, world!\n");
 
+  codec_init();
 
   if (HAL_ADC_Start(&hadc1) != HAL_OK) {
     Error_Handler();
@@ -220,12 +266,16 @@ int main(void)
 
   tusb_init();
 
-  transmit_init(&hdac);
+  int tx_ok = transmit_init(&hdac);
+  if (tx_ok != HAL_OK) {
+    printf("transmit init failed %d\n", tx_ok);
+    Error_Handler();
+  }
 
   extern uint64_t micros(void);
 
   // here so that it can actually print things
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 5; ++i) {
     if (ethernet_init()) {
       printf("ETHERNET OK\n");
       break;
@@ -267,7 +317,11 @@ int main(void)
   }
   #endif
 
-  receive_init();
+  int rx_ok = receive_init();
+  if (rx_ok != HAL_OK) {
+    printf("receive init failed %d\n", rx_ok);
+    Error_Handler();
+  }
 
   int s = 0;
   int calls = 0;
@@ -290,6 +344,10 @@ int main(void)
     if (s != s2) {
       s = s2;
       if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections); }
+    }
+
+    if (transmit_ready(sizeof(TEST_DATA))) {
+      transmit_send(NULL, TEST_DATA, sizeof(TEST_DATA));
     }
 
     ++calls;
@@ -882,6 +940,9 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+  /* DMA2_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
 
 }
 
@@ -911,6 +972,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -928,6 +992,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : USB_PowerSwitchOn_Pin */
   GPIO_InitStruct.Pin = USB_PowerSwitchOn_Pin;
