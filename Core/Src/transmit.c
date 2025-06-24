@@ -285,7 +285,7 @@ int current_dac_value(transmitter_t *t) {
 static bool transmit_pop_next(void);
 
 static int tx_update(transmitter_t *tx) {
-    if (tx->current_micros / TICK_DEN >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
+    if (tx->current_micros >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
         tx->cur_symbol_center += SYMBOL_PERIOD_US;
         ++tx->cur_symbol; if (tx->cur_symbol >= HISTORY) tx->cur_symbol = 0;
 
@@ -362,7 +362,7 @@ static bool transmit_pop_next(void) {
     return true;
 }
 
-#define TX_SAMPLES_PER_SYMBOL (SYMBOL_PERIOD_US / DAC_PERIOD_US)
+#define TX_SAMPLES_PER_SYMBOL (SYMBOL_PERIOD_US * 48 / 1000)
 #define DMA_BUF_SZ (TX_SAMPLES_PER_SYMBOL * 2)
 
 static uint16_t dac_dma_buf_a[DMA_BUF_SZ] __ALIGNED(8);
