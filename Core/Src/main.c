@@ -275,7 +275,7 @@ int main(void)
   extern uint64_t micros(void);
 
   // here so that it can actually print things
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < 2; ++i) {
     if (ethernet_init()) {
       printf("ETHERNET OK\n");
       break;

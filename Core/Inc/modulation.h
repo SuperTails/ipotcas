@@ -7,9 +7,11 @@
 
 #define SAMPLE_PERIOD_NS (SAMPLE_PERIOD_NS_NUM / SAMPLE_PERIOD_NS_DEN) 
 
-#define CARRIERS 8
+#define CARRIERS 12
 
 static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
+  7000,
+  //7500,
    8000,
    8500,
    9000,
@@ -18,10 +20,10 @@ static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
   10500,
   11000,
   11500,
-  12000,
+  //12000,
   12500,
   13000,
-  13500,
+  14000,
 };
 
 static const int CARRIER_PERIODS_NS[CARRIERS] = {

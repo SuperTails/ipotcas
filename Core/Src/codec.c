@@ -87,7 +87,7 @@ void codec_init(void) {
     CODEC_WRITE_REGISTER(0x010E, 0x08, 0x08); // route LDAC/RDAC to LOL/LOR
     CODEC_WRITE_REGISTER(0x0109, 0x3C); // power up HPL/HPR and LOL/LOR
     CODEC_WRITE_REGISTER(0x0110, 0x00, 0x00); // unmute HPL/HPR driver, 0dB gain
-    CODEC_WRITE_REGISTER(0x0112, 10, 10); // unmute LOL/LOR driver, 10dB gain
+    CODEC_WRITE_REGISTER(0x0112, (0) & 0x3F, (0) & 0x3F); // unmute LOL/LOR driver, 0dB gain
     CODEC_WRITE_REGISTER(0x0041, 0x00, 0x00); // DAC => 0dB
     CODEC_WRITE_REGISTER(0x003F, 0xD6); // power up LDAC/RDAC
     CODEC_WRITE_REGISTER(0x0040, 0x00); // unmute LDAC/RDAC

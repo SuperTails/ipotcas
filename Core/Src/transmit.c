@@ -263,7 +263,8 @@ int current_dac_value(transmitter_t *t) {
         for (int i = 0; i < CARRIERS; ++i) {
             int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
             int32_t tmp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], 0);
-            if (i == 2 || i > 6) { amp += tmp * 2; } else { amp += tmp; }
+            //if (i == 2 || i > 6) { amp += tmp * 2; } else { amp += tmp; }
+            amp += tmp;
             //if (i == 7) { amp += tmp * 2; }
         }
 
@@ -273,9 +274,6 @@ int current_dac_value(transmitter_t *t) {
         // *4096:  12-bit DAC
         // /128:   convert cos/sin to -1 to 1
         // /16:    scale down (2*) -4 to 4 range
-        amp *= 1 << 8;
-        amp /= 128 * CARRIERS;
-        amp += 2048;
         HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
 
         return amp;
@@ -374,9 +372,9 @@ void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
 
     // buffer A just finished being read from, refill it
     for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-        int16_t value = (int16_t)tx_update(&TRANSMITTER) - (1 << 11);
-        dac_dma_buf_a[2*i+0] = value << 4;
-        dac_dma_buf_a[2*i+1] = value << 4;
+        int16_t value = (int16_t)tx_update(&TRANSMITTER);
+        dac_dma_buf_a[2*i+0] = value;
+        dac_dma_buf_a[2*i+1] = value;
     }
     tud_cdc_n_write(1, dac_dma_buf_a, sizeof(dac_dma_buf_a));
 }
@@ -386,9 +384,9 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
 
     // buffer B just finished being read from, refill it
     for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-        int16_t value = (int16_t)tx_update(&TRANSMITTER) - (1 << 11);
-        dac_dma_buf_b[2*i+0] = value << 4;
-        dac_dma_buf_b[2*i+1] = value << 4;
+        int16_t value = (int16_t)tx_update(&TRANSMITTER);
+        dac_dma_buf_b[2*i+0] = value;
+        dac_dma_buf_b[2*i+1] = value;
     }
     tud_cdc_n_write(1, dac_dma_buf_b, sizeof(dac_dma_buf_b));
 }
