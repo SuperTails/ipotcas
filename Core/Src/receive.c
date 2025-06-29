@@ -465,7 +465,7 @@ void receive_task(void) {
         if (rxs.len > 0) {
             int exp_len = (rxs.data[1] << 8) | rxs.data[0];
             int len_diff = exp_len - (int)rxs.len - 2;
-            if (-20 <= len_diff && len_diff <= 20) {
+            if (-40 <= len_diff && len_diff <= 40) {
                 rxs.len = exp_len + 2;
                 ethernet_send_packet(rxs.data+2, exp_len);
                 printf("RX (%u %u): ", exp_len, rxs.len - 2);
