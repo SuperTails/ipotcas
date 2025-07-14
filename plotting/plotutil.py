@@ -99,10 +99,10 @@ class WaveSource:
         block_size = count * self.in_rate // self.out_rate
         while True:
             d = self.port.read(block_size * 2)
-            if d[1] > 16:
-                print(f'Skipping byte! {d[0]} {d[1]} {d[2]}')
-                d = d[1:] + self.port.read(1)
-            samples = np.array([(int.from_bytes(d[i:i+2], 'little') - 2048.0) / 2048.0 for i in range(0, len(d), 2)])
+            #if d[1] > 16:
+            #    print(f'Skipping byte! {d[0]} {d[1]} {d[2]}')
+            #    d = d[1:] + self.port.read(1)
+            samples = np.array([(int.from_bytes(d[i:i+2], 'little', signed=True)) for i in range(0, len(d), 2)])
             samples = signal.resample(samples, count)
             self.sample_queue.put(samples)
 

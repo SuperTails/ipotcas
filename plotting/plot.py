@@ -116,7 +116,7 @@ bm2 = BlitManager(fig2.canvas, [ln_cons, ln_cons_errs])
 plt.show(block=False)
 plt.pause(.1)
 
-p = WaveSource('/dev/tty.usbmodem1301', in_rate=ADC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
+p = WaveSource('/dev/tty.usbmodem1201', in_rate=ADC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
 #p = WaveSource('/dev/tty.usbmodem1303', in_rate=DAC_SAMPLE_RATE, out_rate=ADC_SAMPLE_RATE)
 
 t = time.perf_counter()

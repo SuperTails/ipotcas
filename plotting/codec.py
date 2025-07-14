@@ -444,3 +444,13 @@ decode(
     symbol_period=10e-3,
     skip=2
 )
+
+a = bits_to_constellation(BitString.from_bytes(b"Somebody once told me the world is gonna roll me."), 12)
+print("A IS:")
+print(a)
+
+for r in a:
+    print('[', end='')
+    for iq in r:
+        print(f'({int(iq.real):2}, {int(iq.imag):2}), ', end='')
+    print('],')

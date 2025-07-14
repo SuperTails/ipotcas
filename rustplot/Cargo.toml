@@ -1,0 +1,21 @@
+[package]
+name = "rustplot"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "main"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "rustplot"
+#crate-type = ["cdylib"]
+
+[dependencies]
+bitvec = "1.0.1"
+itertools = "0.14.0"
+minifb = "0.28.0"
+num = "0.4.3"
+plotters = "0.3.7"
+pyo3 = "0.25.0"
+serialport = "4.7.2"

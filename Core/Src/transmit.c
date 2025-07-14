@@ -363,8 +363,10 @@ static bool transmit_pop_next(void) {
 #define TX_SAMPLES_PER_SYMBOL (SYMBOL_PERIOD_US * 48 / 1000)
 #define DMA_BUF_SZ (TX_SAMPLES_PER_SYMBOL * 2)
 
-static uint16_t dac_dma_buf_a[DMA_BUF_SZ] __ALIGNED(8);
-static uint16_t dac_dma_buf_b[DMA_BUF_SZ] __ALIGNED(8);
+static int16_t dac_dma_buf_a[DMA_BUF_SZ] __ALIGNED(8);
+static int16_t dac_dma_buf_b[DMA_BUF_SZ] __ALIGNED(8);
+
+static int16_t usb_buf[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 
 
 void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
@@ -375,8 +377,11 @@ void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
         int16_t value = (int16_t)tx_update(&TRANSMITTER);
         dac_dma_buf_a[2*i+0] = value;
         dac_dma_buf_a[2*i+1] = value;
+        usb_buf[i] = value;
     }
-    tud_cdc_n_write(1, dac_dma_buf_a, sizeof(dac_dma_buf_a));
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+    tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
 }
 
 void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
@@ -387,8 +392,11 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
         int16_t value = (int16_t)tx_update(&TRANSMITTER);
         dac_dma_buf_b[2*i+0] = value;
         dac_dma_buf_b[2*i+1] = value;
+        usb_buf[i] = value;
     }
-    tud_cdc_n_write(1, dac_dma_buf_b, sizeof(dac_dma_buf_b));
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+    tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
 }
 
 void transmit_task(DAC_HandleTypeDef *hdac) {
