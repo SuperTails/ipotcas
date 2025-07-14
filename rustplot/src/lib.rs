@@ -11,7 +11,7 @@ static NEED_SKIP: AtomicBool = AtomicBool::new(false);
 
 type Cint64 = num::complex::Complex<i64>;
 
-const BLOCK_SIZE: usize = 96;
+const BLOCK_SIZE: usize = 96*2;
 
 const SAMPLE_RATE: u32 = 48000;
 
@@ -62,7 +62,7 @@ impl Demodulator {
             sample_buf: [0; WINDOW_SIZE],
             sample_head: 0,
             sample_index: 0,
-            filt_power: 0.0,
+            filt_power: 10.0e3,
         };
 
         std::thread::spawn(move || {
@@ -142,10 +142,17 @@ fn rustplot(m: &Bound<'_, PyModule>) -> PyResult<()> {
     Ok(())
 }
 
+#[derive(Clone)]
 pub struct Decoder {
     pub header_samples: usize,
     pub samples: Vec<(usize, [C32; CARRIERS])>,
     pub iq_adj: [C32; CARRIERS],
+}
+
+impl Default for Decoder {
+    fn default() -> Self {
+        Decoder::new()
+    }
 }
 
 impl Decoder {
@@ -157,7 +164,7 @@ impl Decoder {
         }
     }
 
-    pub fn push(&mut self, (idx, sample): (usize, [C32; CARRIERS])) {
+    pub fn push(&mut self, (idx, sample): (usize, [C32; CARRIERS]), lock_adj: bool) {
         if self.header_samples == 2 {
             let mut res = [C32::zero(); CARRIERS];
             for (res, samp, adj) in izip!(&mut res, sample, self.iq_adj) {
@@ -166,8 +173,10 @@ impl Decoder {
             self.samples.push((idx, res));
         } else if self.header_samples == 1 {
             // this is the training sample
-            for (adj, samp) in zip(&mut self.iq_adj, sample) {
-                *adj = C32::new(4.0, 0.0) / samp;
+            if !lock_adj {
+                for (adj, samp) in zip(&mut self.iq_adj, sample) {
+                    *adj = C32::new(4.0, 0.0) / samp;
+                }
             }
             self.samples.push((idx, [C32::new(4.0, 0.0); CARRIERS]));
             self.header_samples += 1;
