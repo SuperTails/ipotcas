@@ -2,9 +2,10 @@
 use std::{iter::zip, sync::{atomic::{AtomicBool, Ordering}, mpsc::{Receiver, Sender}}, thread::JoinHandle};
 
 use itertools::izip;
+use ordered_float::OrderedFloat;
 use pyo3::prelude::*;
 
-use num::{complex::Complex32 as C32, Complex, Zero};
+use num::{complex::{Complex32 as C32, ComplexFloat}, Complex, Zero};
 use serialport::SerialPort;
 
 static NEED_SKIP: AtomicBool = AtomicBool::new(false);
@@ -146,7 +147,10 @@ fn rustplot(m: &Bound<'_, PyModule>) -> PyResult<()> {
 pub struct Decoder {
     pub header_samples: usize,
     pub samples: Vec<(usize, [C32; CARRIERS])>,
+    pub mag_adj: [f32; CARRIERS],
+    pub phase_adj: [f32; CARRIERS],
     pub iq_adj: [C32; CARRIERS],
+    pub is_init: bool,
 }
 
 impl Default for Decoder {
@@ -160,11 +164,29 @@ impl Decoder {
         Decoder {
             header_samples: 0,
             samples: Vec::new(),
+            mag_adj: [1.0; CARRIERS],
+            phase_adj: [0.0; CARRIERS],
             iq_adj: [C32::new(1.0, 0.0); CARRIERS],
+            is_init: false,
         }
     }
 
     pub fn push(&mut self, (idx, sample): (usize, [C32; CARRIERS]), lock_adj: bool) {
+        let mu = 1e-5;
+        for c in 0..CARRIERS {
+            let samp_adj = sample[c] * self.iq_adj[c];
+            self.mag_adj[c] += mu * (3.0 - samp_adj.abs());
+
+            let closest = closest_symbol(samp_adj);
+            if matches!((closest.re, closest.im), (1, 0) | (-1, 0) | (0, 1) | (0, -1)) {
+                self.phase_adj[c] -= 0.1 * (samp_adj / Complex::new(closest.re as f32, closest.im as f32)).arg();
+            }
+
+            self.iq_adj[c] = self.mag_adj[c] * C32::new(self.phase_adj[c].cos(), self.phase_adj[c].sin());
+        }
+
+        dbg!(self.mag_adj[0]);
+
         if self.header_samples == 2 {
             let mut res = [C32::zero(); CARRIERS];
             for (res, samp, adj) in izip!(&mut res, sample, self.iq_adj) {
@@ -172,13 +194,26 @@ impl Decoder {
             }
             self.samples.push((idx, res));
         } else if self.header_samples == 1 {
+            for c in 0..CARRIERS {
+                if !self.is_init {
+                    self.mag_adj[c] = 3.0 / sample[c].abs();
+                }
+                self.phase_adj[c] = -sample[c].arg();
+                self.iq_adj[c] = self.mag_adj[c] * C32::new(self.phase_adj[c].cos(), self.phase_adj[c].sin());
+            }
+            self.is_init = true;
             // this is the training sample
-            if !lock_adj {
+            /*if !lock_adj {
                 for (adj, samp) in zip(&mut self.iq_adj, sample) {
                     *adj = C32::new(4.0, 0.0) / samp;
                 }
+            }*/
+            let mut res = [C32::zero(); CARRIERS];
+            for (res, samp, adj) in izip!(&mut res, sample, self.iq_adj) {
+                *res = samp * adj;
             }
-            self.samples.push((idx, [C32::new(4.0, 0.0); CARRIERS]));
+            self.samples.push((idx, res));
+            //self.samples.push((idx, [C32::new(4.0, 0.0); CARRIERS]));
             self.header_samples += 1;
         } else {
             self.header_samples += 1;
@@ -197,6 +232,14 @@ impl Decoder {
         self.header_samples = 0;
         self.samples.clear();
     }
+}
+
+pub fn closest_symbol(cons: C32) -> Complex<i32> {
+    SYMBOL_TO_CONSTELLATION
+        .iter()
+        .copied()
+        .min_by_key(|pt| OrderedFloat((C32::new(pt.re as f32, pt.im as f32) - cons).norm_sqr()))
+        .unwrap()
 }
 
 const SYMBOL_TO_CONSTELLATION_I: [i32; 32] = [ -4,  0, 0, 4,  4, 0,  0, -4, -2, -2, 2,  2,  2, 2, -2, -2, -3,  1, -3, 1, 3, -1,  3, -1, 1, -3, 1,  1, -1, 3, -1, -1 ];
