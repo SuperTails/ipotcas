@@ -563,7 +563,7 @@ static void handle_sample_interrupt(int16_t adc_val) {
         }
     }
 
-    if (filt_power < 0.5e-3) {
+    if (filt_power < 1.0e-3) {
         ++quiet_time;
     } else {
         if (quiet_time > SAMPLES_PER_SYMBOL / 2) {

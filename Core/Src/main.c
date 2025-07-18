@@ -346,7 +346,7 @@ int main(void)
       if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections); }
     }
 
-    if (transmit_ready(sizeof(TEST_DATA))) {
+    if (false && transmit_ready(sizeof(TEST_DATA))) {
       transmit_send(NULL, TEST_DATA, sizeof(TEST_DATA));
     }
 

@@ -185,8 +185,6 @@ impl Decoder {
             self.iq_adj[c] = self.mag_adj[c] * C32::new(self.phase_adj[c].cos(), self.phase_adj[c].sin());
         }
 
-        dbg!(self.mag_adj[0]);
-
         if self.header_samples == 2 {
             let mut res = [C32::zero(); CARRIERS];
             for (res, samp, adj) in izip!(&mut res, sample, self.iq_adj) {
