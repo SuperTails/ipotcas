@@ -380,7 +380,7 @@ void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
         usb_buf[i] = value;
     }
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
-    tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
+    //tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
 }
 
@@ -395,7 +395,7 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
         usb_buf[i] = value;
     }
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
-    tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
+    //tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
 }
 

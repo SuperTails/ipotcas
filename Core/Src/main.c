@@ -38,6 +38,52 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+const char TEST_DATA[] =
+    "Somebody once told me the world is gonna roll me / "
+    "I ain't the sharpest tool in the shed / "
+    "She was looking kind of dumb with her finger and her thumb / "
+    "In the shape of an \"L\" on her forehead / "
+    "Well, the years start comin' and they don't stop comin' / "
+    "Fed to the rules and I hit the ground runnin' / "
+    "Didn't make sense not to live for fun / "
+    "Your brain gets smart but your head gets dumb / "
+    "So much to do, so much to see / "
+    "So what's wrong with taking the backstreets? / "
+    "You'll never know if you don't go / "
+    "You'll never shine if you don't glow / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(And all that glitters is gold) / "
+    "Only shootin' stars break the mold / "
+    "It's a cool place, and they say it gets colder / "
+    "You're bundled up now, wait 'til you get older / "
+    "But the meteor men beg to differ / "
+    "Judging by the hole in the satellite picture / "
+    "The ice we skate is gettin' pretty thin / "
+    "The waters gettin' warm so you might as well swim / "
+    "My world's on fire, how 'bout yours? / "
+    "That's the way I like it and I'll never get bored / "
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Go for the moon / "
+    "Go-go-go for the moon / "
+    "Hey now, you're an all star / "
+    "Get your game on, go play / "
+    "Hey now, you're a rock star / "
+    "Get your show on, get paid / "
+    "(All that glitters is gold)";
+
+
+#if 0
 const char TEST_DATA[] =
     "Somebody once told me the world is gonna roll me / "
     "I ain't the sharpest tool in the shed / "
@@ -80,6 +126,7 @@ const char TEST_DATA[] =
     "Hey now, you're a rock star / "
     "Get your show on, get paid / "
     "(All that glitters is gold)";
+  #endif
 
 /* USER CODE END PD */
 
@@ -346,7 +393,9 @@ int main(void)
       if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections); }
     }
 
-    if (false && transmit_ready(sizeof(TEST_DATA))) {
+    static bool prev_btn_state = false;
+    bool btn_state = HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin);
+    if (btn_state && !prev_btn_state && transmit_ready(sizeof(TEST_DATA))) {
       transmit_send(NULL, TEST_DATA, sizeof(TEST_DATA));
     }
 

@@ -3,7 +3,6 @@ use std::{iter::zip, sync::{atomic::{AtomicBool, Ordering}, mpsc::{Receiver, Sen
 
 use itertools::izip;
 use ordered_float::OrderedFloat;
-use pyo3::prelude::*;
 
 use num::{complex::{Complex32 as C32, ComplexFloat}, Complex, Zero};
 use serialport::SerialPort;
@@ -128,19 +127,6 @@ impl Demodulator {
 
 pub fn skip_stream_byte() {
     NEED_SKIP.store(true, Ordering::Relaxed);
-}
-
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
-}
-
-/// A Python module implemented in Rust.
-#[pymodule]
-fn rustplot(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
-    Ok(())
 }
 
 #[derive(Clone)]
