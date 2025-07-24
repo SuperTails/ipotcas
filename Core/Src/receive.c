@@ -1,6 +1,7 @@
 #include "receive.h"
 #include "fast_math.h"
 #include "stm32f7xx_hal.h"
+#include "stm32f7xx_hal_cortex.h"
 #include "stm32f7xx_hal_sai.h"
 #include "tusb.h"
 #include "hamming.h"
@@ -189,6 +190,7 @@ carrier_t carriers[CARRIERS];
 int bit_errors[CARRIERS] = { 0 };
   
 int16_t sample_buf[SAMPLE_BUF_SZ] __ALIGNED(4) = { 0 };
+// +4 bytes for header
 int sample_buf_head = 0;
 int quiet_time = 0;
 int samples = 0;
@@ -402,9 +404,6 @@ static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
     }
 }
 
-int16_t cons_buffer[RX_STREAM_SIZE*2] __ALIGNED(8);
-int cons_buffer_len = 0;
-
 void receive_task(void) {
     //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_2, 1);
 
@@ -416,8 +415,11 @@ void receive_task(void) {
         }
     }
 
+
     if (data_sample_ready) {
         data_sample_ready = false;
+
+        int16_t cons_points[CARRIERS * 2];
         int symbols[CARRIERS] = { 0 };
         bool symbols_valid = false;
         float avg_drift = 0.0f;
@@ -432,10 +434,8 @@ void receive_task(void) {
             float mag = sqrtf(b_adj.re * b_adj.re + b_adj.im * b_adj.im);
             carriers[c].mag_adj += mu * (3.0f - mag);
 
-            if (c == 0 && cons_buffer_len < RX_STREAM_SIZE) {
-                cons_buffer[cons_buffer_len++] = (int16_t)(b_adj.re * 256.0);
-                cons_buffer[cons_buffer_len++] = (int16_t)(b_adj.im * 256.0);
-            }
+            cons_points[c*2+0] = (int16_t)(b_adj.re * 4096.0f);
+            cons_points[c*2+1] = (int16_t)(b_adj.im * 4096.0f);
 
             /*let closest = closest_symbol(samp_adj);
             if matches!((closest.re, closest.im), (1, 0) | (-1, 0) | (0, 1) | (0, -1)) {
@@ -473,8 +473,13 @@ void receive_task(void) {
         }
 
         //printf("MAG: %d\n", (int)(log10f(m) * 1000.0f));
-    }
 
+        int16_t header[] = { 0x55FF, 0x00AA, 0x0002, sizeof(cons_points) };
+        __disable_irq();
+        tud_cdc_write(header, sizeof(header));
+        tud_cdc_write(cons_points, sizeof(cons_points));
+        __enable_irq();
+    }
 
     if (frame_finished) {
         frame_finished = false;
@@ -503,8 +508,6 @@ void receive_task(void) {
                 printf("BAD LEN");
             }
 
-            tud_cdc_n_write(1, cons_buffer, cons_buffer_len * 2);
-            cons_buffer_len = 0;
             /*if (rxs.len < exp_len + 2 + 8) {
                 rxs.len = exp_len + 2;
             }*/
@@ -568,9 +571,10 @@ static void handle_sample_interrupt(int16_t adc_val) {
 
     if (sample_buf_head >= SAMPLE_BUF_SZ) {
         sample_buf_head = 0;
+        int16_t header[4] __ALIGNED(4) = { 0x55FF, 0x00AA, 0x0001, sizeof(sample_buf) }; 
+        tud_cdc_write(header, sizeof(header));
         tud_cdc_write(sample_buf, sizeof(sample_buf));
     }
-
 
     bool training_sample = (samples == SAMPLES_PER_SYMBOL * 3 / 2);
 

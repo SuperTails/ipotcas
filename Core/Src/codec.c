@@ -66,13 +66,27 @@ void codec_init(void) {
     CODEC_WRITE_REGISTER(0x003D, 0x01); // select ADC PRB_R1 (?)
     CODEC_WRITE_REGISTER(0x0014, 0x80); // set ADC OSR to 128
 
+    // configure 1st-order IIR filter:
+    // passband gain of 0.5, -3dB point of ~2 kHz
+
+    // N0 =  4718592 = 0x48_00_00 (reg pg8 24/25/26, pg9 32/33/34)
+    // N1 = -4718592 = 0xB8_00_00 (reg pg8 28/29/30, pg9 36/37/38) 
+    // D1 = 10485760 = 0xA0_00_00 (reg pg8 32/33/34, pg9 40/41/42)
+    CODEC_WRITE_REGISTER(0x0818, 0x48, 0x00, 0x00);
+    CODEC_WRITE_REGISTER(0x081C, 0xB8, 0x00, 0x00);
+    CODEC_WRITE_REGISTER(0x0820, 0xA0, 0x00, 0x00);
+
+    CODEC_WRITE_REGISTER(0x0920, 0x48, 0x00, 0x00);
+    CODEC_WRITE_REGISTER(0x0924, 0xB8, 0x00, 0x00);
+    CODEC_WRITE_REGISTER(0x0928, 0xA0, 0x00, 0x00);
+
     CODEC_WRITE_REGISTER(0x0147, 0x32); // set MicPGA startup delay to 3.1ms
     CODEC_WRITE_REGISTER(0x0134, 0x80); // Route IN1L to LEFT_P with 20K input impedance
     CODEC_WRITE_REGISTER(0x0136, 0x80); // Route Common Mode to LEFT_M with impedance of 20K
     //CODEC_WRITE_REGISTER(0x0137, 0x80); // Route IN1R to RIGHT_P with input impedance of 20K
     CODEC_WRITE_REGISTER(0x0139, 0x80); // Route Common Mode to RIGHT_M with impedance of 20K
     // Unmute Left MICPGA and set gain to +20dB
-    CODEC_WRITE_REGISTER(0x013B, 40);
+    CODEC_WRITE_REGISTER(0x013B, 52);
     // Unmute Right MICPGA, Gain selection of 6dB to make channel gain 0dB
     // Register of 6dB with input impedance of 20K => Channel Gain of 0dB
     CODEC_WRITE_REGISTER(0x013C, 0x0C);

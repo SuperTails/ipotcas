@@ -215,76 +215,58 @@ static void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
 
 #define HISTORY 1
 
-// 48 kHz -> 125/6 microseconds
-#define TICK_NUM 125
-#define TICK_DEN 6
-
 typedef struct {
     tx_cstream_t cs;
     int64_t cur_symbol_center;
     mod_t mod[HISTORY][CARRIERS];
     int cur_symbol; // history index of the current symbol
-    int64_t current_micros;
-    int tick_err;
+    int32_t ticks; // elapsed ticks modulo SAMPLES_PER_SYMBOL
 } transmitter_t;
 
 int current_dac_value(transmitter_t *t) {
-    if (0) {
-        int64_t u = t->current_micros;
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 
-        double amp = 0.0;
-        static int last_step = 0;
-        int freq_step = (u / 20000) % 2000;
-        double t = freq_step / 2000.0;
-        // 100 Hz to 100kHz
-        double freq = exp(4.6 + (9.9 - 4.6) * t);
-        if (freq_step != last_step) {
-            printf("freq %d\n", (int)(freq));
-            HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_0);
-            last_step = freq_step;
-        }
-        double rad = freq * u * (2.0 * M_PI / 1e6);
-        amp += fast_cos(rad) / 2.0;
-        //int i = (micros() / 100000) - ((micros() - 50) / 100000);
-        //amp = (i * 8.0) - 4.0;
-        // scale -8 to 8 range into 0 to 1, then convert to int
-        return (int)(((amp + 8.0) / 16.0) * 4096.0);
+    int ip0 = t->cur_symbol;
 
-    } else {
-        int u = t->current_micros % 2000;
-
-        int ip0 = t->cur_symbol;
-
-        int32_t amp = 0;
-
-        // TODO: Manually const-fold math on CARRIER_FREQUENCIES_HZ
-
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
-        for (int i = 0; i < CARRIERS; ++i) {
-            int ang = u * (256 * CARRIER_FREQUENCIES_HZ[i] / 100) / 10000;
-            int32_t tmp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], 0);
-            //if (i == 2 || i > 6) { amp += tmp * 2; } else { amp += tmp; }
-            amp += tmp;
-            //if (i == 7) { amp += tmp * 2; }
-        }
-
-        // amp is now in 12.20 fixed-point
-
-        // *2:     increase amplitude
-        // *4096:  12-bit DAC
-        // /128:   convert cos/sin to -1 to 1
-        // /16:    scale down (2*) -4 to 4 range
-        HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
-
-        return amp;
+    #if 0
+    int any = 0;
+    static unsigned sum = 0;
+    if (t->ticks == 0) {
+        sum >>= 1;
+        if (sum == 0) sum = 0xF29393EF;
     }
+    for (int i = 0; i < CARRIERS; ++i) {
+        if (t->mod[ip0][i].i != 0 || t->mod[ip0][i].q != 0) {
+            any = 1;
+        }
+        t->mod[ip0][i].i = 0;
+        t->mod[ip0][i].q = 0;
+    }
+
+    if (any) {
+        // FSK:
+        //if (g) { t->mod[ip0][0].i = 4; } else { t->mod[ip0][11].i = 4; }
+        // 2-ASK:
+        // BPSK:
+        t->mod[ip0][0].i = (sum % 2) ? 4 : -4;
+    }
+    #endif
+
+    int32_t amp = 0;
+    for (int i = 0; i < CARRIERS; ++i) {
+        int ang = t->ticks * (256 * CARRIER_FREQUENCIES_HZ[i]) / SAMPLE_RATE_HZ;
+        amp = smlad(*(int32_t *)&t->mod[ip0][i], cos_sin_table[ang & 0xFF], amp);
+    }
+
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
+    return amp;
 }
 
 static bool transmit_pop_next(void);
 
 static int tx_update(transmitter_t *tx) {
-    if (tx->current_micros >= tx->cur_symbol_center + SYMBOL_PERIOD_US / 2) {
-        tx->cur_symbol_center += SYMBOL_PERIOD_US;
+    if (++tx->ticks >= SAMPLES_PER_SYMBOL) {
+        tx->ticks = 0;
         ++tx->cur_symbol; if (tx->cur_symbol >= HISTORY) tx->cur_symbol = 0;
 
         if (txcs_data_exhausted(&tx->cs)) {
@@ -301,17 +283,13 @@ static int tx_update(transmitter_t *tx) {
         }
     }
 
-    tx->tick_err += TICK_NUM;
-    tx->current_micros += tx->tick_err / TICK_DEN;
-    tx->tick_err %= TICK_DEN;
-
     return current_dac_value(tx);
 }
 
 static void tx_reset(transmitter_t *tx) {
     memset(tx, 0, sizeof(*tx));
     tx->cur_symbol_center = 0;
-    tx->current_micros = 0;
+    tx->ticks = 0;
 }
 
 static transmitter_t TRANSMITTER;
@@ -368,7 +346,6 @@ static int16_t dac_dma_buf_b[DMA_BUF_SZ] __ALIGNED(8);
 
 static int16_t usb_buf[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 
-
 void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
     (void)dma;
 
@@ -402,6 +379,7 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
 void transmit_task(DAC_HandleTypeDef *hdac) {
 }
 
+// magic flag nonsense from the STM HAL
 static uint32_t SAI_InterruptFlag2(const SAI_HandleTypeDef *hsai)
 {
   uint32_t tmpIT = SAI_IT_OVRUDR;
@@ -428,6 +406,8 @@ static uint32_t SAI_InterruptFlag2(const SAI_HandleTypeDef *hsai)
 
 extern SAI_HandleTypeDef hsai_BlockA1;
 
+// Initialize DMA to transfer generated samples to the audio codec
+// and call the DAC_DMA_M0_Cplt/DAC_DMA_M1_Cplt callbacks whenever we need more samples
 HAL_StatusTypeDef transmit_init(DAC_HandleTypeDef *hdac) {
     tx_reset(&TRANSMITTER);
 
