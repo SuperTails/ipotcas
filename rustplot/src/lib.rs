@@ -1,5 +1,5 @@
 
-use std::{iter::zip, sync::{atomic::{AtomicBool, Ordering}, mpsc::{Receiver, Sender}}, thread::JoinHandle};
+use std::{collections::VecDeque, iter::zip, sync::{atomic::{AtomicBool, Ordering}, mpsc::{Receiver, Sender}}, thread::JoinHandle};
 
 use itertools::izip;
 use ordered_float::OrderedFloat;
@@ -22,6 +22,11 @@ pub const CARRIERS: usize = 12;
 pub mod hamming;
 pub mod codec;
 
+pub mod serial_msg {
+    pub const ADC_DATA:    u16 = 0x0001;
+    pub const CONS_POINTS: u16 = 0x0002;
+}
+
 const CARRIER_FREQS_HZ: [u32; CARRIERS] = [
     7000, 8000, 8500, 9000, 9500, 10000,
     10500, 11000, 11500, 12500, 13000, 14000,
@@ -35,34 +40,43 @@ pub struct SampleInfo {
     pub power: f32,
 }
 
+pub type ConsPoints = [C32; CARRIERS];
+
 pub struct Demodulator {
+    serial_queue: VecDeque<u8>,
     port: Box<dyn SerialPort>,
-    tx: Sender<SampleInfo>,
+    adc_tx: Sender<SampleInfo>,
+    cons_tx: Sender<ConsPoints>,
     sample_buf: [i32; WINDOW_SIZE],
     accum: [Cint64; CARRIERS],
     sample_head: usize,
     sample_index: usize,
     filt_power: f32,
+    packet_cnt: usize,
 }
 
 impl Demodulator {
-    pub fn recv(port: &str) -> Receiver<SampleInfo> {
+    pub fn recv(port: &str) -> (Receiver<SampleInfo>, Receiver<ConsPoints>) {
         let port =
             serialport::new(port, 115200)
             .timeout(std::time::Duration::MAX)
             .open()
             .expect("unable to open port");
 
-        let (tx, rx) = std::sync::mpsc::channel();
+        let (adc_tx, adc_rx) = std::sync::mpsc::channel();
+        let (cons_tx, cons_rx) = std::sync::mpsc::channel();
 
         let mut dem = Demodulator {
+            serial_queue: VecDeque::new(),
             port,
-            tx,
+            adc_tx,
+            cons_tx,
             accum: [Cint64::zero(); CARRIERS],
             sample_buf: [0; WINDOW_SIZE],
             sample_head: 0,
             sample_index: 0,
             filt_power: 10.0e3,
+            packet_cnt: 0,
         };
 
         std::thread::spawn(move || {
@@ -71,23 +85,83 @@ impl Demodulator {
             }
         });
 
-        rx
+        (adc_rx, cons_rx)
+    }
+
+    pub fn refill_queue(&mut self) {
+        let mut buf = [0; BLOCK_SIZE];
+        let num_read = self.port.read(&mut buf).unwrap();
+        self.serial_queue.extend(&buf[0..num_read]);
+    }
+
+    pub fn munch_byte(&mut self) -> u8 {
+        if self.serial_queue.is_empty() {
+            self.refill_queue();
+        }
+        
+        self.serial_queue.pop_front().unwrap()
+    }
+
+    pub fn munch_u16(&mut self) -> u16 {
+        let lo = self.munch_byte();
+        let hi = self.munch_byte();
+        u16::from_le_bytes([lo, hi])
+    }
+
+    pub fn munch_bytes(&mut self, len: u16) -> Vec<u8> {
+        std::iter::from_fn(|| Some(self.munch_byte())).take(len as usize).collect()
     }
 
     pub fn poll(&mut self) {
-        if NEED_SKIP.swap(false, Ordering::Relaxed) {
-            println!("SKIPPING!");
-            let mut tmp = [0; 1];
-            self.port.read_exact(&mut tmp).unwrap();
+        loop {
+            if self.munch_byte() == 0xFF {
+                break;
+            }
         }
 
-        let mut buf = [0; BLOCK_SIZE];
-        self.port.read_exact(&mut buf).unwrap();
-        for num in buf.chunks_exact(2) {
-            let sample = i16::from_le_bytes(num.try_into().unwrap());
-            let info = self.handle_new_sample(sample);
-            self.tx.send(info).unwrap();
+        // found 1st header byte, check for second header byte
+        if self.munch_byte() != 0x55 {
+            return;
         }
+        if self.munch_byte() != 0xAA {
+            return;
+        }
+        if self.munch_byte() != 0x00 {
+            return;
+        }
+
+        let id = self.munch_u16();
+        let len = self.munch_u16();
+        let dat = self.munch_bytes(len);
+
+        match id {
+            serial_msg::ADC_DATA => {
+                for num in dat.chunks_exact(2) {
+                    let sample = i16::from_le_bytes(num.try_into().unwrap());
+                    let info = self.handle_new_sample(sample);
+                    self.adc_tx.send(info).unwrap();
+                    /*if sample.unsigned_abs() > 1000 {
+                        dbg!(idx);
+                    }*/
+                }
+            }
+            serial_msg::CONS_POINTS => {
+                let mut points = [C32::zero(); CARRIERS];
+                for (pt, src) in zip(&mut points, dat.chunks_exact(4)) {
+                    pt.re = i16::from_le_bytes([src[0], src[1]]) as f32 / 4096.0;
+                    pt.im = i16::from_le_bytes([src[2], src[3]]) as f32 / 4096.0;
+                }
+                self.cons_tx.send(points).unwrap();
+            }
+            _ => {
+                eprintln!("unknown message {id}")
+            }
+        }
+
+        self.packet_cnt += 1;
+
+        /*for num in buf.chunks_exact(2) {
+        }*/
     }
 
     pub fn handle_new_sample(&mut self, sample: i16) -> SampleInfo {
@@ -158,6 +232,25 @@ impl Decoder {
     }
 
     pub fn push(&mut self, (idx, sample): (usize, [C32; CARRIERS]), lock_adj: bool) {
+        if self.header_samples == 2 {
+            self.samples.push((idx, sample));
+        } else if self.header_samples == 1 {
+            self.is_init = true;
+            // this is the training sample
+            /*if !lock_adj {
+                for (adj, samp) in zip(&mut self.iq_adj, sample) {
+                    *adj = C32::new(4.0, 0.0) / samp;
+                }
+            }*/
+            self.samples.push((idx, sample));
+            //self.samples.push((idx, [C32::new(4.0, 0.0); CARRIERS]));
+            self.header_samples += 1;
+        } else {
+            self.header_samples += 1;
+        }
+
+        return;
+
         let mu = 1e-5;
         for c in 0..CARRIERS {
             let samp_adj = sample[c] * self.iq_adj[c];
