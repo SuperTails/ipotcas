@@ -1,6 +1,34 @@
 #pragma once
 #include <stdint.h>
 
+
+#define MODULATION_ASK 0
+#define MODULATION_QAM 1
+
+#if MODULATION_ASK
+
+#define AGC 0
+#define AVG_PHASE_CORRECTION 0
+#define PHASE_CORRECTION 1
+#define BITS_PER_SYMBOL 2
+#define SYMBOL_PERIOD_US 8000
+
+// end MODULATION_ASK
+#elif MODULATION_QAM 
+
+#define AGC 1
+#define AVG_PHASE_CORRECTION 1
+#define PHASE_CORRECTION 1
+#define BITS_PER_SYMBOL 4
+#define SYMBOL_PERIOD_US 4000
+
+// end MODULATION_QAM
+#else
+#error "Must choose a modulation scheme"
+#endif
+
+// 2-ASK
+
 // 1 / (48 kHz) == 62500 ns / 3
 #define SAMPLE_PERIOD_NS_NUM 62500
 #define SAMPLE_PERIOD_NS_DEN 3
@@ -64,13 +92,11 @@ static const int CARRIER_PERIODS_NS[CARRIERS] = {
 //#define CARRIER_PERIOD_NS 166666 // 6khz
 //#define CARRIER_FREQUENCY (1.0e9 / CARRIER_PERIOD_NS)
 
-#define SYMBOL_PERIOD_US 4000
 #define SYMBOL_GAP_US (4 * SYMBOL_PERIOD_US)
 #define TRAIN_PERIOD_US (2 * SYMBOL_PERIOD_US)
 
 #define SAMPLES_PER_SYMBOL ((SAMPLE_RATE_HZ / 1000) * (SYMBOL_PERIOD_US / 1000))
 
-#define BITS_PER_SYMBOL 4
 
 static const int8_t CONSTELLATION_TO_SYMBOL[9][9] = {
   { -1, -1, -1, 28, -1, 27, -1, -1, -1 },

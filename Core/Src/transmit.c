@@ -200,16 +200,23 @@ static void txcs_munch_period(tx_cstream_t *tx, mod_t mod[CARRIERS]) {
     } else {
         int symbols[CARRIERS] = { 0 };
 
-        for (int b = 0; b < 4; ++b) {
+        for (int b = 0; b < BITS_PER_SYMBOL; ++b) {
             int stripe = txhs_munch_bits(&tx->bs, &tx->hs, CARRIERS);
             for (int c = 0; c < CARRIERS; ++c) {
                 symbols[c] |= ((stripe >> c) & 1) << b;
             }
         }
 
+        #if MODULATION_ASK
+        for (int c = 0; c < CARRIERS; ++c) {
+            mod[c].i = 1 + (symbols[c]);
+            mod[c].q = 0;
+        }
+        #elif MODULATION_QAM
         for (int i = 0; i < CARRIERS; ++i) {
             encoder_enc(&tx->enc[i], symbols[i], &mod[i].i, &mod[i].q);
         }
+        #endif
     }
 }
 
@@ -232,7 +239,7 @@ int current_dac_value(transmitter_t *t) {
     int any = 0;
     static unsigned sum = 0;
     if (t->ticks == 0) {
-        sum >>= 1;
+        sum >>= 2;
         if (sum == 0) sum = 0xF29393EF;
     }
     for (int i = 0; i < CARRIERS; ++i) {
@@ -247,8 +254,9 @@ int current_dac_value(transmitter_t *t) {
         // FSK:
         //if (g) { t->mod[ip0][0].i = 4; } else { t->mod[ip0][11].i = 4; }
         // 2-ASK:
+        t->mod[ip0][0].i = 1 + (sum & 0x3);
         // BPSK:
-        t->mod[ip0][0].i = (sum % 2) ? 4 : -4;
+        //t->mod[ip0][0].i = (sum % 2) ? 4 : -4;
     }
     #endif
 

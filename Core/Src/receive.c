@@ -354,7 +354,7 @@ static uint32_t SAI_InterruptFlag2(const SAI_HandleTypeDef *hsai)
 
 int receive_init(void) {
     for (int c = 0; c < CARRIERS; ++c) {
-        carriers[c].mag_adj = 10.0;
+        carriers[c].mag_adj = 8.0;
     }
 
     SAI_HandleTypeDef *hsai = &hsai_BlockB1;
@@ -430,9 +430,11 @@ void receive_task(void) {
             complexf_t b_raw = { data_b_i[c], data_b_q[c] };
             complexf_t b_adj = complexf_mul(b_raw, carriers[c].adj);
 
+#if AGC
             const float mu = 1e-2;
             float mag = sqrtf(b_adj.re * b_adj.re + b_adj.im * b_adj.im);
             carriers[c].mag_adj += mu * (3.0f - mag);
+#endif
 
             cons_points[c*2+0] = (int16_t)(b_adj.re * 4096.0f);
             cons_points[c*2+1] = (int16_t)(b_adj.im * 4096.0f);
@@ -458,11 +460,13 @@ void receive_task(void) {
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 0);
         }
 
+#if AVG_PHASE_CORRECTION
         for (int c = 0; c < CARRIERS; ++c) {
             carriers[c].phase_adj += avg_drift * CARRIER_FREQUENCIES_HZ[c];
             carriers[c].adj.re = carriers[c].mag_adj * cosf(carriers[c].phase_adj);
             carriers[c].adj.im = carriers[c].mag_adj * sinf(carriers[c].phase_adj);
         }
+#endif
 
         /*if (rxs.len == 0) {
             printf("dr %d %d %d\n", (int)(avg_drift * 1e6), (int)(diff2.re * 1e6), (int)(diff2.im * 1e6));
@@ -588,7 +592,9 @@ static void handle_sample_interrupt(int16_t adc_val) {
 
         if (training_sample) {
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
+#if PHASE_CORRECTION
             carriers[c].phase_adj = -atan2f(b_q, b_i);
+#endif
             carriers[c].adj.re = carriers[c].mag_adj * cosf(carriers[c].phase_adj);
             carriers[c].adj.im = carriers[c].mag_adj * sinf(carriers[c].phase_adj);
             //carriers[c].adj.re =  4.0f * b_i / b_mag_sq;

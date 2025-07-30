@@ -140,9 +140,6 @@ impl Demodulator {
                     let sample = i16::from_le_bytes(num.try_into().unwrap());
                     let info = self.handle_new_sample(sample);
                     self.adc_tx.send(info).unwrap();
-                    /*if sample.unsigned_abs() > 1000 {
-                        dbg!(idx);
-                    }*/
                 }
             }
             serial_msg::CONS_POINTS => {
@@ -226,7 +223,7 @@ impl Decoder {
             samples: Vec::new(),
             mag_adj: [1.0; CARRIERS],
             phase_adj: [0.0; CARRIERS],
-            iq_adj: [C32::new(1.0, 0.0); CARRIERS],
+            iq_adj: [C32::new(2e-3, 0.0); CARRIERS],
             is_init: false,
         }
     }
@@ -236,14 +233,13 @@ impl Decoder {
             self.samples.push((idx, sample));
         } else if self.header_samples == 1 {
             self.is_init = true;
-            // this is the training sample
-            /*if !lock_adj {
-                for (adj, samp) in zip(&mut self.iq_adj, sample) {
-                    *adj = C32::new(4.0, 0.0) / samp;
-                }
-            }*/
-            self.samples.push((idx, sample));
-            //self.samples.push((idx, [C32::new(4.0, 0.0); CARRIERS]));
+
+            let mut res = [C32::zero(); CARRIERS];
+            for (res, samp, adj) in izip!(&mut res, sample, self.iq_adj) {
+                *res = samp * adj;
+            }
+            self.samples.push((idx, res));
+
             self.header_samples += 1;
         } else {
             self.header_samples += 1;
