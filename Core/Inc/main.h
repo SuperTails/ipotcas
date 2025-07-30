@@ -36,11 +36,24 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+typedef struct {
+  int16_t header_lo;
+  int16_t header_hi;
+  int16_t msg_type;
+  uint16_t len;
+} usb_msg_header_t;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+
+#define USB_MSG_HEADER_LO 0x55FF
+#define USB_MSG_HEADER_HI 0x00AA
+
+#define USB_MSG_RX_SAMPLES 0x0001
+#define USB_MSG_RX_CONS_POINTS 0x0002
+#define USB_MSG_TX_AUDIO_ACK 0x0003
+
 
 /* USER CODE END EC */
 

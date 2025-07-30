@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 
+#define TX_RAW_STREAM 0
 
 #define MODULATION_ASK 0
 #define MODULATION_QAM 1

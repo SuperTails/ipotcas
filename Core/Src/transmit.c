@@ -6,8 +6,10 @@
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dma.h"
 #include "tusb.h"
+#include "main.h"
 #include "stm32f7xx_hal_dac.h"
 #include "stm32f7xx_hal_dma_ex.h"
+#include <complex.h>
 #include <stdint.h>
 #include <stdint.h>
 #include <string.h>
@@ -354,8 +356,40 @@ static int16_t dac_dma_buf_b[DMA_BUF_SZ] __ALIGNED(8);
 
 static int16_t usb_buf[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 
+#if TX_RAW_STREAM
+static volatile int16_t next_tx_stream[TX_SAMPLES_PER_SYMBOL] = { 0 };
+static volatile int next_tx_stream_ready = 0;
+
+void submit_raw_stream(int16_t *samples) { 
+    for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
+        next_tx_stream[i] = samples[i];
+    }
+    next_tx_stream_ready = 1;
+}
+#endif
+
 void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
     (void)dma;
+
+
+#if TX_RAW_STREAM
+
+    if (next_tx_stream_ready) {
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+
+        for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
+            int16_t value = next_tx_stream[i];
+            dac_dma_buf_a[2*i+0] = value;
+            dac_dma_buf_a[2*i+1] = value;
+        }
+        next_tx_stream_ready = 0;
+
+        usb_msg_header_t header = { USB_MSG_HEADER_LO, USB_MSG_HEADER_HI, USB_MSG_TX_AUDIO_ACK, 0 };
+        tud_cdc_write((const void *)&header, sizeof(header));
+        tud_cdc_write_flush();
+    }
+
+#else // normal operation
 
     // buffer A just finished being read from, refill it
     for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
@@ -364,13 +398,36 @@ void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
         dac_dma_buf_a[2*i+1] = value;
         usb_buf[i] = value;
     }
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
-    //tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
+
+#endif
+
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
+
 }
 
 void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
     (void)dma;
+
+
+#if TX_RAW_STREAM
+
+    if (next_tx_stream_ready) {
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+
+        for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
+            int16_t value = next_tx_stream[i];
+            dac_dma_buf_b[2*i+0] = value;
+            dac_dma_buf_b[2*i+1] = value;
+        }
+        next_tx_stream_ready = 0;
+
+        usb_msg_header_t header = { USB_MSG_HEADER_LO, USB_MSG_HEADER_HI, USB_MSG_TX_AUDIO_ACK, 0 };
+        tud_cdc_write((const void *)&header, sizeof(header));
+        tud_cdc_write_flush();
+
+    }
+
+#else // normal operation
 
     // buffer B just finished being read from, refill it
     for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
@@ -379,8 +436,9 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
         dac_dma_buf_b[2*i+1] = value;
         usb_buf[i] = value;
     }
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
-    //tud_cdc_n_write(1, usb_buf, sizeof(usb_buf));
+
+#endif
+
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
 }
 

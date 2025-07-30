@@ -326,9 +326,14 @@ int main(void)
     Error_Handler();
   }
 
+  int8_t sample_buf[2*192] __ALIGNED(4);
+  int sample_buf_idx = 0;
+
   int s = 0;
   int calls = 0;
   int st = micros() / 1000000;
+  int total_bytes = 0;
+  uint64_t count_start = 0;
   while (1)
   {
     /* USER CODE END WHILE */
@@ -347,7 +352,32 @@ int main(void)
     if (s != s2) {
       s = s2;
       if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections); }
+
+#if TX_RAW_STREAM
+      int millis = ((micros() - count_start) / 1000);
+      int bytes_per_ms = total_bytes / millis;
+      int micros_per_packet = (int)(micros() - count_start) / (total_bytes / 384);
+      printf("b/ms: %d us/p: %d\n", bytes_per_ms, micros_per_packet);
+      printf("%d\n", tud_cdc_available());
+#endif
     }
+
+
+#if TX_RAW_STREAM
+    tud_task();
+
+    if (tud_cdc_available() >= 64) {
+      tud_cdc_read(sample_buf+sample_buf_idx, 64);
+      sample_buf_idx += 64;
+      total_bytes += 64;
+    }
+
+    if (sample_buf_idx == 384) {
+      submit_raw_stream((int16_t *)sample_buf);
+      sample_buf_idx = 0;
+    }
+#else
+    tud_task();
 
     static bool prev_btn_state = false;
     bool btn_state = HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin);
@@ -355,11 +385,13 @@ int main(void)
       transmit_send(NULL, TEST_DATA, sizeof(TEST_DATA));
     }
 
-    ++calls;
     transmit_task(&hdac);
+#endif
+
     receive_task();
     //ethernet_task();
-    tud_task();
+
+    ++calls;
   }
   /* USER CODE END 3 */
 }
