@@ -28,7 +28,17 @@
 #error "Must choose a modulation scheme"
 #endif
 
-// 2-ASK
+#if 1
+#define HAMMING_BLOCK_SIZE 15
+#define HAMMING_MESSAGE_SIZE 11
+#define HAMMING_ENCODE hamming_encode_15_11
+#define HAMMING_DECODE hamming_decode_15_11
+#else
+#define HAMMING_BLOCK_SIZE 7
+#define HAMMING_MESSAGE_SIZE 4
+#define HAMMING_ENCODE hamming_encode_7_4
+#define HAMMING_DECODE hamming_decode_7_4
+#endif
 
 // 1 / (48 kHz) == 62500 ns / 3
 #define SAMPLE_PERIOD_NS_NUM 62500

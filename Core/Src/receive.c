@@ -183,6 +183,8 @@ typedef struct {
     float mag_adj;
     float phase_adj;
     complexf_t adj;
+    float err_sum;
+    int symbol_cnt;
 } carrier_t;
 
 carrier_t carriers[CARRIERS];
@@ -206,6 +208,7 @@ typedef struct {
     size_t len;
     int next_byte;
     uint8_t data[RX_STREAM_SIZE];
+    int hamming_err_cnt;
 } rx_stream_t;
 
 static void rx_push_bitstring(rx_stream_t *rxs, int value, int num_bits) {
@@ -245,6 +248,7 @@ static void rx_stream_reset(rx_stream_t *rxs) {
     rxs->bits = 0;
     rxs->len = 0;
     rxs->next_byte = 0;
+    rxs->hamming_err_cnt = 0;
 }
 
 typedef struct {
@@ -259,12 +263,12 @@ typedef struct {
 static void rxh_push_bitstring(rx_stream_t *rxs, rx_hamming_stream_t *rxh, int value, int num_bits) {
     rxh->next_chunk |= (value << rxh->bits);
     rxh->bits += num_bits;
-    while (rxh->bits >= 7) {
-        uint16_t chunk = rxh->next_chunk & 0x7F;
-        rxh->next_chunk >>= 7;
-        rxh->bits -= 7;
+    while (rxh->bits >= HAMMING_BLOCK_SIZE) {
+        uint16_t chunk = rxh->next_chunk & ((1 << HAMMING_BLOCK_SIZE) - 1);
+        rxh->next_chunk >>= HAMMING_BLOCK_SIZE;
+        rxh->bits -= HAMMING_BLOCK_SIZE;
 
-        rx_push_bitstring(rxs, hamming_decode_7_4(chunk), 4);
+        rx_push_bitstring(rxs, HAMMING_DECODE(chunk, &rxs->hamming_err_cnt), HAMMING_MESSAGE_SIZE);
     }
 
     rxh->next_check_chunk |= (value << rxh->check_bits);
@@ -355,6 +359,8 @@ static uint32_t SAI_InterruptFlag2(const SAI_HandleTypeDef *hsai)
 int receive_init(void) {
     for (int c = 0; c < CARRIERS; ++c) {
         carriers[c].mag_adj = 8.0;
+        carriers[c].err_sum = 0.0;
+        carriers[c].symbol_cnt = 0;
     }
 
     SAI_HandleTypeDef *hsai = &hsai_BlockB1;
@@ -453,6 +459,10 @@ void receive_task(void) {
             complexf_t best_iq = { i_int, q_int };
             complexf_t diff = complexf_div(b_adj, best_iq);
 
+            float err_mag_sq = (b_adj.re - i_int) * (b_adj.re - i_int) + (b_adj.im - q_int) * (b_adj.im - q_int);
+            carriers[c].err_sum += sqrtf(err_mag_sq);
+            carriers[c].symbol_cnt += 1;
+
             diff2 = diff;
 
             avg_drift += -atan2f(diff.im, diff.re) / (CARRIER_FREQUENCIES_HZ[c] * CARRIERS);
@@ -502,25 +512,48 @@ void receive_task(void) {
         }
 
         if (rxs.len > 0) {
+            bool packet_ok = true;
             int exp_len = (rxs.data[1] << 8) | rxs.data[0];
-            int len_diff = exp_len - (int)rxs.len - 2;
-            if (-40 <= len_diff && len_diff <= 40) {
-                rxs.len = exp_len + 2;
-                ethernet_send_packet(rxs.data+2, exp_len);
-                printf("RX (%u %u): ", exp_len, rxs.len - 2);
+            int len_diff = exp_len - (int)rxs.len - 4;
+            if (-100 <= len_diff && len_diff <= 100) {
+                rxs.len = exp_len + 4;
+                printf("RX (%u %u): ", exp_len, rxs.len - 4);
             } else {
-                printf("BAD LEN");
+                printf("BAD LEN (exp %u found %u)\n", exp_len, rxs.len - 4);
+                packet_ok = false;
+            }
+
+            uint8_t checksum_acc = 0;
+            uint8_t checksum_cum = 0;
+            for (size_t i = 2; i < rxs.len-2; ++i) {
+                checksum_acc += rxs.data[i];
+                checksum_cum += checksum_acc;
+            }
+
+            if (checksum_acc != rxs.data[rxs.len-2] || checksum_cum != rxs.data[rxs.len-1]) {
+                printf(
+                    "BAD CHECKSUM (exp %02x %02x found %02x %02x)\n", 
+                    checksum_acc, checksum_cum,
+                    rxs.data[rxs.len-2], rxs.data[rxs.len-1]
+                );
+                packet_ok = false;
+            }
+
+            if (packet_ok) {
+                ethernet_send_packet(rxs.data+2, exp_len);
             }
 
             /*if (rxs.len < exp_len + 2 + 8) {
                 rxs.len = exp_len + 2;
             }*/
 
-            for (size_t i = 2; i < rxs.len; ++i) {
+
+            for (size_t i = 2; i < rxs.len-2; ++i) {
                 printf("%c", rxs.data[i]);
             }
             printf("\n");
             printf("m/p: %d %d\n", (int)(log10f(carriers[0].mag_adj) * 1000.0f), 0);
+            printf("hamming errors: %d\n", rxs.hamming_err_cnt);
             int l = (rxs.len < expected_len) ? rxs.len : expected_len;
             printf("%d: ", 2*l/CARRIERS);
             for (int i = 0; i < CARRIERS; ++i) {
@@ -528,6 +561,13 @@ void receive_task(void) {
                 bit_errors[i] = 0;
             }
             expected_cnt = 0;
+            printf("\n");
+            printf("rms err: ");
+            for (int i = 0; i < CARRIERS; ++i) {
+                printf("%3d ", (int)(carriers[i].err_sum * 1000.0f / carriers[i].symbol_cnt));
+                carriers[i].err_sum = 0.0f;
+                carriers[i].symbol_cnt = 0;
+            }
             printf("\n");
             if (rxs.len-2 == TEST_DATA_LEN) {
                 for (int i = 0; i < TEST_DATA_LEN; ++i) {

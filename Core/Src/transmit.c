@@ -108,22 +108,40 @@ typedef struct {
     size_t idx;
     uint32_t buf;
     int bits;
+    uint8_t checksum_acc;
+    uint8_t checksum_cum;
+    int checksum_done;
 } tx_bitstream_t;
 
 void txbs_reload_data(tx_bitstream_t *s) {
     s->idx = 0;
     s->buf = sym_len;
     s->bits = 16;
+    s->checksum_acc = 0;
+    s->checksum_cum = 0;
 }
 
 bool txbs_data_exhausted(const tx_bitstream_t *s) {
-    return s->idx >= sym_len && s->bits == 0;
+    return s->idx == (sym_len + 2) && s->bits == 0;
 }
 
 int txbs_munch_bits(tx_bitstream_t *s, int num_bits) {
-    while (num_bits > s->bits && s->idx < sym_len) {
-        s->buf |= sym_data[s->idx++] << s->bits;
-        s->bits += 8;
+    while (num_bits > s->bits && s->idx < sym_len + 2) {
+        if (s->idx < sym_len) {
+            s->buf |= sym_data[s->idx] << s->bits;
+            s->checksum_acc += sym_data[s->idx];
+            s->checksum_cum += s->checksum_acc;
+            s->bits += 8;
+            s->idx++;
+        } else if (s->idx == sym_len) {
+            s->buf |= s->checksum_acc << s->bits;
+            s->bits += 8;
+            s->idx++;
+        } else if (s->idx == sym_len + 1) {
+            s->buf |= s->checksum_cum << s->bits;
+            s->bits += 8;
+            s->idx++;
+        }
     }
 
     int result = s->buf & ((1 << num_bits) - 1);
@@ -148,10 +166,10 @@ static bool txhs_data_exhausted(const tx_bitstream_t *s, const tx_hamming_t *txh
 
 static int txhs_munch_bits(tx_bitstream_t *s, tx_hamming_t *txh, int num_bits) {
     while (num_bits > txh->bits) {
-        uint16_t val = txbs_munch_bits(s, 4);
-        uint16_t chunk = hamming_encode_7_4(val);
+        uint16_t val = txbs_munch_bits(s, HAMMING_MESSAGE_SIZE);
+        uint16_t chunk = HAMMING_ENCODE(val);
         txh->buf |= chunk << txh->bits;
-        txh->bits += 7;
+        txh->bits += HAMMING_BLOCK_SIZE;
     }
 
     int result = txh->buf & ((1 << num_bits) - 1);
