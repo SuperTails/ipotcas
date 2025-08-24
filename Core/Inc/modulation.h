@@ -11,6 +11,7 @@
 #define AGC 0
 #define AVG_PHASE_CORRECTION 0
 #define PHASE_CORRECTION 1
+#define TRAINING_PHASE 1.5707f
 #define BITS_PER_SYMBOL 2
 #define SYMBOL_PERIOD_US 8000
 
@@ -20,8 +21,16 @@
 #define AGC 1
 #define AVG_PHASE_CORRECTION 1
 #define PHASE_CORRECTION 1
-#define BITS_PER_SYMBOL 4
+#define TRAINING_PHASE 0.0f
 #define SYMBOL_PERIOD_US 4000
+
+#define TRELLIS_CODING 1
+
+#if TRELLIS_CODING
+#define BITS_PER_SYMBOL 4
+#else
+#define BITS_PER_SYMBOL 5
+#endif
 
 // end MODULATION_QAM
 #else
@@ -33,11 +42,18 @@
 #define HAMMING_MESSAGE_SIZE 11
 #define HAMMING_ENCODE hamming_encode_15_11
 #define HAMMING_DECODE hamming_decode_15_11
-#else
+#elif 0
 #define HAMMING_BLOCK_SIZE 7
 #define HAMMING_MESSAGE_SIZE 4
 #define HAMMING_ENCODE hamming_encode_7_4
 #define HAMMING_DECODE hamming_decode_7_4
+#elif 0
+#define HAMMING_BLOCK_SIZE 8
+#define HAMMING_MESSAGE_SIZE 8
+#define HAMMING_ENCODE hamming_encode_nop
+#define HAMMING_DECODE hamming_decode_nop
+#else
+#error "Must choose a hamming code"
 #endif
 
 // 1 / (48 kHz) == 62500 ns / 3
@@ -51,7 +67,7 @@
 #define CARRIERS 16
 
 static const int CARRIER_FREQUENCIES_HZ[CARRIERS] = {
-  6500,
+ 6500,
   7000,
   7500,
    8000,

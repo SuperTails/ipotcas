@@ -2,6 +2,15 @@
 
 #include <stdint.h>
 
+static inline uint16_t hamming_decode_nop(uint16_t chunk, int *error_cnt) {
+    (void)error_cnt;
+    return chunk;
+}
+
+static inline uint16_t hamming_encode_nop(uint16_t chunk) {
+    return chunk;
+}
+
 static inline uint16_t hamming_decode_15_11(uint16_t chunk, int *error_cnt) {
     int p0 = __builtin_popcount(chunk & 0x5555) & 1;
     int p1 = __builtin_popcount(chunk & 0x6666) & 1;

@@ -3,6 +3,7 @@
 #include "modulation.h"
 #include "ethernet.h"
 #include "hamming.h"
+#include "scrambler.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dma.h"
 #include "tusb.h"
@@ -71,10 +72,15 @@ static void encoder_reset(encoder_t *enc) {
 
 static void encoder_enc(encoder_t *enc, int symbol, int16_t *i, int16_t *q) {
     int q34 = symbol & 0x3;
-    int q12 = symbol >> 2;
+    int q12 = (symbol >> 2) & 0x3;
 
+#if TRELLIS_CODING
     enc->y12 = diff_enc(enc->y12, q12);
     int y0 = cc_step(&enc->cc, enc->y12);
+#else
+    enc->y12 = diff_enc(enc->y12, q12);
+    int y0 = (symbol >> 4) & 0x1;
+#endif
 
     *i = SYMBOL_TO_CONSTELLATION_I[(y0 << 4) | (enc->y12 << 2) | q34];
     *q = SYMBOL_TO_CONSTELLATION_Q[(y0 << 4) | (enc->y12 << 2) | q34];
@@ -108,6 +114,7 @@ typedef struct {
     size_t idx;
     uint32_t buf;
     int bits;
+    scrambler_t scrambler;
     uint8_t checksum_acc;
     uint8_t checksum_cum;
     int checksum_done;
@@ -119,6 +126,10 @@ void txbs_reload_data(tx_bitstream_t *s) {
     s->bits = 16;
     s->checksum_acc = 0;
     s->checksum_cum = 0;
+
+    s->scrambler = scrambler_reset();
+    s->buf ^= scrambler_step_byte(&s->scrambler);
+    s->buf ^= scrambler_step_byte(&s->scrambler) << 8;
 }
 
 bool txbs_data_exhausted(const tx_bitstream_t *s) {
@@ -128,17 +139,17 @@ bool txbs_data_exhausted(const tx_bitstream_t *s) {
 int txbs_munch_bits(tx_bitstream_t *s, int num_bits) {
     while (num_bits > s->bits && s->idx < sym_len + 2) {
         if (s->idx < sym_len) {
-            s->buf |= sym_data[s->idx] << s->bits;
+            s->buf |= (sym_data[s->idx] ^ scrambler_step_byte(&s->scrambler)) << s->bits;
             s->checksum_acc += sym_data[s->idx];
             s->checksum_cum += s->checksum_acc;
             s->bits += 8;
             s->idx++;
         } else if (s->idx == sym_len) {
-            s->buf |= s->checksum_acc << s->bits;
+            s->buf |= (s->checksum_acc ^ scrambler_step_byte(&s->scrambler)) << s->bits;
             s->bits += 8;
             s->idx++;
         } else if (s->idx == sym_len + 1) {
-            s->buf |= s->checksum_cum << s->bits;
+            s->buf |= (s->checksum_cum ^ scrambler_step_byte(&s->scrambler)) << s->bits;
             s->bits += 8;
             s->idx++;
         }

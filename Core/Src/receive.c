@@ -1,5 +1,6 @@
 #include "receive.h"
 #include "fast_math.h"
+#include "scrambler.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_cortex.h"
 #include "stm32f7xx_hal_sai.h"
@@ -22,6 +23,22 @@
 #define TRELLIS_HISTORY 16
 #define CC_STATES 8
 
+static int find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
+    int best_symbol = -1;
+    float best_dist = INFINITY;
+    for (int i = 0; i < 32; ++i) { 
+        float i_dist = b_i - SYMBOL_TO_CONSTELLATION_I[i];
+        float q_dist = b_q - SYMBOL_TO_CONSTELLATION_Q[i];
+        float dist = i_dist * i_dist + q_dist * q_dist;
+        if (dist < best_dist) {
+            best_symbol = i;
+            best_dist = dist;
+            if (best_i) *best_i = SYMBOL_TO_CONSTELLATION_I[i];
+            if (best_q) *best_q = SYMBOL_TO_CONSTELLATION_Q[i];
+        }
+    }
+    return best_symbol;
+}
 
 int diff_dec(int y_prev, int y_new) {
   const int8_t TABLE[4][4] = {
@@ -68,7 +85,6 @@ extern const char TEST_DATA[];
 const size_t TEST_DATA_LEN = 1507;
 
 size_t expected_cnt = 0;
-
 
 void trellis_reset(trellis_t *t) {
     memset(t, 0, sizeof(*t));
@@ -129,7 +145,8 @@ int trellis_pop_tail(trellis_t *t) {
 
     return (q12 << 2) | result_q34;
 }
-  
+
+#if TRELLIS_CODING
 int trellis_push_head(trellis_t *t, float i_pt, float q_pt) {
     int result = -1;
     if (t->head == t->tail) {
@@ -177,6 +194,20 @@ int trellis_push_head(trellis_t *t, float i_pt, float q_pt) {
 
     return result;
 }
+#else
+int trellis_push_head(trellis_t *t, float i_pt, float q_pt) {
+    int symbol = find_best_iq(i_pt, q_pt, NULL, NULL);
+
+    int result_q0 = symbol >> 4;
+    int result_y12 = (symbol >> 2) & 0x3;
+    int result_q34 = symbol & 0x3;
+
+    int q12 = diff_dec(t->y12, result_y12);
+    t->y12 = result_y12;
+
+    return (result_q0 << 4) | (q12 << 2) | result_q34;
+}
+#endif
 
 typedef struct {
     trellis_t trellis;
@@ -209,9 +240,14 @@ typedef struct {
     int next_byte;
     uint8_t data[RX_STREAM_SIZE];
     int hamming_err_cnt;
+    scrambler_t scrambler;
 } rx_stream_t;
 
 static void rx_push_bitstring(rx_stream_t *rxs, int value, int num_bits) {
+    for (int i = 0; i < num_bits; ++i) {
+        value ^= scrambler_step(&rxs->scrambler) << i;
+    }
+
     rxs->next_byte |= (value << rxs->bits);
     rxs->bits += num_bits;
     while (rxs->bits >= 8) {
@@ -225,7 +261,7 @@ static void rx_push_bitstring(rx_stream_t *rxs, int value, int num_bits) {
 }
 
 static void rx_stream_push_block(rx_stream_t *rxs, int symbols[CARRIERS]) {
-    for (int b = 0; b < 4; ++b) {
+    for (int b = 0; b < BITS_PER_SYMBOL; ++b) {
         for (int c = 0; c < CARRIERS; ++c) {
             rx_push_bitstring(rxs, (symbols[c] >> b) & 0x1, 1);
         }
@@ -249,6 +285,7 @@ static void rx_stream_reset(rx_stream_t *rxs) {
     rxs->len = 0;
     rxs->next_byte = 0;
     rxs->hamming_err_cnt = 0;
+    rxs->scrambler = scrambler_reset();
 }
 
 typedef struct {
@@ -297,7 +334,7 @@ static void rxh_push_bitstring(rx_stream_t *rxs, rx_hamming_stream_t *rxh, int v
 }
 
 static void rxh_push_block(rx_stream_t *rxs, rx_hamming_stream_t *rxh, int symbols[CARRIERS]) {
-    for (int b = 0; b < 4; ++b) {
+    for (int b = 0; b < BITS_PER_SYMBOL; ++b) {
         for (int c = 0; c < CARRIERS; ++c) {
             rxh_push_bitstring(rxs, rxh, (symbols[c] >> b) & 0x1, 1);
         }
@@ -394,20 +431,6 @@ int receive_init(void) {
     __HAL_UNLOCK(hsai);
 
     return HAL_OK;
-}
-
-static void find_best_iq(float b_i, float b_q, int *best_i, int *best_q) {
-    float best_dist = INFINITY;
-    for (int i = 0; i < 32; ++i) { 
-        float i_dist = b_i - SYMBOL_TO_CONSTELLATION_I[i];
-        float q_dist = b_q - SYMBOL_TO_CONSTELLATION_Q[i];
-        float dist = i_dist * i_dist + q_dist * q_dist;
-        if (dist < best_dist) {
-            best_dist = dist;
-            *best_i = SYMBOL_TO_CONSTELLATION_I[i];
-            *best_q = SYMBOL_TO_CONSTELLATION_Q[i];
-        }
-    }
 }
 
 void receive_task(void) {
@@ -633,7 +656,7 @@ static void handle_sample_interrupt(int16_t adc_val) {
         if (training_sample) {
             HAL_GPIO_WritePin(GPIOF, GPIO_PIN_1, 1);
 #if PHASE_CORRECTION
-            carriers[c].phase_adj = -atan2f(b_q, b_i);
+            carriers[c].phase_adj = TRAINING_PHASE - atan2f(b_q, b_i);
 #endif
             carriers[c].adj.re = carriers[c].mag_adj * cosf(carriers[c].phase_adj);
             carriers[c].adj.im = carriers[c].mag_adj * sinf(carriers[c].phase_adj);

@@ -17,7 +17,7 @@ const SAMPLE_RATE: u32 = 48000;
 
 const WINDOW_SIZE: usize = 96;
 
-pub const CARRIERS: usize = 12;
+pub const CARRIERS: usize = 16;
 
 pub mod hamming;
 pub mod codec;
@@ -27,9 +27,9 @@ pub mod serial_msg {
     pub const CONS_POINTS: u16 = 0x0002;
 }
 
-const CARRIER_FREQS_HZ: [u32; CARRIERS] = [
-    7000, 8000, 8500, 9000, 9500, 10000,
-    10500, 11000, 11500, 12500, 13000, 14000,
+pub const CARRIER_FREQS_HZ: [u32; CARRIERS] = [
+    6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
+    10500, 11000, 11500, 12000, 12500, 13000, 14000, 14500,
 ];
 
 #[derive(Clone, Copy)]
