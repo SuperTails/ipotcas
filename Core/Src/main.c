@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f7xx_hal_uart.h"
 #include "string.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -39,7 +40,12 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#if 1
+const char TEST_DATA[] =
+    "Somebody once told me the world is gonna roll me / "
+    "I ain't the sharpest tool in the shed / ";
+
+
+#if 0
 const char TEST_DATA[] =
     "Somebody once told me the world is gonna roll me / "
     "I ain't the sharpest tool in the shed / "
@@ -138,6 +144,8 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
 
+uint8_t raw_uart_buf[288];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -173,9 +181,6 @@ int _write(int fd, const char *ptr, int len) {
   }
   return -1;
 }
-extern int buffer_uses[8];
-extern int uart_rx_tail; // index that is being popped off
-extern uint8_t uart_rx_buf[1024];
 
 int hamming_corrections = 0;
 
@@ -327,8 +332,13 @@ int main(void)
     Error_Handler();
   }
 
-  int8_t sample_buf[2*192] __ALIGNED(4);
-  int sample_buf_idx = 0;
+#if TX_RAW_STREAM
+  int uart_ok = HAL_UART_Receive_DMA(&huart3, raw_uart_buf, sizeof(raw_uart_buf));
+  if (uart_ok != HAL_OK) {
+    printf("UART rx start failed %d\n", uart_ok);
+    Error_Handler();
+  }
+#endif
 
   int s = 0;
   int calls = 0;
@@ -349,24 +359,23 @@ int main(void)
       printf("hewo\n");
     }*/
 
+#if TX_RAW_STREAM
+    if (need_new_raw_samples()) {
+      printf("S\n");
+    }
+#endif
 
     if (s != s2) {
       s = s2;
-      if (s2 != st) { printf("hewo %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections); }
-
-#if TX_RAW_STREAM
-      int millis = ((micros() - count_start) / 1000);
-      int bytes_per_ms = total_bytes / millis;
-      int micros_per_packet = (int)(micros() - count_start) / (total_bytes / 384);
-      printf("b/ms: %d us/p: %d\n", bytes_per_ms, micros_per_packet);
-      printf("%d\n", tud_cdc_available());
-#endif
+      if (s2 != st) { printf("hewo %d %d %d %d\n", calls / (s2 - st), heth.Instance->MMCRGUFCR, hamming_corrections, huart3.RxState); }
     }
 
 
 #if TX_RAW_STREAM
     tud_task();
 
+
+#if 0
     if (tud_cdc_available() >= 64) {
       tud_cdc_read(sample_buf+sample_buf_idx, 64);
       sample_buf_idx += 64;
@@ -377,6 +386,9 @@ int main(void)
       submit_raw_stream((int16_t *)sample_buf);
       sample_buf_idx = 0;
     }
+#else
+
+#endif
 #else
     tud_task();
 
@@ -1085,6 +1097,18 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
+  if (huart == &huart3) {
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+
+    submit_raw_stream(raw_uart_buf);
+
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 0);
+  }
+}
+
 
 /* USER CODE END 4 */
 

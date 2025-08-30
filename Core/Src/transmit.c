@@ -11,6 +11,7 @@
 #include "stm32f7xx_hal_dac.h"
 #include "stm32f7xx_hal_dma_ex.h"
 #include <complex.h>
+#include <stdatomic.h>
 #include <stdint.h>
 #include <stdint.h>
 #include <string.h>
@@ -386,15 +387,39 @@ static int16_t dac_dma_buf_b[DMA_BUF_SZ] __ALIGNED(8);
 static int16_t usb_buf[TX_SAMPLES_PER_SYMBOL] __ALIGNED(8);
 
 #if TX_RAW_STREAM
-static volatile int16_t next_tx_stream[TX_SAMPLES_PER_SYMBOL] = { 0 };
-static volatile int next_tx_stream_ready = 0;
 
-void submit_raw_stream(int16_t *samples) { 
-    for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-        next_tx_stream[i] = samples[i];
+#define COMPRESSED_SYMBOL_SIZE (TX_SAMPLES_PER_SYMBOL * 12 / 8)
+
+static volatile uint8_t raw_tx_stream[TX_QUEUE_SIZE][COMPRESSED_SYMBOL_SIZE] = { 0 };
+static volatile size_t raw_tx_head = 0;
+static volatile _Atomic(size_t) raw_tx_length = 0;
+static volatile _Atomic(size_t) raw_tx_available = TX_QUEUE_SIZE;
+
+static volatile size_t raw_tx_queue_full_errors = 0;
+
+void submit_raw_stream(uint8_t *samples) { 
+    static size_t raw_tx_tail = 0;
+
+    if (atomic_load(&raw_tx_length) < TX_QUEUE_SIZE) {
+        for (int i = 0; i < COMPRESSED_SYMBOL_SIZE; ++i) {
+            raw_tx_stream[raw_tx_tail][i] = samples[i];
+        }
+        atomic_fetch_add(&raw_tx_length, 1);
+        if (++raw_tx_tail >= TX_QUEUE_SIZE) { raw_tx_tail = 0; }
+    } else {
+        ++raw_tx_queue_full_errors;
     }
-    next_tx_stream_ready = 1;
 }
+
+bool need_new_raw_samples(void) {
+    if (atomic_load(&raw_tx_available) > 0) {
+        atomic_fetch_add(&raw_tx_available, -1);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 #endif
 
 void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
@@ -403,15 +428,34 @@ void DMA_DAC_M0_Cplt(struct __DMA_HandleTypeDef *dma) {
 
 #if TX_RAW_STREAM
 
-    if (next_tx_stream_ready) {
+    if (atomic_load(&raw_tx_length) > 0) {
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
 
-        for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-            int16_t value = next_tx_stream[i];
-            dac_dma_buf_a[2*i+0] = value;
-            dac_dma_buf_a[2*i+1] = value;
+        int j = 0;
+        for (int i = 0; i < COMPRESSED_SYMBOL_SIZE; i += 3) {
+            uint8_t b0 = raw_tx_stream[raw_tx_head][i+0];
+            uint8_t b1 = raw_tx_stream[raw_tx_head][i+1];
+            uint8_t b2 = raw_tx_stream[raw_tx_head][i+2];
+
+            int32_t s = (b2 << 16) | (b1 << 8) | (b0 << 0);
+            int32_t s0 = s & 0xFFF;
+            int32_t s1 = (s >> 12) & 0xFFF;
+
+            // Sign-extend
+            s0 = (s0 << 20) >> 20;
+            s1 = (s1 << 20) >> 20;
+
+            dac_dma_buf_a[2*j+0] = s0;
+            dac_dma_buf_a[2*j+1] = s0;
+            ++j;
+            dac_dma_buf_a[2*j+0] = s1;
+            dac_dma_buf_a[2*j+1] = s1;
+            ++j;
         }
-        next_tx_stream_ready = 0;
+
+        if (++raw_tx_head >= TX_QUEUE_SIZE) { raw_tx_head = 0; }
+        atomic_fetch_add(&raw_tx_length, -1);
+        atomic_fetch_add(&raw_tx_available, 1);
 
         usb_msg_header_t header = { USB_MSG_HEADER_LO, USB_MSG_HEADER_HI, USB_MSG_TX_AUDIO_ACK, 0 };
         tud_cdc_write((const void *)&header, sizeof(header));
@@ -440,20 +484,34 @@ void DMA_DAC_M1_Cplt(struct __DMA_HandleTypeDef *dma) {
 
 #if TX_RAW_STREAM
 
-    if (next_tx_stream_ready) {
+    if (atomic_load(&raw_tx_length) > 0) {
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
 
-        for (int i = 0; i < TX_SAMPLES_PER_SYMBOL; ++i) {
-            int16_t value = next_tx_stream[i];
-            dac_dma_buf_b[2*i+0] = value;
-            dac_dma_buf_b[2*i+1] = value;
+        int j = 0;
+        for (int i = 0; i < COMPRESSED_SYMBOL_SIZE; i += 3) {
+            uint8_t b0 = raw_tx_stream[raw_tx_head][i+0];
+            uint8_t b1 = raw_tx_stream[raw_tx_head][i+1];
+            uint8_t b2 = raw_tx_stream[raw_tx_head][i+2];
+
+            int32_t s = (b2 << 16) | (b1 << 8) | (b0 << 0);
+            int16_t s0 = (s & 0xFFF) << 4;
+            int16_t s1 = ((s >> 12) & 0xFFF) << 4;
+
+            dac_dma_buf_b[2*j+0] = s0;
+            dac_dma_buf_b[2*j+1] = s0;
+            ++j;
+            dac_dma_buf_b[2*j+0] = s1;
+            dac_dma_buf_b[2*j+1] = s1;
+            ++j;
         }
-        next_tx_stream_ready = 0;
+
+        if (++raw_tx_head >= TX_QUEUE_SIZE) { raw_tx_head = 0; }
+        atomic_fetch_add(&raw_tx_length, -1);
+        atomic_fetch_add(&raw_tx_available, 1);
 
         usb_msg_header_t header = { USB_MSG_HEADER_LO, USB_MSG_HEADER_HI, USB_MSG_TX_AUDIO_ACK, 0 };
         tud_cdc_write((const void *)&header, sizeof(header));
         tud_cdc_write_flush();
-
     }
 
 #else // normal operation

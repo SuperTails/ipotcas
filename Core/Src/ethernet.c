@@ -211,50 +211,6 @@ uint8_t get_next_uart(void) {
   return d;
 }
 
-void ethernet_task(void) {
-  HAL_UART_Receive_IT(&huart2, uart_rx_buf, sizeof(uart_rx_buf));
-  int uart_rx_head = (int)(huart2.pRxBuffPtr - uart_rx_buf);
-
-  while (uart_rx_tail != uart_rx_head) {
-    uint8_t d = get_next_uart();
-
-    if (next_packet_state == ST_HEADER) {
-      if (d == '%') {
-        next_packet_state = ST_LEN_LO;
-      }
-    } else if (next_packet_state == ST_LEN_LO) {
-      next_packet_len = d;
-      next_packet_state = ST_LEN_HI;
-    } else if (next_packet_state == ST_LEN_HI) {
-      next_packet_len |= (d << 8);
-      if (next_packet_len > sizeof(next_packet_buf)) {
-        printf("BAD LEN %d\n", next_packet_len);
-        next_packet_state = ST_HEADER;
-      } else {
-        next_packet_idx = 0;
-        next_packet_state = ST_BODY;
-      }
-    } else {
-      next_packet_buf[next_packet_idx++] = d;
-      if (next_packet_idx >= next_packet_len) {
-        // finished with this packet
-        ethernet_send_packet(next_packet_buf, next_packet_len);
-        next_packet_state = ST_HEADER;
-        printf("uart rx %d\n", next_packet_len);
-      }
-    }
-  }
-}
-
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-  if (huart == &huart2) {
-    HAL_UART_Receive_IT(&huart2, uart_rx_buf, sizeof(uart_rx_buf));
-  }
-}
-
-
-
 int ethernet_init(void) {
   /* Set PHY IO functions */
   LAN8742_RegisterBusIO(&LAN8742, &LAN8742_IOCtx);

@@ -72,6 +72,7 @@ void codec_init(void) {
     // N0 =  4718592 = 0x48_00_00 (reg pg8 24/25/26, pg9 32/33/34)
     // N1 = -4718592 = 0xB8_00_00 (reg pg8 28/29/30, pg9 36/37/38) 
     // D1 = 10485760 = 0xA0_00_00 (reg pg8 32/33/34, pg9 40/41/42)
+    #if 1
     CODEC_WRITE_REGISTER(0x0818, 0x48, 0x00, 0x00);
     CODEC_WRITE_REGISTER(0x081C, 0xB8, 0x00, 0x00);
     CODEC_WRITE_REGISTER(0x0820, 0xA0, 0x00, 0x00);
@@ -79,6 +80,7 @@ void codec_init(void) {
     CODEC_WRITE_REGISTER(0x0920, 0x48, 0x00, 0x00);
     CODEC_WRITE_REGISTER(0x0924, 0xB8, 0x00, 0x00);
     CODEC_WRITE_REGISTER(0x0928, 0xA0, 0x00, 0x00);
+    #endif
 
     CODEC_WRITE_REGISTER(0x0147, 0x32); // set MicPGA startup delay to 3.1ms
     CODEC_WRITE_REGISTER(0x0134, 0x80); // Route IN1L to LEFT_P with 20K input impedance
@@ -101,7 +103,7 @@ void codec_init(void) {
     CODEC_WRITE_REGISTER(0x010E, 0x08, 0x08); // route LDAC/RDAC to LOL/LOR
     CODEC_WRITE_REGISTER(0x0109, 0x3C); // power up HPL/HPR and LOL/LOR
     CODEC_WRITE_REGISTER(0x0110, 0x00, 0x00); // unmute HPL/HPR driver, 0dB gain
-    CODEC_WRITE_REGISTER(0x0112, (0) & 0x3F, (0) & 0x3F); // unmute LOL/LOR driver, 0dB gain
+    CODEC_WRITE_REGISTER(0x0112, (0) & 0x3F, (0) & 0x3F); // unmute LOL/LOR driver, -6dB gain
     CODEC_WRITE_REGISTER(0x0041, 0x00, 0x00); // DAC => 0dB
     CODEC_WRITE_REGISTER(0x003F, 0xD6); // power up LDAC/RDAC
     CODEC_WRITE_REGISTER(0x0040, 0x00); // unmute LDAC/RDAC

@@ -12,5 +12,9 @@ void transmit_send(const void *packet, const uint8_t *data, size_t len);
 void transmit_task(DAC_HandleTypeDef *hdac);
 
 #if TX_RAW_STREAM
-void submit_raw_stream(int16_t *samples);
+
+#define TX_QUEUE_SIZE 16
+
+void submit_raw_stream(uint8_t *samples);
+bool need_new_raw_samples(void);
 #endif
